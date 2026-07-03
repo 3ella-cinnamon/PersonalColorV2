@@ -1,0 +1,21 @@
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.5
+pydantic-settings>=2.0
+email-validator>=2.0
+
+# Database
+sqlalchemy>=2.0
+pymysql>=1.1                  # MySQL driver
+cryptography>=42              # required by pymysql for TLS
+psycopg2-binary>=2.9          # PostgreSQL driver (Supabase)
+
+# Auth
+bcrypt>=4.1,<5
+python-jose[cryptography]>=3.3
+python-multipart>=0.0.7       # required by OAuth2PasswordRequestForm
+
+# AI
+openai>=1.0
+anthropic>=0.25
+google-genai>=2.0

@@ -1,0 +1,390 @@
+"""SQLAlchemy ORM models — the database schema.
+
+Tables:
+  - users              : auth credentials (email + bcrypt hash)
+  - user_profiles      : user's static birth/personality data
+  - mbti_criteria      : MBTI type → preference → decision rule (goal-aware)
+  - hd_criteria        : Human Design type → preference → decision rule (goal-aware)
+  - mbti_hd_scenarios  : 16×5 = 80 MBTI+HD blend/conflict/recommendation rows
+"""
+
+from datetime import date, datetime, time
+from typing import Optional
+
+from sqlalchemy import (
+    Date, DateTime, Float, ForeignKey, String, Text, Time, func,
+)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from core.database import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+    profile: Mapped[Optional["UserProfile"]] = relationship(
+        "UserProfile",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )
+
+
+class UserProfile(Base):
+    __tablename__ = "user_profiles"
+
+    id:      Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True, nullable=False)
+
+    birthdate:  Mapped[date] = mapped_column(Date, nullable=False)
+    birth_time: Mapped[time] = mapped_column(Time, nullable=False)
+    birthplace: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    mbti:       Mapped[str] = mapped_column(String(4), nullable=False)
+    hd_type:    Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    personal_color: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    blood_type: Mapped[Optional[str]] = mapped_column(String(3), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now(), onupdate=func.now()
+    )
+
+    user: Mapped["User"] = relationship("User", back_populates="profile")
+
+
+class MbtiCriterion(Base):
+    """Lookup rule: for an MBTI type, what's the preference, and what decision applies?
+
+    goal=None  → general rule, returned for every goal.
+    goal='work'/'money'/'relationship' → returned only when that goal is active.
+    """
+    __tablename__ = "mbti_criteria"
+
+    id:         Mapped[int] = mapped_column(primary_key=True)
+    mbti_type:  Mapped[str] = mapped_column(String(4), index=True, nullable=False)
+    preference: Mapped[str] = mapped_column(String(100), nullable=False)
+    decision:   Mapped[str] = mapped_column(Text, nullable=False)
+    weight:     Mapped[float] = mapped_column(Float, default=1.0, nullable=False)
+    goal:       Mapped[Optional[str]] = mapped_column(String(20), nullable=True, index=True)
+
+
+class HdCriterion(Base):
+    """Lookup rule: for a Human Design type, what's the preference, and what decision applies?
+
+    goal=None  → general rule, returned for every goal.
+    goal='work'/'money'/'relationship' → returned only when that goal is active.
+    """
+    __tablename__ = "hd_criteria"
+
+    id:         Mapped[int] = mapped_column(primary_key=True)
+    hd_type:    Mapped[str] = mapped_column(String(50), index=True, nullable=False)
+    preference: Mapped[str] = mapped_column(String(100), nullable=False)
+    decision:   Mapped[str] = mapped_column(Text, nullable=False)
+    weight:     Mapped[float] = mapped_column(Float, default=1.0, nullable=False)
+    goal:       Mapped[Optional[str]] = mapped_column(String(20), nullable=True, index=True)
+
+
+class MbtiTypeProfile(Base):
+    """Rich reference profile for each MBTI type. Arrays stored as pipe-separated text."""
+    __tablename__ = "mbti_type_profiles"
+
+    id:         Mapped[int] = mapped_column(primary_key=True)
+    type_code:  Mapped[str] = mapped_column(String(4),  unique=True, index=True, nullable=False)
+    type_name:  Mapped[str] = mapped_column(String(50), nullable=False)
+    group_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    population_percent: Mapped[str] = mapped_column(String(100), nullable=False)
+
+    dominant_function:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    auxiliary_function: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    tertiary_function:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    inferior_function:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    core_motivation: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    core_desire:     Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    core_fear:       Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    worldview:       Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    information_processing:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    decision_making:         Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    communication_style:     Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    leadership_style:        Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    conflict_style:          Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    relationship_style:      Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    parenting_style:         Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    learning_style:          Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    work_style:              Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # Pipe-separated list fields
+    career_patterns:    Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    strengths:          Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    weaknesses:         Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    blind_spots:        Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    stress_behavior:    Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    growth_path:        Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    ideal_environment:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    burnout_pattern:         Mapped[Optional[str]] = mapped_column(Text,        nullable=True)
+    emotional_pattern:       Mapped[Optional[str]] = mapped_column(Text,        nullable=True)
+    team_role:               Mapped[Optional[str]] = mapped_column(Text,        nullable=True)
+    ideal_manager:           Mapped[Optional[str]] = mapped_column(Text,        nullable=True)
+    worst_manager:           Mapped[Optional[str]] = mapped_column(Text,        nullable=True)
+    financial_behavior:      Mapped[Optional[str]] = mapped_column(Text,        nullable=True)
+    innovation_style:        Mapped[Optional[str]] = mapped_column(Text,        nullable=True)
+    change_management_style: Mapped[Optional[str]] = mapped_column(Text,        nullable=True)
+    risk_tolerance:          Mapped[Optional[str]] = mapped_column(Text,        nullable=True)
+    scientific_evidence_level: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    long_description:        Mapped[Optional[str]] = mapped_column(Text,        nullable=True)
+
+
+class HdTypeProfile(Base):
+    """Static reference profile for each Human Design type (one row per type)."""
+    __tablename__ = "hd_type_profiles"
+
+    id:                 Mapped[int] = mapped_column(primary_key=True)
+    hd_type:            Mapped[str] = mapped_column(String(50), unique=True, index=True, nullable=False)
+    population_percent: Mapped[str] = mapped_column(String(50), nullable=False)
+    core_purpose:       Mapped[str] = mapped_column(Text, nullable=False)
+    energy_pattern:     Mapped[str] = mapped_column(Text, nullable=False)
+    strategy:           Mapped[str] = mapped_column(Text, nullable=False)
+    signature:          Mapped[str] = mapped_column(Text, nullable=False)
+    not_self:           Mapped[str] = mapped_column(Text, nullable=False)
+    strengths:          Mapped[str] = mapped_column(Text, nullable=False)
+    challenges:         Mapped[str] = mapped_column(Text, nullable=False)
+    work_style:         Mapped[str] = mapped_column(Text, nullable=False)
+    leadership_style:   Mapped[str] = mapped_column(Text, nullable=False)
+    decision_making:    Mapped[str] = mapped_column(Text, nullable=False)
+    relationship_style: Mapped[str] = mapped_column(Text, nullable=False)
+    growth_path:        Mapped[str] = mapped_column(Text, nullable=False)
+    environment_needs:  Mapped[str] = mapped_column(Text, nullable=False)
+    stress_behavior:    Mapped[str] = mapped_column(Text, nullable=False)
+    long_description:   Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class MbtiHdScenario(Base):
+    """One blend/conflict/recommendation row per (MBTI type × HD type) pair.
+
+    80 rows total: 16 MBTI × 5 HD types.
+    Surfaced in /api/daily-calc when a user's profile has both MBTI and HD set.
+    """
+    __tablename__ = "mbti_hd_scenarios"
+
+    id:                   Mapped[int] = mapped_column(primary_key=True)
+    mbti_type:            Mapped[str] = mapped_column(String(4), index=True, nullable=False)
+    hd_type:              Mapped[str] = mapped_column(String(50), index=True, nullable=False)
+    blend_summary:        Mapped[str] = mapped_column(Text, nullable=False)
+    conflict_situation:   Mapped[str] = mapped_column(Text, nullable=False)
+    conflict_sentence:    Mapped[str] = mapped_column(Text, nullable=False)
+    recommended_sentence: Mapped[str] = mapped_column(Text, nullable=False)
+    recommended_action:   Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class PersonalColorProfile(Base):
+    __tablename__ = "personal_color_profiles"
+    season: Mapped[str] = mapped_column(String(20), primary_key=True)
+    sub_types: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    energy_tone: Mapped[str] = mapped_column(String(50), nullable=False)
+    impression: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    communication_vibe: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    language_style: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    best_colors: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    avoid_styles: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    social_energy: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    coaching_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+
+class Recommendation(Base):
+    __tablename__ = "recommendations"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    goal: Mapped[str] = mapped_column(String(50), nullable=False)
+    variation_seed: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    variation_angle: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    bazi_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+
+    # ── EN content ───────────────────────────────────────────
+    behavior_recommendation: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    timing_guidance: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    communication_strategy: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    warnings: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    practical_tips: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    sample_sentences: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    alternative_responses: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    coaching_summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # ── TH translations (populated on first TH request) ──────
+    behavior_recommendation_th: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    timing_guidance_th: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    communication_strategy_th: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    warnings_th: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    practical_tips_th: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    sample_sentences_th: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    alternative_responses_th: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    coaching_summary_th: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # ── Cache key snapshot ────────────────────────────────────
+    profile_mbti: Mapped[Optional[str]] = mapped_column(String(4), nullable=True)
+    profile_hd_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    profile_birthdate: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+
+    generation_model: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    generation_ms: Mapped[Optional[int]] = mapped_column(nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    user: Mapped["User"] = relationship("User")
+
+
+class APILog(Base):
+    """One row per inbound API request — URL, response snapshot, timing."""
+    __tablename__ = "api_logs"
+
+    id:            Mapped[int]           = mapped_column(primary_key=True)
+    method:        Mapped[str]           = mapped_column(String(10),  nullable=False)
+    url:           Mapped[str]           = mapped_column(String(500), nullable=False, index=True)
+    status_code:   Mapped[int]           = mapped_column(nullable=False, index=True)
+    request_body:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    response_body: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # truncated at 4 KB
+    duration_ms:   Mapped[int]           = mapped_column(nullable=False)
+    created_at:    Mapped[datetime]      = mapped_column(DateTime, server_default=func.now(), index=True)
+
+
+class RecommendationFeedback(Base):
+    __tablename__ = "recommendation_feedback"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    recommendation_id: Mapped[int] = mapped_column(ForeignKey("recommendations.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    rating: Mapped[int] = mapped_column(nullable=False)
+    feedback_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+
+class AgentMemory(Base):
+    __tablename__ = "agent_memories"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    memory_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    goal_context: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
+# ── Consult & Healing — Adaptive Assessment ──────────────────────────────────
+
+class AssessmentNode(Base):
+    """One row per node in the adaptive decision tree.
+
+    node_type: single_select | scale_set | likert_set | checkbox_set | terminal
+    scale_labels_json / scale_values_json: JSON arrays, null for single_select.
+    scoring_rules_json: JSON object describing how to score answers and pick next node.
+    """
+    __tablename__ = "assessment_nodes"
+
+    node_id:            Mapped[str]           = mapped_column(String(60), primary_key=True)
+    node_type:          Mapped[str]           = mapped_column(String(20), nullable=False)
+    instrument:         Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    label:              Mapped[str]           = mapped_column(Text, nullable=False)
+    rationale:          Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    evidence:           Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    trigger_warning:    Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    scale_labels_json:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    scale_values_json:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    scoring_rules_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    questions: Mapped[list["AssessmentQuestion"]] = relationship(
+        "AssessmentQuestion", back_populates="node",
+        order_by="AssessmentQuestion.sort_order",
+        cascade="all, delete-orphan",
+    )
+    options: Mapped[list["AssessmentOption"]] = relationship(
+        "AssessmentOption", back_populates="node",
+        order_by="AssessmentOption.sort_order",
+        cascade="all, delete-orphan",
+    )
+
+
+class AssessmentQuestion(Base):
+    """One row per item within a scale/likert/checkbox node."""
+    __tablename__ = "assessment_questions"
+
+    id:             Mapped[int]           = mapped_column(primary_key=True)
+    node_id:        Mapped[str]           = mapped_column(ForeignKey("assessment_nodes.node_id"), nullable=False, index=True)
+    question_id:    Mapped[str]           = mapped_column(String(30), nullable=False)
+    text:           Mapped[str]           = mapped_column(Text, nullable=False)
+    subscale:       Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    reverse_scored: Mapped[bool]          = mapped_column(default=False, nullable=False)
+    safety_item:    Mapped[bool]          = mapped_column(default=False, nullable=False)
+    sort_order:     Mapped[int]           = mapped_column(default=0, nullable=False)
+
+    node: Mapped["AssessmentNode"] = relationship("AssessmentNode", back_populates="questions")
+
+
+class AssessmentOption(Base):
+    """One row per choice in a single_select or checkbox_set node."""
+    __tablename__ = "assessment_options"
+
+    id:           Mapped[int]           = mapped_column(primary_key=True)
+    node_id:      Mapped[str]           = mapped_column(ForeignKey("assessment_nodes.node_id"), nullable=False, index=True)
+    option_id:    Mapped[str]           = mapped_column(String(40), nullable=False)
+    label:        Mapped[str]           = mapped_column(Text, nullable=False)
+    next_node_id: Mapped[Optional[str]] = mapped_column(String(60), nullable=True)
+    flag:         Mapped[Optional[str]] = mapped_column(String(60), nullable=True)
+    sort_order:   Mapped[int]           = mapped_column(default=0, nullable=False)
+
+    node: Mapped["AssessmentNode"] = relationship("AssessmentNode", back_populates="options")
+
+
+class AssessmentSession(Base):
+    """Tracks one user's in-progress or completed assessment run."""
+    __tablename__ = "assessment_sessions"
+
+    id:                  Mapped[int]           = mapped_column(primary_key=True)
+    user_id:             Mapped[int]           = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    current_node_id:     Mapped[str]           = mapped_column(String(60), nullable=False)
+    flags_json:          Mapped[str]           = mapped_column(Text, default="[]", nullable=False)
+    scores_json:         Mapped[str]           = mapped_column(Text, default="{}", nullable=False)
+    visited_nodes_json:  Mapped[str]           = mapped_column(Text, default="[]", nullable=False)
+    status:              Mapped[str]           = mapped_column(String(20), default="in_progress", nullable=False)
+    created_at:          Mapped[datetime]      = mapped_column(DateTime, server_default=func.now())
+    updated_at:          Mapped[datetime]      = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    user:    Mapped["User"]                    = relationship("User")
+    answers: Mapped[list["AssessmentAnswer"]]  = relationship(
+        "AssessmentAnswer", back_populates="session", cascade="all, delete-orphan"
+    )
+    profile: Mapped[Optional["AssessmentProfile"]] = relationship(
+        "AssessmentProfile", back_populates="session", uselist=False, cascade="all, delete-orphan"
+    )
+
+
+class AssessmentAnswer(Base):
+    """One row per answered item (question or option selection)."""
+    __tablename__ = "assessment_answers"
+
+    id:          Mapped[int]           = mapped_column(primary_key=True)
+    session_id:  Mapped[int]           = mapped_column(ForeignKey("assessment_sessions.id"), nullable=False, index=True)
+    node_id:     Mapped[str]           = mapped_column(String(60), nullable=False)
+    question_id: Mapped[str]           = mapped_column(String(30), nullable=False)
+    value:       Mapped[float]         = mapped_column(Float, nullable=False)
+    text_value:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at:  Mapped[datetime]      = mapped_column(DateTime, server_default=func.now())
+
+    session: Mapped["AssessmentSession"] = relationship("AssessmentSession", back_populates="answers")
+
+
+class AssessmentProfile(Base):
+    """Completed psychological profile — generated once all nodes are visited."""
+    __tablename__ = "assessment_profiles"
+
+    id:           Mapped[int]           = mapped_column(primary_key=True)
+    session_id:   Mapped[int]           = mapped_column(ForeignKey("assessment_sessions.id"), unique=True, nullable=False)
+    user_id:      Mapped[int]           = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    profile_json: Mapped[str]           = mapped_column(Text, nullable=False)
+    ai_summary:   Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at:   Mapped[datetime]      = mapped_column(DateTime, server_default=func.now())
+
+    session: Mapped["AssessmentSession"] = relationship("AssessmentSession", back_populates="profile")
+    user:    Mapped["User"]              = relationship("User")

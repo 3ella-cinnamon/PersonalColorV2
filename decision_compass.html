@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Compass — Bazi · Qimen · Thai · Human Design</title>
+<style>
+:root{
+  --bg:#fbf7f7; --card:#ffffff; --ink:#2a2326; --muted:#8a7b80;
+  --line:#ecdfe1; --accent:#d65a6a; --accent-soft:#fbe9eb; --accent-deep:#a8333f;
+  --wood:#2e8b57; --fire:#c0392b; --earth:#b8860b; --metal:#9a9aa2; --water:#1f3a5f;
+  --good:#2e8b57; --warn:#d6892e; --bad:#c0392b;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',-apple-system,'Helvetica Neue',Tahoma,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px}
+.wrap{max-width:1080px;margin:0 auto;padding:26px 20px 60px}
+h1{font-size:25px;margin:0 0 4px;letter-spacing:.2px}
+h2{font-size:18px;margin:34px 0 12px;border-left:4px solid var(--accent);padding-left:10px}
+.sub{color:var(--muted);font-size:13.5px;margin:0 0 18px}
+.banner{background:var(--accent-soft);border:1px solid #f3cdd2;border-radius:12px;
+  padding:13px 16px;font-size:13px;color:var(--accent-deep);margin:14px 0 8px}
+.banner b{color:var(--accent-deep)}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:8px 0 4px;
+  background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+input[type=date],input[type=time]{font-size:15px;padding:7px 10px;border:1px solid var(--line);
+  border-radius:8px;background:#fff;color:var(--ink)}
+label{font-size:13px;color:var(--muted);margin-right:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;
+  box-shadow:0 1px 3px rgba(150,80,90,.05)}
+.pname{font-weight:700;font-size:16px;margin:0 0 2px}
+.pmeta{color:var(--muted);font-size:12.5px;margin-bottom:12px}
+.stance{font-size:22px;font-weight:800;margin:6px 0 2px}
+.stance small{display:block;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.5px}
+.row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.row:last-child{border-bottom:none}
+.row span:first-child{color:var(--muted)}
+.row span:last-child{font-weight:600;text-align:right}
+.swatch{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px;border:1px solid rgba(0,0,0,.15)}
+.pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
+.p-good{background:#e7f4ec;color:var(--good)} .p-warn{background:#fbf0e0;color:var(--warn)} .p-bad{background:#f8e3e3;color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-deep);font-weight:700;font-size:12px}
+tr:last-child td{border-bottom:none}
+.tag{font-size:10.5px;padding:1px 7px;border-radius:6px;font-weight:700}
+.t-sci{background:#e7f4ec;color:#1f7a44} .t-part{background:#fff3da;color:#9a6a14} .t-trad{background:#f3e6ee;color:#8a3d77}
+.acts{font-size:12.5px;margin-top:10px}
+.acts div{padding:3px 0}
+.dot{font-weight:800;margin-right:5px}
+.foot{color:var(--muted);font-size:12px;margin-top:30px;border-top:1px solid var(--line);padding-top:14px}
+.daycell b{font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Decision Compass</h1>
+  <p class="sub">Bazi (八字) + Qimen-style direction + Thai astrology (โหราศาสตร์ไทย) + Human Design — layered on real astronomy. For two charts, side by side.</p>
+
+  <div class="banner">
+    <b>Honesty layer.</b> The <b>astronomy</b> here (weekday/planetary ruler, planetary hour ยาม, element direction) is real and computable.
+    The interpretive layers — Bazi, Qimen, Thai, Human Design — are <b>traditional belief systems with no peer-reviewed evidence that they predict real outcomes</b>.
+    Use this as a structured reflection &amp; ritual tool for confidence and consistency, not as validated forecasting. See the evidence table at the bottom.
+  </div>
+
+  <div class="controls">
+    <div><label for="d">Decision date</label><input type="date" id="d"></div>
+    <div><label for="t">Time (for ยาม / hour)</label><input type="time" id="t" value="10:00"></div>
+    <div style="color:var(--muted);font-size:12px">Location fixed: Bangkok 13.76°N, 100.50°E</div>
+  </div>
+
+  <div class="grid" id="dayout"></div>
+
+  <h2>The two charts (computed once from birth data)</h2>
+  <div class="grid" id="profiles"></div>
+
+  <h2>How the engine thinks — logic mapping</h2>
+  <table id="logic"></table>
+
+  <h2>Evidence &amp; honesty rating per system</h2>
+  <table id="evidence"></table>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+/* ===================== PERSON DATA (computed in Python, cross-checked) ===================== */
+const PEOPLE = [
+ { key:'p1', name:'Person 1 — Female', meta:'3 May 1991, 15:06, Bangkok',
+   dm:'癸 Yin Water (水)', dmEl:'Water', strength:'Weak (身弱)',
+   pillars:'辛未 · 壬辰 · 癸酉 · 己未 (true-solar) / hour 庚申 if clock time',
+   fav:['Water','Metal'], leadColor:'Black / Deep Blue', leadHex:'--water',
+   secColor:'White / Gold', energy:'Calm depth, strategic patience, adaptability, quiet authority.',
+   hd:'Projector · Self-projected (G) authority · Profile 6/2',
+   hdStrat:'WAIT FOR THE INVITATION. Recognition first, then act. Speak your truth and let the right people pull you in.',
+   thaiAsc:'Leo (ลัคนาสิงห์)', saturn:'Saturn in Capricorn (own sign, dignified) — House 6',
+   saturnNote:'Saturn well-placed for outlasting rivals through discipline & service; strong on long games, slow on quick wins.' },
+
+ { key:'p2', name:'Person 2 — Male', meta:'8 Aug 1992, 13:55, Bangkok',
+   dm:'丙 Yang Fire (火)', dmEl:'Fire', strength:'Weak (身弱)',
+   pillars:'壬申 · 戊申 · 丙辰 · 乙未',
+   fav:['Fire','Wood'], leadColor:'Red / Purple', leadHex:'--fire',
+   secColor:'Green / Teal', energy:'Warmth, visibility, drive, charisma — needs fuel (allies, momentum) to shine.',
+   hd:'Projector · Self-projected (G) authority · Profile 3/6',
+   hdStrat:'WAIT FOR THE INVITATION. Trial-and-error wisdom (line 3) — test, learn, then guide. Avoid forcing your way in.',
+   thaiAsc:'Scorpio (ลัคนาพิจิก)', saturn:'Saturn in Capricorn (own sign, dignified) — House 3',
+   saturnNote:'Saturn in 3rd rewards persistent effort, communication, and courage built over time; disciplined initiative pays off.' }
+];
+
+/* ===================== BAZI DAY-PILLAR ENGINE ===================== */
+// Anchor verified: 2024-01-01 (noon) = 甲子 (index 0). Today 2026-06-05 = 庚戌 (index46). OK.
+const STEMS=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const BRANCHES=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const STEM_EL=['Wood','Wood','Fire','Fire','Earth','Earth','Metal','Metal','Water','Water'];
+const BRANCH_EL=['Water','Earth','Wood','Wood','Earth','Fire','Fire','Earth','Metal','Metal','Earth','Water'];
+const GEN={Wood:'Fire',Fire:'Earth',Earth:'Metal',Metal:'Water',Water:'Wood'};      // produces
+const CTRL={Wood:'Earth',Earth:'Water',Water:'Fire',Fire:'Metal',Metal:'Wood'};     // controls
+const EL_COLORHEX={Wood:'--wood',Fire:'--fire',Earth:'--earth',Metal:'--metal',Water:'--water'};
+const EL_COLORTXT={Wood:'Green',Fire:'Red',Earth:'Yellow/Brown',Metal:'White/Gold',Water:'Blue/Black'};
+const EL_DIR={Wood:'East (ทิศตะวันออก)',Fire:'South (ทิศใต้)',Earth:'Centre / NE-SW',Metal:'West (ทิศตะวันตก)',Water:'North (ทิศเหนือ)'};
+const EL_TH={Wood:'ไม้',Fire:'ไฟ',Earth:'ดิน',Metal:'ทอง/โลหะ',Water:'น้ำ'};
+const CLASH={'子':'午','午':'子','丑':'未','未':'丑','寅':'申','申':'寅','卯':'酉','酉':'卯','辰':'戌','戌':'辰','巳':'亥','亥':'巳'};
+
+function dayPillar(date){
+  const anchor=Date.UTC(2024,0,1);
+  const d=Date.UTC(date.getFullYear(),date.getMonth(),date.getDate());
+  let idx=Math.round((d-anchor)/86400000)%60; if(idx<0)idx+=60;
+  const stem=STEMS[idx%10], branch=BRANCHES[idx%12];
+  return {stem,branch,stemEl:STEM_EL[idx%10],branchEl:BRANCH_EL[idx%12]};
+}
+
+/* ===================== THAI PLANETARY DAY + PLANETARY HOUR (real astronomy) ===================== */
+const DAY_RULER=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn']; // Sun=0..Sat=6
+const DAY_RULER_TH=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'];
+const CHALDEAN=['Saturn','Jupiter','Mars','Sun','Venus','Mercury','Moon'];
+// NOAA sunrise/sunset for Bangkok
+function sunTimes(date,lat,lon){
+  const rad=Math.PI/180;
+  const day=Math.floor((Date.UTC(date.getFullYear(),date.getMonth(),date.getDate())-Date.UTC(date.getFullYear(),0,0))/86400000);
+  function calc(isRise){
+    const zenith=90.833;
+    const lngHour=lon/15;
+    const t=day+((isRise?6:18)-lngHour)/24;
+    const M=(0.9856*t)-3.289;
+    let L=M+(1.916*Math.sin(M*rad))+(0.020*Math.sin(2*M*rad))+282.634; L=(L+360)%360;
+    let RA=Math.atan(0.91764*Math.tan(L*rad))/rad; RA=(RA+360)%360;
+    RA+=(Math.floor(L/90)*90)-(Math.floor(RA/90)*90); RA/=15;
+    const sinDec=0.39782*Math.sin(L*rad), cosDec=Math.cos(Math.asin(sinDec));
+    const cosH=(Math.cos(zenith*rad)-(sinDec*Math.sin(lat*rad)))/(cosDec*Math.cos(lat*rad));
+    if(cosH>1||cosH<-1)return null;
+    let H=isRise?360-Math.acos(cosH)/rad:Math.acos(cosH)/rad; H/=15;
+    let T=H+RA-(0.06571*t)-6.622;
+    let UT=(T-lngHour)%24; if(UT<0)UT+=24;
+    return UT; // hours UT
+  }
+  return {rise:calc(true),set:calc(false)};
+}
+function planetaryHour(date,lat,lon,tz){
+  const st=sunTimes(date,lat,lon);
+  if(!st.rise) return {ruler:'—',idx:0};
+  // local decimal hour
+  const localH=date.getHours()+date.getMinutes()/60;
+  const riseL=(st.rise+tz+24)%24, setL=(st.set+tz+24)%24;
+  const dow=date.getDay();
+  const dayRuler=DAY_RULER[dow];
+  const startIdx=CHALDEAN.indexOf(dayRuler);
+  let hourNum;
+  if(localH>=riseL && localH<setL){ // daytime
+    const len=(setL-riseL)/12; hourNum=Math.floor((localH-riseL)/len);
+  }else{ // night
+    const nightLen=((24-setL)+riseL)/12;
+    let since= localH>=setL ? (localH-setL) : (24-setL+localH);
+    hourNum=12+Math.floor(since/nightLen);
+  }
+  const ruler=CHALDEAN[(startIdx+hourNum)%7];
+  return {ruler,dayRuler,riseL,setL,hourNum};
+}
+
+/* ===================== STRATEGY DECISION ===================== */
+const ACTIVITY={
+  deal:{label:'Close a deal / sign',good:['Mercury','Jupiter','Sun']},
+  negotiate:{label:'Negotiate salary',good:['Mercury','Jupiter']},
+  interview:{label:'Interview / meet client',good:['Jupiter','Sun','Mercury']},
+  date:{label:'Date / propose / wedding',good:['Venus','Jupiter','Moon']},
+  launch:{label:'Open business / launch',good:['Sun','Jupiter','Mars']}
+};
+function strategy(person,dp,ph){
+  const fav=person.fav, dmEl=person.dmEl;
+  const dayEl=dp.stemEl;
+  let stance,cls='p-warn',why;
+  const officerEl=Object.keys(CTRL).find(k=>CTRL[k]===dmEl); // controls DM
+  const wealthEl=CTRL[dmEl];                                  // DM controls
+  if(fav.includes(dayEl)){stance='รุก · ADVANCE';cls='p-good';why='Day element ('+dayEl+') feeds your favourable element. Push: pitch, ask, commit.';}
+  else if(dayEl===officerEl){stance='ตั้งรับ · DEFEND';cls='p-warn';why='Day element ('+dayEl+') pressures your weak Day Master. Hold position, protect what you have.';}
+  else if(dayEl===wealthEl){stance='ถ่อมตน · RESTRAIN';cls='p-warn';why='A wealth-element day, but your Day Master is weak — opportunity that can drain you. Don’t overreach.';}
+  else {stance='หลีกเลี่ยง? · NEUTRAL';cls='p-warn';why='Day element ('+dayEl+') is mild for you. Routine over big moves.';}
+  // branch clash override (vs person day branch)
+  const pBranch = person.key==='p1'?'酉':'辰';
+  if(CLASH[dp.branch]===pBranch){stance='หลีกเลี่ยง · AVOID';cls='p-bad';why='Day branch '+dp.branch+' clashes (冲) your natal day branch '+pBranch+'. Avoid irreversible commitments today.';}
+  // Saturn flavour
+  let saturnFlag = (ph.dayRuler==='Saturn'||ph.ruler==='Saturn');
+  return {stance,cls,why,dayEl,saturnFlag};
+}
+
+/* ===================== RENDER ===================== */
+function cssv(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function renderDay(){
+  const dval=document.getElementById('d').value, tval=document.getElementById('t').value||'10:00';
+  const [Y,M,D]=dval.split('-').map(Number); const [hh,mm]=tval.split(':').map(Number);
+  const date=new Date(Y,M-1,D,hh,mm);
+  const dp=dayPillar(date);
+  const ph=planetaryHour(date,13.7563,100.5018,7);
+  const dowTH=DAY_RULER_TH[date.getDay()];
+  let html='';
+  PEOPLE.forEach(p=>{
+    const s=strategy(p,dp,ph);
+    const dir=EL_DIR[p.fav[0]];
+    const colorHex=cssv(EL_COLORHEX[p.fav[0]]);
+    // best hours summary for key activities
+    let actHtml='';
+    for(const k in ACTIVITY){
+      const a=ACTIVITY[k]; const ok=a.good.includes(ph.ruler);
+      actHtml+='<div><span class="dot" style="color:'+(ok?'var(--good)':'var(--muted)')+'">'+(ok?'▲':'·')+'</span>'+a.label+' — '+(ok?'<b>good hour now</b>':'wait for '+a.good.join('/')+' hour')+'</div>';
+    }
+    html+=`<div class="card">
+      <div class="pname">${p.name}</div>
+      <div class="pmeta">DM ${p.dm} · ${p.strength}</div>
+      <div class="stance" style="color:var(--${s.cls==='p-good'?'good':s.cls==='p-bad'?'bad':'warn'})">${s.stance}<small>TODAY'S STANCE</small></div>
+      <div style="font-size:12.5px;color:var(--muted);margin:2px 0 10px">${s.why}</div>
+      <div class="row"><span>Lead colour (wear / surround)</span><span><span class="swatch" style="background:${colorHex}"></span>${p.leadColor}</span></div>
+      <div class="row"><span>Lucky direction (face / travel)</span><span>${dir}</span></div>
+      <div class="row"><span>Day element (Bazi)</span><span>${dp.stem}${dp.branch} · ${s.dayEl}</span></div>
+      <div class="row"><span>Planetary day / hour (ยาม)</span><span>${dowTH} · ${ph.ruler} hour</span></div>
+      ${s.saturnFlag?'<div class="row"><span>เสาร์ Saturn active</span><span style="color:var(--warn)">Be humble, disciplined, slow</span></div>':''}
+      <div class="acts">${actHtml}</div>
+    </div>`;
+  });
+  document.getElementById('dayout').innerHTML=html;
+}
+
+function renderProfiles(){
+  let html='';
+  PEOPLE.forEach(p=>{
+    html+=`<div class="card">
+      <div class="pname">${p.name}</div>
+      <div class="pmeta">${p.meta}</div>
+      <div class="row"><span>Bazi Day Master</span><span>${p.dm} · ${p.strength}</span></div>
+      <div class="row"><span>Four Pillars</span><span style="font-size:12px">${p.pillars}</span></div>
+      <div class="row"><span>Favourable elements (用神)</span><span>${p.fav.join(' , ')}</span></div>
+      <div class="row"><span>Lead colour / energy</span><span><span class="swatch" style="background:${cssv(p.leadHex)}"></span>${p.leadColor}</span></div>
+      <div class="row"><span>Human Design</span><span style="font-size:12px">${p.hd}</span></div>
+      <div class="row"><span>HD strategy</span><span style="font-size:12px">${p.hdStrat}</span></div>
+      <div class="row"><span>Thai Ascendant (ลัคนา)</span><span>${p.thaiAsc}</span></div>
+      <div class="row"><span>Saturn (ดาวเสาร์)</span><span style="font-size:12px">${p.saturn}</span></div>
+      <div style="font-size:12.5px;color:var(--muted);margin-top:8px"><b>Inner / being:</b> ${p.energy}<br><b>Saturn note:</b> ${p.saturnNote}</div>
+    </div>`;
+  });
+  document.getElementById('profiles').innerHTML=html;
+}
+
+function renderLogic(){
+  const rows=[
+    ['Layer','Input','Output it drives','Weight here'],
+    ['☀️ Astronomy (real)','Weekday, sunrise/sunset, planetary hour (ยาม)','WHEN — best hour windows for each activity','Foundation'],
+    ['Bazi 八字 (primary)','Birth pillars → Day Master + favourable element; day pillar vs natal','STANCE (advance/defend/restrain/avoid) + LEAD COLOUR','High'],
+    ['Qimen-style direction','Favourable element → compass direction','WHERE — direction to face / travel','High (simplified)'],
+    ['Thai โหราศาสตร์','Planetary day ruler, Saturn (ดาวเสาร์) placement','Caution/discipline flavour, ฤกษ์ tone','Secondary'],
+    ['Human Design','Type + Authority + Profile','HOW you decide (process), not when','Overlay'],
+    ['MBTI','Self-report questionnaire (not from birth)','Communication & negotiation style','Overlay — needs test']
+  ];
+  let h='';rows.forEach((r,i)=>{h+='<tr>'+r.map(c=>i===0?`<th>${c}</th>`:`<td>${c}</td>`).join('')+'</tr>';});
+  document.getElementById('logic').innerHTML=h;
+}
+
+function renderEvidence(){
+  const rows=[
+    ['System','What it is','Evidence status'],
+    ['Planetary hours / astronomy','Deterministic sky positions','<span class="tag t-sci">REAL</span> Computable fact'],
+    ['MBTI','Personality typology','<span class="tag t-part">CONTESTED</span> Peer-reviewed but weak test-retest & predictive validity'],
+    ['Bazi (八字)','Chinese calendrical fate system','<span class="tag t-trad">TRADITION</span> No validating studies; historical/sinological scholarship only'],
+    ['Qimen Dunjia (奇門遁甲)','Divination & strategy system','<span class="tag t-trad">TRADITION</span> Documented since Han dynasty; no predictive evidence'],
+    ['Thai astrology','Vedic/Khmer-derived horoscopy','<span class="tag t-trad">TRADITION</span> Anthropological study only; no predictive evidence'],
+    ['Human Design','1987 New-Age synthesis','<span class="tag t-trad">TRADITION</span> Created by A. Krakower; no empirical mechanism'],
+    ['Astrology overall','Natal prediction','<span class="tag t-part">TESTED → null</span> Carlson 1985 (Nature); Dean &amp; Kelly time-twins: no effect']
+  ];
+  let h='';rows.forEach((r,i)=>{h+='<tr>'+r.map(c=>i===0?`<th>${c}</th>`:`<td>${c}</td>`).join('')+'</tr>';});
+  document.getElementById('evidence').innerHTML=h;
+}
+
+document.getElementById('foot').innerHTML='Sources include: Erford (2025) <i>J. Counseling &amp; Development</i> MBTI synthesis; Carlson (1985) <i>Nature</i> 318:419; Dean &amp; Kelly time-twins study; Cambridge <i>Diogenes</i> on Thai/Khmer divination; Wikipedia/scholarly entries on Four Pillars, Qimen Dunjia, Human Design. Astronomy via NOAA sunrise algorithm + Swiss Ephemeris. <b>This tool is for reflection, not prediction.</b>';
+
+// init
+const today=new Date();
+document.getElementById('d').value=today.toISOString().slice(0,10);
+['d','t'].forEach(id=>document.getElementById(id).addEventListener('change',renderDay));
+renderDay();renderProfiles();renderLogic();renderEvidence();
+</script>
+</body>
+</html>

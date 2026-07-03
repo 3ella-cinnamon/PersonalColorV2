@@ -1,0 +1,1124 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "title": "Boong Adaptive Psychological Stress Assessment",
+    "description": "Evidence-based adaptive decision tree for identifying root causes of stress in working adults. Assessment only — not therapy, not diagnosis.",
+    "disclaimer": "This tool is a self-report screening instrument for psychoeducational purposes only. It does not constitute a clinical diagnosis. All questions are drawn from validated, peer-reviewed instruments. Users showing high scores on depression or anxiety items should be directed to a licensed mental health professional.",
+    "languages": ["en", "th", "ko"],
+    "estimated_time_minutes": "8–20 (adaptive — shorter paths for focused concerns)"
+  },
+
+  "instruments_registry": {
+    "PSS-4": {
+      "full_name": "Perceived Stress Scale (4-item)",
+      "citation": "Cohen S, Kamarck T, Mermelstein R (1983). A global measure of perceived stress. J Health Soc Behav. 24(4):385–396.",
+      "doi": "10.2307/2136404",
+      "scale": "0=Never, 1=Almost Never, 2=Sometimes, 3=Fairly Often, 4=Very Often",
+      "scoring": "Sum items 1–4; reverse-score items 2 and 3. Range 0–16. ≥9 = elevated stress."
+    },
+    "PHQ-9": {
+      "full_name": "Patient Health Questionnaire – 9 items",
+      "citation": "Kroenke K, Spitzer RL, Williams JBW (2001). The PHQ-9: Validity of a brief depression severity measure. J Gen Intern Med. 16(9):606–613.",
+      "doi": "10.1046/j.1525-1497.2001.016009606.x",
+      "scale": "0=Not at all, 1=Several days, 2=More than half the days, 3=Nearly every day",
+      "scoring": "Sum all 9 items. 0–4=minimal, 5–9=mild, 10–14=moderate, 15–19=moderately severe, 20–27=severe. Item 9 (suicidal ideation) always flags for referral if ≥1."
+    },
+    "GAD-7": {
+      "full_name": "Generalized Anxiety Disorder – 7 items",
+      "citation": "Spitzer RL, Kroenke K, Williams JBW, Löwe B (2006). A brief measure for assessing generalized anxiety disorder. Arch Intern Med. 166(10):1092–1097.",
+      "doi": "10.1001/archinte.166.10.1092",
+      "scale": "0=Not at all, 1=Several days, 2=More than half the days, 3=Nearly every day",
+      "scoring": "Sum all 7 items. 5–9=mild, 10–14=moderate, ≥15=severe."
+    },
+    "MBI-EE": {
+      "full_name": "Maslach Burnout Inventory – Emotional Exhaustion subscale",
+      "citation": "Maslach C, Jackson SE, Leiter MP (1996). Maslach Burnout Inventory Manual (3rd ed.). Consulting Psychologists Press.",
+      "scale": "0=Never, 1=A few times a year, 2=Once a month, 3=A few times a month, 4=Once a week, 5=A few times a week, 6=Every day",
+      "scoring": "EE subscale: 9 items. ≤16=low, 17–26=moderate, ≥27=high burnout."
+    },
+    "MBI-DP": {
+      "full_name": "Maslach Burnout Inventory – Depersonalization subscale",
+      "citation": "Maslach C, Jackson SE, Leiter MP (1996). Maslach Burnout Inventory Manual (3rd ed.). Consulting Psychologists Press.",
+      "scale": "0=Never to 6=Every day",
+      "scoring": "DP subscale: 5 items. ≤5=low, 6–9=moderate, ≥10=high cynicism."
+    },
+    "ERI": {
+      "full_name": "Effort-Reward Imbalance Model",
+      "citation": "Siegrist J (1996). Adverse health effects of high-effort/low-reward conditions. J Occup Health Psychol. 1(1):27–41.",
+      "doi": "10.1037/1076-8998.1.1.27",
+      "scoring": "Effort score / Reward score. Ratio >1.0 = imbalance risk."
+    },
+    "JDC": {
+      "full_name": "Job Demands-Control-Support model",
+      "citation": "Karasek R, Theorell T (1990). Healthy Work: Stress, Productivity, and the Reconstruction of Working Life. Basic Books.",
+      "scoring": "High demands + low control = strain. High demands + low control + low support = iso-strain."
+    },
+    "ECR-R": {
+      "full_name": "Experiences in Close Relationships – Revised",
+      "citation": "Fraley RC, Waller NG, Brennan KA (2000). An item-response theory analysis of self-report measures of adult attachment. J Pers Soc Psychol. 78(2):350–365.",
+      "doi": "10.1037/0022-3514.78.2.350",
+      "scale": "1=Disagree strongly to 7=Agree strongly",
+      "scoring": "Two subscales: Anxiety (fear of abandonment) and Avoidance (discomfort with closeness). Each 18 items, mean score. High anxiety + low avoidance = Preoccupied. Low anxiety + high avoidance = Dismissing. High both = Fearful. Low both = Secure."
+    },
+    "RSQ": {
+      "full_name": "Rejection Sensitivity Questionnaire",
+      "citation": "Downey G, Feldman SI (1996). Implications of rejection sensitivity for intimate relationships. J Pers Soc Psychol. 70(6):1327–1343.",
+      "doi": "10.1037/0022-3514.70.6.1327",
+      "scoring": "Anxious expectations × likelihood of rejection. High RS = hypersensitive to perceived rejection cues."
+    },
+    "PBI": {
+      "full_name": "Parental Bonding Instrument",
+      "citation": "Parker G, Tupling H, Brown LB (1979). A parental bonding instrument. Br J Med Psychol. 52(1):1–10.",
+      "doi": "10.1111/j.2044-8341.1979.tb02487.x",
+      "scale": "0=Very unlike to 3=Very like",
+      "scoring": "Two subscales per parent: Care (0–36) and Overprotection/Control (0–39). Quadrant typology: Optimal (high care, low control), Affectionless control (low care, high control), Affectionate constraint (high care, high control), Neglectful (low care, low control)."
+    },
+    "CTQ-SF": {
+      "full_name": "Childhood Trauma Questionnaire – Short Form",
+      "citation": "Bernstein DP, Stein JA, Newcomb MD et al. (2003). Development and validation of a brief screening version of the Childhood Trauma Questionnaire. Child Abuse Negl. 27(2):169–190.",
+      "doi": "10.1016/S0145-2134(02)00541-0",
+      "scale": "1=Never true to 5=Very often true",
+      "scoring": "5 subscales: Emotional Abuse (EA), Physical Abuse (PA), Sexual Abuse (SA), Emotional Neglect (EN), Physical Neglect (PN). Each 5 items. EN cutoff ≥15 = moderate-severe. EA cutoff ≥13 = moderate-severe."
+    },
+    "ACE": {
+      "full_name": "Adverse Childhood Experiences questionnaire",
+      "citation": "Felitti VJ, Anda RF, Nordenberg D et al. (1998). Relationship of childhood abuse and household dysfunction to many of the leading causes of death in adults. Am J Prev Med. 14(4):245–258.",
+      "doi": "10.1016/S0749-3797(98)00017-8",
+      "scale": "Yes/No for 10 categories",
+      "scoring": "ACE score = count of 'Yes' answers. ≥4 = significantly elevated risk for adverse health and mental health outcomes. Triggers trauma-informed framing."
+    },
+    "DERS-16": {
+      "full_name": "Difficulties in Emotion Regulation Scale – 16-item version",
+      "citation": "Bjureberg J, Ljótsson B, Tull MT et al. (2016). Development and validation of a brief version of the Difficulties in Emotion Regulation Scale. J Psychopathol Behav Assess. 38(2):284–296.",
+      "doi": "10.1007/s10862-015-9514-x",
+      "scale": "1=Almost never to 5=Almost always",
+      "scoring": "Total score 16–80. Higher = more difficulties regulating emotions. Subscales: Nonacceptance, Goals, Impulse, Awareness, Strategies, Clarity."
+    },
+    "SCS-SF": {
+      "full_name": "Self-Compassion Scale – Short Form",
+      "citation": "Raes F, Pommier E, Neff KD, Van Gucht D (2011). Construction and factorial validation of a short form of the Self-Compassion Scale. Clin Psychol Psychother. 18(3):250–255.",
+      "doi": "10.1002/cpp.702",
+      "scale": "1=Almost never to 5=Almost always",
+      "scoring": "Mean of 12 items (after reverse-scoring: Self-Judgment, Isolation, Over-identification). ≤2.5=low, 2.5–3.5=moderate, ≥3.5=high self-compassion."
+    },
+    "FMPS": {
+      "full_name": "Frost Multidimensional Perfectionism Scale (key subscales)",
+      "citation": "Frost RO, Marten P, Lahart C, Rosenblate R (1990). The dimensions of perfectionism. Cogn Ther Res. 14(5):449–468.",
+      "doi": "10.1007/BF01172967",
+      "scale": "1=Strongly disagree to 5=Strongly agree",
+      "scoring": "Maladaptive subscales: Concern over Mistakes (CM, ≥25 = high), Doubts about Actions (DA, ≥11 = high). Adaptive: Personal Standards (PS)."
+    },
+    "TOSCA-3": {
+      "full_name": "Test of Self-Conscious Affect – 3rd edition (shame vs guilt differentiation)",
+      "citation": "Tangney JP, Dearing RL (2002). Shame and Guilt. Guilford Press.",
+      "scoring": "Proneness to shame (global self-condemnation) vs guilt (behaviour-specific remorse). High shame proneness predicts depression, low empathy, externalisation."
+    },
+    "YSQ-S3": {
+      "full_name": "Young Schema Questionnaire – Short Form 3",
+      "citation": "Young JE (1998). Young Schema Questionnaire – Short Form. Cognitive Therapy Center of New York. Psychometric validation: Rijkeboer MM, van den Bergh H (2006). Multiple group confirmatory factor analysis of the Young Schema-Questionnaire in a Dutch clinical versus non-clinical population. Cogn Ther Res. 30(3):263–278.",
+      "doi": "10.1007/s10608-006-9051-8",
+      "scale": "1=Completely untrue to 6=Describes me perfectly",
+      "scoring": "18 schemas across 5 domains. Score ≥4 on a schema = clinically relevant. Domains: Disconnection/Rejection, Impaired Autonomy, Impaired Limits, Other-Directedness, Overvigilance."
+    },
+    "RSES": {
+      "full_name": "Rosenberg Self-Esteem Scale",
+      "citation": "Rosenberg M (1965). Society and the Adolescent Self-Image. Princeton University Press.",
+      "scale": "1=Strongly agree to 4=Strongly disagree (some reverse-scored)",
+      "scoring": "Sum 10 items (reverse items 3,5,8,9,10). Range 10–40. <25 = low self-esteem."
+    },
+    "ISS": {
+      "full_name": "Internalized Shame Scale",
+      "citation": "Cook DR (1994). Internalized shame scale: Reliability and validity. Alcohol Treat Q. 12(2):197–211.",
+      "doi": "10.1300/J020V12N02_13",
+      "scale": "0=Never to 4=Almost always",
+      "scoring": "24 shame items + 6 self-esteem items. Shame subscale ≥71 (total)/64th percentile = clinically significant."
+    },
+    "PFAI": {
+      "full_name": "Performance Failure Appraisal Inventory",
+      "citation": "Conroy DE, Willow JP, Metzler JN (2002). Multidimensional fear of failure measurement. J Appl Sport Psychol. 14(2):76–90.",
+      "doi": "10.1080/10413200252907752",
+      "scale": "–2=Do not believe at all to +2=Believe 100%",
+      "scoring": "5 subscales: Shame/embarrassment, Devalue of self-estimate, Uncertain future, Upsetting important others, Loss of social influence."
+    }
+  },
+
+  "flow": {
+    "entry": "L1_BROAD_SCREEN",
+
+    "nodes": {
+
+      "L1_BROAD_SCREEN": {
+        "id": "L1_BROAD_SCREEN",
+        "type": "single_select",
+        "label": "Which area of your life feels heaviest right now?",
+        "rationale": "Broad life-domain screening. Based on life stress taxonomy from Holmes & Rahe (1967) Social Readjustment Rating Scale and Lazarus & Folkman (1984) transactional stress model. Allows adaptive focus rather than administering all instruments to all users.",
+        "evidence": "Lazarus RS, Folkman S (1984). Stress, Appraisal, and Coping. Springer.",
+        "instruction": "Select one — the one that feels most urgent or heavy. You can return for other areas later.",
+        "options": [
+          { "id": "work", "label": "Work", "icon": "briefcase", "next": "L2_WORK_SCREEN" },
+          { "id": "relationship", "label": "Romantic relationship", "icon": "heart", "next": "L2_REL_SCREEN" },
+          { "id": "family", "label": "Family", "icon": "users", "next": "L2_FAM_SCREEN" },
+          { "id": "friends", "label": "Friends / social", "icon": "user-group", "next": "L2_SOC_SCREEN" },
+          { "id": "health", "label": "Health", "icon": "activity", "next": "L2_HEALTH_SCREEN" },
+          { "id": "money", "label": "Money / finances", "icon": "currency-dollar", "next": "L2_MONEY_SCREEN" },
+          { "id": "self", "label": "Myself / my inner world", "icon": "brain", "next": "L2_SELF_SCREEN" }
+        ]
+      },
+
+      "L2_WORK_SCREEN": {
+        "id": "L2_WORK_SCREEN",
+        "type": "single_select",
+        "label": "What feels hardest about work?",
+        "rationale": "Narrows the work stressor to its primary locus before applying specific instruments. Based on the multi-dimensional Job Demands-Control-Support model (Karasek & Theorell) and Effort-Reward Imbalance model (Siegrist).",
+        "evidence": "Karasek R, Theorell T (1990). Healthy Work. Basic Books. / Siegrist J (1996). J Occup Health Psychol. 1(1):27–41.",
+        "options": [
+          { "id": "workload", "label": "Too much to do, never enough time", "next": "L3_WORK_BURNOUT" },
+          { "id": "boss", "label": "My manager or leadership", "next": "L3_WORK_BOSS" },
+          { "id": "recognition", "label": "Not feeling valued or recognised", "next": "L3_WORK_ERI" },
+          { "id": "autonomy", "label": "No control over my work", "next": "L3_WORK_CONTROL" },
+          { "id": "colleagues", "label": "Conflict with colleagues", "next": "L3_WORK_CONFLICT" },
+          { "id": "purpose", "label": "I don't see the point of what I do", "next": "L3_WORK_MEANING" }
+        ]
+      },
+
+      "L3_WORK_BURNOUT": {
+        "id": "L3_WORK_BURNOUT",
+        "type": "scale_set",
+        "instrument": "MBI-EE",
+        "label": "In the past month, how often have you experienced the following?",
+        "scale_labels": ["Never", "A few times a year", "Once a month", "A few times a month", "Once a week", "Several times a week", "Every day"],
+        "scale_values": [0, 1, 2, 3, 4, 5, 6],
+        "rationale": "Emotional Exhaustion (EE) subscale of the Maslach Burnout Inventory is the core marker of burnout. It measures depletion of emotional resources. High EE is the first stage in Leiter & Maslach's burnout progression model.",
+        "evidence": "Maslach C, Leiter MP (2016). Understanding the burnout experience: Recent research and its implications for psychiatry. World Psychiatry. 15(2):103–111.",
+        "questions": [
+          { "id": "MBI_EE_1", "text": "I feel emotionally drained from my work." },
+          { "id": "MBI_EE_2", "text": "I feel used up at the end of the workday." },
+          { "id": "MBI_EE_3", "text": "I feel tired when I get up in the morning and have to face another day at work." },
+          { "id": "MBI_EE_4", "text": "Working all day is really a strain for me." },
+          { "id": "MBI_EE_5", "text": "I feel burned out from my work." }
+        ],
+        "scoring": {
+          "sum_items": ["MBI_EE_1","MBI_EE_2","MBI_EE_3","MBI_EE_4","MBI_EE_5"],
+          "cutoffs": {
+            "0-9": { "level": "low", "next": "L4_WORK_DEMANDS" },
+            "10-17": { "level": "moderate", "next": "L4_WORK_DEMANDS" },
+            "18-30": { "level": "high", "flag": "burnout_risk", "next": "L4_WORK_CYNICISM" }
+          }
+        }
+      },
+
+      "L4_WORK_CYNICISM": {
+        "id": "L4_WORK_CYNICISM",
+        "type": "scale_set",
+        "instrument": "MBI-DP",
+        "label": "How often do you feel the following about your job?",
+        "scale_labels": ["Never", "A few times a year", "Once a month", "A few times a month", "Once a week", "Several times a week", "Every day"],
+        "scale_values": [0, 1, 2, 3, 4, 5, 6],
+        "rationale": "High EE combined with high Depersonalisation (cynicism/detachment) confirms the burnout profile. Together they predict professional inefficacy and health outcomes. Measured by MBI Cynicism subscale (adapted from original DP subscale for general workers).",
+        "evidence": "Schaufeli WB, Leiter MP, Maslach C (2009). Burnout: 35 years of research and practice. Career Dev Int. 14(3):204–220.",
+        "questions": [
+          { "id": "MBI_DP_1", "text": "I feel I treat some colleagues as if they were impersonal objects." },
+          { "id": "MBI_DP_2", "text": "I've become more callous toward people since I took this job." },
+          { "id": "MBI_DP_3", "text": "I worry that this job is hardening me emotionally." },
+          { "id": "MBI_DP_4", "text": "I don't really care what happens to some people at work." },
+          { "id": "MBI_DP_5", "text": "I feel clients or colleagues blame me for some of their problems." }
+        ],
+        "scoring": {
+          "sum_items": ["MBI_DP_1","MBI_DP_2","MBI_DP_3","MBI_DP_4","MBI_DP_5"],
+          "cutoffs": {
+            "0-5": { "level": "low", "next": "L4_WORK_DEMANDS" },
+            "6-9": { "level": "moderate", "next": "L4_WORK_DEMANDS" },
+            "10-30": { "level": "high", "flag": "cynicism_high", "next": "L4_WORK_DEMANDS" }
+          }
+        }
+      },
+
+      "L4_WORK_DEMANDS": {
+        "id": "L4_WORK_DEMANDS",
+        "type": "scale_set",
+        "instrument": "JDC",
+        "label": "How much do you agree with each statement about your job?",
+        "scale_labels": ["Strongly disagree", "Disagree", "Agree", "Strongly agree"],
+        "scale_values": [1, 2, 3, 4],
+        "rationale": "Job Demands-Control model. The 'strain' quadrant (high demands + low control) is the primary structural predictor of occupational stress and cardiovascular disease. Identifying this pattern determines whether intervention should target workload vs. autonomy.",
+        "evidence": "Karasek RA (1979). Job demands, job decision latitude, and mental strain. Adm Sci Q. 24(2):285–308.",
+        "questions": [
+          { "id": "JDC_D1", "text": "My job requires working very fast.", "subscale": "demands" },
+          { "id": "JDC_D2", "text": "My job requires working very hard.", "subscale": "demands" },
+          { "id": "JDC_D3", "text": "I am not asked to do an excessive amount of work.", "subscale": "demands", "reverse": true },
+          { "id": "JDC_C1", "text": "I have a lot of say about what happens in my job.", "subscale": "control" },
+          { "id": "JDC_C2", "text": "I have freedom to decide how I do my work.", "subscale": "control" },
+          { "id": "JDC_C3", "text": "My job involves a lot of repetitive work.", "subscale": "control", "reverse": true }
+        ],
+        "scoring": {
+          "subscales": {
+            "demands": { "items": ["JDC_D1","JDC_D2","JDC_D3"], "reverse_items": ["JDC_D3"] },
+            "control": { "items": ["JDC_C1","JDC_C2","JDC_C3"], "reverse_items": ["JDC_C3"] }
+          },
+          "profile_rules": {
+            "high_demands_low_control": { "condition": "demands_mean >= 3 AND control_mean <= 2", "flag": "job_strain", "next": "L5_PERSONAL_SCHEMAS" },
+            "high_demands_high_control": { "condition": "demands_mean >= 3 AND control_mean >= 3", "label": "active_job", "next": "L5_PERFECTIONISM_SCREEN" },
+            "low_demands_low_control": { "condition": "demands_mean < 3 AND control_mean <= 2", "flag": "passive_job", "next": "L5_PERSONAL_SCHEMAS" },
+            "default": { "next": "L5_PERSONAL_SCHEMAS" }
+          }
+        }
+      },
+
+      "L3_WORK_ERI": {
+        "id": "L3_WORK_ERI",
+        "type": "scale_set",
+        "instrument": "ERI",
+        "label": "How true are the following about your work situation?",
+        "scale_labels": ["Strongly disagree", "Disagree", "Agree", "Strongly agree"],
+        "scale_values": [1, 2, 3, 4],
+        "rationale": "Effort-Reward Imbalance model (Siegrist). When workers perceive their effort exceeds their reward (pay, esteem, job security, career opportunity), chronic stress and health damage result. High ERI ratio predicts depression and cardiovascular disease.",
+        "evidence": "Siegrist J (1996). Adverse health effects of high-effort/low-reward conditions. J Occup Health Psychol. 1(1):27–41.",
+        "questions": [
+          { "id": "ERI_E1", "text": "I have constant time pressure due to a heavy work load.", "subscale": "effort" },
+          { "id": "ERI_E2", "text": "I have many interruptions and disturbances in my job.", "subscale": "effort" },
+          { "id": "ERI_E3", "text": "I have a lot of responsibility in my job.", "subscale": "effort" },
+          { "id": "ERI_R1", "text": "I receive the respect I deserve from my superiors.", "subscale": "reward" },
+          { "id": "ERI_R2", "text": "My job advancement prospects are poor.", "subscale": "reward", "reverse": true },
+          { "id": "ERI_R3", "text": "My job security is poor.", "subscale": "reward", "reverse": true },
+          { "id": "ERI_R4", "text": "Considering all my efforts and achievements, I receive appropriate pay.", "subscale": "reward" }
+        ],
+        "scoring": {
+          "effort_mean": "mean of ERI_E1, ERI_E2, ERI_E3",
+          "reward_mean": "mean of ERI_R1..4 (reverse-scored where marked)",
+          "ratio": "effort_mean / reward_mean",
+          "cutoffs": {
+            "ratio > 1.0": { "flag": "ERI_imbalance", "next": "L5_NEED_FOR_APPROVAL" },
+            "ratio <= 1.0": { "next": "L5_PERSONAL_SCHEMAS" }
+          }
+        }
+      },
+
+      "L3_WORK_BOSS": {
+        "id": "L3_WORK_BOSS",
+        "type": "single_select",
+        "label": "What best describes what's hard about your relationship with your manager?",
+        "rationale": "Differentiates between abusive supervision, lack of recognition, unfair treatment, and lack of psychological safety — each with distinct psychological mechanisms and interventions.",
+        "evidence": "Tepper BJ (2000). Consequences of abusive supervision. Acad Manage J. 43(2):178–190.",
+        "options": [
+          { "id": "criticism", "label": "They often criticise or belittle me", "next": "L4_SHAME_SCREEN" },
+          { "id": "ignored", "label": "They ignore or dismiss my contributions", "next": "L3_WORK_ERI" },
+          { "id": "unfair", "label": "They treat me unfairly compared to others", "next": "L4_INJUSTICE_SCREEN" },
+          { "id": "micromanage", "label": "They control every detail and don't trust me", "next": "L4_WORK_DEMANDS" }
+        ]
+      },
+
+      "L3_WORK_CONTROL": {
+        "id": "L3_WORK_CONTROL",
+        "type": "likert_set",
+        "instrument": "JDC control subscale + SDT basic needs",
+        "label": "How much do you agree with these statements?",
+        "scale_labels": ["Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "rationale": "Combines the control dimension of Karasek's JDC model with Deci & Ryan's Self-Determination Theory. Autonomy is a basic psychological need; its thwarting predicts demotivation, anxiety, and disengagement.",
+        "evidence": "Deci EL, Ryan RM (2000). The 'what' and 'why' of goal pursuits. Psychol Inq. 11(4):227–268.",
+        "questions": [
+          { "id": "SDT_A1", "text": "I feel free to decide how to approach my work tasks." },
+          { "id": "SDT_A2", "text": "My manager pressures me to think or act in specific ways." },
+          { "id": "SDT_A3", "text": "I feel I can express my ideas and opinions in this job." },
+          { "id": "SDT_C1", "text": "I feel confident I can do my job well." },
+          { "id": "SDT_R1", "text": "I feel I matter to the people at work." }
+        ],
+        "scoring": {
+          "autonomy_mean": "mean of SDT_A1 (reversed A2), SDT_A3",
+          "next_always": "L5_PERSONAL_SCHEMAS"
+        }
+      },
+
+      "L3_WORK_CONFLICT": {
+        "id": "L3_WORK_CONFLICT",
+        "type": "single_select",
+        "label": "How do you usually respond when there is conflict at work?",
+        "rationale": "Thomas-Kilmann Conflict Mode Instrument identifies conflict style. Avoidant and accommodating styles under chronic conflict are associated with resentment accumulation and burnout.",
+        "evidence": "Thomas KW, Kilmann RH (1974). Thomas-Kilmann Conflict Mode Instrument. Xicom.",
+        "options": [
+          { "id": "avoid", "label": "I avoid it or go silent", "flag": "conflict_avoidant", "next": "L4_SHAME_SCREEN" },
+          { "id": "accommodate", "label": "I give in to keep the peace", "flag": "conflict_accommodating", "next": "L5_NEED_FOR_APPROVAL" },
+          { "id": "compete", "label": "I argue or push my position", "next": "L5_PERSONAL_SCHEMAS" },
+          { "id": "collaborate", "label": "I try to find a solution that works for both", "next": "L5_PERSONAL_SCHEMAS" }
+        ]
+      },
+
+      "L3_WORK_MEANING": {
+        "id": "L3_WORK_MEANING",
+        "type": "likert_set",
+        "label": "How much do you relate to these statements?",
+        "scale_labels": ["Not at all", "A little", "Moderately", "Quite a bit", "Completely"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "rationale": "Loss of meaning is the third burnout dimension (Reduced Personal Accomplishment). It is also central to existential frameworks (Frankl) and is linked to schema-level core beliefs about self-worth being conditional on achievement.",
+        "evidence": "Leiter MP, Maslach C (2009). Nurse turnover: The mediating role of burnout. J Nurs Manag. 17(3):331–339.",
+        "questions": [
+          { "id": "MEAN_1", "text": "I no longer feel that my work makes a real difference." },
+          { "id": "MEAN_2", "text": "I used to be excited about this work but that feeling is gone." },
+          { "id": "MEAN_3", "text": "Even when I succeed at work, it feels hollow." }
+        ],
+        "scoring": {
+          "next_high": "L4_SCHEMA_UNRELENTING",
+          "next_low": "L5_PERSONAL_SCHEMAS",
+          "cutoff": "mean >= 3.5 = next_high"
+        }
+      },
+
+      "L2_REL_SCREEN": {
+        "id": "L2_REL_SCREEN",
+        "type": "single_select",
+        "label": "What feels hardest in your romantic relationship right now?",
+        "rationale": "Differentiates between relationship stressors to route to the appropriate instrument cluster. Each sub-domain maps to distinct psychological constructs.",
+        "evidence": "Johnson SM (2004). The Practice of Emotionally Focused Couple Therapy (2nd ed.). Brunner-Routledge.",
+        "options": [
+          { "id": "trust", "label": "I don't feel safe or fully trust them", "next": "L3_REL_ATTACHMENT" },
+          { "id": "rejection", "label": "I'm afraid of being rejected or abandoned", "next": "L3_REL_REJECTION" },
+          { "id": "conflict", "label": "We fight often or can't communicate well", "next": "L3_REL_COMMUNICATION" },
+          { "id": "distance", "label": "We feel emotionally distant or disconnected", "next": "L3_REL_ATTACHMENT" },
+          { "id": "jealousy", "label": "I feel jealous or insecure", "next": "L3_REL_REJECTION" },
+          { "id": "control", "label": "The relationship feels unbalanced or controlling", "next": "L4_SHAME_SCREEN" }
+        ]
+      },
+
+      "L3_REL_ATTACHMENT": {
+        "id": "L3_REL_ATTACHMENT",
+        "type": "scale_set",
+        "instrument": "ECR-R (12-item short form)",
+        "label": "How much do these statements describe how you generally feel in close romantic relationships?",
+        "scale_labels": ["Strongly disagree", "2", "3", "4", "5", "6", "Strongly agree"],
+        "scale_values": [1, 2, 3, 4, 5, 6, 7],
+        "rationale": "Attachment theory (Bowlby 1969; Ainsworth 1978) describes how early experiences with caregivers create working models that shape adult intimate relationships. The ECR-R measures the two core dimensions of adult attachment: anxiety (fear of abandonment) and avoidance (discomfort with closeness). These predict communication patterns, conflict style, and emotional distress.",
+        "evidence": "Fraley RC, Waller NG, Brennan KA (2000). J Pers Soc Psychol. 78(2):350–365.",
+        "questions": [
+          { "id": "ECR_AX1", "text": "I worry about being abandoned.", "subscale": "anxiety" },
+          { "id": "ECR_AX2", "text": "My desire to be very close to my partner sometimes scares them away.", "subscale": "anxiety" },
+          { "id": "ECR_AX3", "text": "I worry that romantic partners won't care about me as much as I care about them.", "subscale": "anxiety" },
+          { "id": "ECR_AX4", "text": "I get frustrated when my partner is not around as much as I would like.", "subscale": "anxiety" },
+          { "id": "ECR_AX5", "text": "I often worry that my partner doesn't really love me.", "subscale": "anxiety" },
+          { "id": "ECR_AX6", "text": "I worry a lot about my relationships.", "subscale": "anxiety" },
+          { "id": "ECR_AV1", "text": "I prefer not to share my feelings with my partner.", "subscale": "avoidance" },
+          { "id": "ECR_AV2", "text": "I find it difficult to allow myself to depend on romantic partners.", "subscale": "avoidance" },
+          { "id": "ECR_AV3", "text": "I don't feel comfortable opening up to romantic partners.", "subscale": "avoidance" },
+          { "id": "ECR_AV4", "text": "I try to avoid getting too close to my partner.", "subscale": "avoidance" },
+          { "id": "ECR_AV5", "text": "It helps to turn to my partner in times of need.", "subscale": "avoidance", "reverse": true },
+          { "id": "ECR_AV6", "text": "I tell my partner just about everything.", "subscale": "avoidance", "reverse": true }
+        ],
+        "scoring": {
+          "anxiety_mean": "mean of ECR_AX1..6",
+          "avoidance_mean": "mean of ECR_AV1..6 (reverse ECR_AV5, ECR_AV6)",
+          "profile_rules": {
+            "secure": { "condition": "anxiety_mean < 3.5 AND avoidance_mean < 3.5", "label": "Secure attachment", "next": "L4_REL_COMMUNICATION" },
+            "preoccupied": { "condition": "anxiety_mean >= 3.5 AND avoidance_mean < 3.5", "flag": "anxious_attachment", "next": "L4_REL_REJECTION_SENS" },
+            "dismissing": { "condition": "anxiety_mean < 3.5 AND avoidance_mean >= 3.5", "flag": "avoidant_attachment", "next": "L5_EMOTIONAL_NEGLECT_SCREEN" },
+            "fearful": { "condition": "anxiety_mean >= 3.5 AND avoidance_mean >= 3.5", "flag": "fearful_attachment", "next": "L5_EMOTIONAL_NEGLECT_SCREEN" }
+          }
+        }
+      },
+
+      "L3_REL_REJECTION": {
+        "id": "L3_REL_REJECTION",
+        "type": "scale_set",
+        "instrument": "RSQ (adapted items)",
+        "label": "Imagine your partner does something that could mean they are unhappy with you (e.g., doesn't reply quickly, seems distracted). For each scenario, rate how anxious you would feel that rejection is happening, and how likely you think that is.",
+        "scale_labels": ["Very unconcerned to very concerned", "Very unlikely to very likely"],
+        "rationale": "Rejection Sensitivity (Downey & Feldman, 1996) is the anxious expectation, rapid perception, and overreaction to rejection cues. It is a transdiagnostic risk factor for borderline features, depression, relationship violence, and social anxiety. Measuring RS early enables personalised psychoeducation about the rejection-loop pattern.",
+        "evidence": "Downey G, Feldman SI (1996). J Pers Soc Psychol. 70(6):1327–1343.",
+        "questions": [
+          { "id": "RSQ_1", "text": "You ask your partner for some important emotional support. You're waiting for a response.\n  (a) How concerned would you be that they might not want to support you? (1–6)\n  (b) How likely do you think it is that they would not want to support you? (1–6)" },
+          { "id": "RSQ_2", "text": "You want to talk with your partner about how things are going between you. You bring it up.\n  (a) How concerned would you be that they might not want to talk? (1–6)\n  (b) How likely do you think it is that they would not want to talk? (1–6)" },
+          { "id": "RSQ_3", "text": "After an argument with your partner, you approach them to make up. You wait to see how they react.\n  (a) How concerned would you be that they might reject your attempt? (1–6)\n  (b) How likely is it that they would reject your attempt? (1–6)" }
+        ],
+        "scoring": {
+          "formula": "For each scenario: RS_score = concern × likelihood. Sum all 3. Divide by 3.",
+          "cutoffs": {
+            "high": { "condition": "mean >= 12", "flag": "high_rejection_sensitivity", "next": "L4_SHAME_SCREEN" },
+            "moderate": { "condition": "mean 8-11", "flag": "elevated_RS", "next": "L3_REL_ATTACHMENT" },
+            "low": { "condition": "mean < 8", "next": "L3_REL_ATTACHMENT" }
+          }
+        }
+      },
+
+      "L3_REL_COMMUNICATION": {
+        "id": "L3_REL_COMMUNICATION",
+        "type": "single_select",
+        "label": "When you and your partner have a serious conflict, what usually happens?",
+        "rationale": "Gottman's Four Horsemen model identifies four communication patterns predictive of relationship failure: Criticism, Contempt, Defensiveness, Stonewalling. Identifying the pattern routes to appropriate psychological constructs.",
+        "evidence": "Gottman JM, Silver N (1999). The Seven Principles for Making Marriage Work. Crown.",
+        "options": [
+          { "id": "withdraw", "label": "One or both of us shuts down and goes silent", "flag": "stonewalling", "next": "L3_REL_ATTACHMENT" },
+          { "id": "escalate", "label": "It escalates into harsh words or attacks on character", "flag": "contempt_criticism", "next": "L4_SHAME_SCREEN" },
+          { "id": "defensive", "label": "We both defend ourselves and feel unheard", "flag": "defensiveness", "next": "L3_REL_ATTACHMENT" },
+          { "id": "resolve", "label": "We usually find a resolution, but it's exhausting", "next": "L3_REL_ATTACHMENT" }
+        ]
+      },
+
+      "L4_REL_REJECTION_SENS": {
+        "id": "L4_REL_REJECTION_SENS",
+        "type": "likert_set",
+        "label": "How much do these statements describe you?",
+        "scale_labels": ["Not at all like me", "A little like me", "Somewhat like me", "Very much like me", "Completely like me"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "rationale": "Following anxious attachment identification, assess the specific fear of rejection and abandonment schema. These items probe the Abandonment/Instability schema (Young 1998) and fearful self-regulation in response to perceived rejection.",
+        "evidence": "Young JE, Klosko JS, Weishaar ME (2003). Schema Therapy: A Practitioner's Guide. Guilford.",
+        "questions": [
+          { "id": "AB_1", "text": "I worry constantly that people I love will leave me." },
+          { "id": "AB_2", "text": "When someone important to me doesn't respond quickly, I assume the worst." },
+          { "id": "AB_3", "text": "I cling to people I love because I'm afraid they'll leave if I don't." },
+          { "id": "AB_4", "text": "I feel a desperate need to hold onto the people I care about." }
+        ],
+        "scoring": {
+          "mean_high": { "condition": "mean >= 3.5", "flag": "abandonment_schema", "next": "L5_CHILDHOOD_SCREEN" },
+          "mean_low": { "next": "L5_PERSONAL_SCHEMAS" }
+        }
+      },
+
+      "L2_FAM_SCREEN": {
+        "id": "L2_FAM_SCREEN",
+        "type": "single_select",
+        "label": "What feels hardest about your family situation?",
+        "rationale": "Family stressors operate across different developmental timelines — current family dynamics vs. childhood experiences — each requiring different assessment pathways.",
+        "evidence": "Bowen M (1978). Family Therapy in Clinical Practice. Jason Aronson.",
+        "options": [
+          { "id": "parents_now", "label": "My relationship with my parents right now", "next": "L3_FAM_PARENTS" },
+          { "id": "childhood", "label": "My childhood experiences are still affecting me", "next": "L3_FAM_CHILDHOOD" },
+          { "id": "expectations", "label": "Family expectations and pressure", "next": "L3_FAM_EXPECTATIONS" },
+          { "id": "support", "label": "I don't feel emotionally supported by my family", "next": "L3_FAM_NEGLECT" },
+          { "id": "sibling_conflict", "label": "Conflict with siblings or extended family", "next": "L5_PERSONAL_SCHEMAS" }
+        ]
+      },
+
+      "L3_FAM_CHILDHOOD": {
+        "id": "L3_FAM_CHILDHOOD",
+        "type": "scale_set",
+        "instrument": "CTQ-SF (Emotional Abuse + Emotional Neglect subscales)",
+        "label": "Looking back on your childhood, how true are the following statements? (Before age 18)",
+        "scale_labels": ["Never true", "Rarely true", "Sometimes true", "Often true", "Very often true"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "trigger_warning": "These questions ask about difficult childhood experiences. There are no right or wrong answers. You can skip any question.",
+        "rationale": "The CTQ-SF is the most widely validated brief screen for childhood trauma. Emotional Abuse (EA) and Emotional Neglect (EN) subscales are the strongest predictors of adult depression, anxiety, attachment insecurity, and personality difficulties. They are less frequently screened than physical or sexual abuse despite being more prevalent.",
+        "evidence": "Bernstein DP et al. (2003). Child Abuse Negl. 27(2):169–190. / Spinhoven P et al. (2010). Vulnerability to depression: Links between the Child Abuse and Neglect Questionnaire and the DERS. Child Abuse Negl. 34(9):649–658.",
+        "questions": [
+          { "id": "CTQ_EN1", "text": "I felt that my family was a source of strength and support.", "subscale": "EN", "reverse": true },
+          { "id": "CTQ_EN2", "text": "People in my family made me feel special and valued.", "subscale": "EN", "reverse": true },
+          { "id": "CTQ_EN3", "text": "I felt loved.", "subscale": "EN", "reverse": true },
+          { "id": "CTQ_EN4", "text": "I felt that my family didn't care about each other.", "subscale": "EN" },
+          { "id": "CTQ_EN5", "text": "There was someone in my family who helped me feel important or special.", "subscale": "EN", "reverse": true },
+          { "id": "CTQ_EA1", "text": "People in my family called me things like 'stupid', 'lazy', or 'ugly'.", "subscale": "EA" },
+          { "id": "CTQ_EA2", "text": "I felt hurt or emotionally abused by a family member.", "subscale": "EA" },
+          { "id": "CTQ_EA3", "text": "I believed that my parents wished I had never been born.", "subscale": "EA" },
+          { "id": "CTQ_EA4", "text": "I was made to feel ashamed of myself by a family member.", "subscale": "EA" },
+          { "id": "CTQ_EA5", "text": "A family member degraded or humiliated me.", "subscale": "EA" }
+        ],
+        "scoring": {
+          "EN_sum": "sum CTQ_EN items (reverse EN1, EN2, EN3, EN5). Score range 5-25.",
+          "EA_sum": "sum CTQ_EA items. Score range 5-25.",
+          "cutoffs": {
+            "EN_moderate_severe": { "condition": "EN_sum >= 15", "flag": "emotional_neglect", "next": "L4_ACE_SCREEN" },
+            "EA_moderate_severe": { "condition": "EA_sum >= 13", "flag": "emotional_abuse_history", "next": "L4_SHAME_SCREEN" },
+            "EN_mild": { "condition": "EN_sum 10-14", "flag": "mild_emotional_neglect", "next": "L5_PERSONAL_SCHEMAS" },
+            "both_low": { "next": "L5_PERSONAL_SCHEMAS" }
+          }
+        }
+      },
+
+      "L4_ACE_SCREEN": {
+        "id": "L4_ACE_SCREEN",
+        "type": "checkbox_set",
+        "instrument": "ACE (abbreviated screening, 6 categories)",
+        "label": "Before you turned 18, did you experience any of the following? (Check all that apply — these answers are private)",
+        "trigger_warning": "These questions cover difficult childhood experiences. You may skip any question.",
+        "rationale": "Adverse Childhood Experiences (Felitti et al., 1998) have dose-response relationships with adult mental health, substance use, health risk behaviours, and chronic disease. The original Kaiser/CDC study showed ≥4 ACEs dramatically increases risk. This abbreviated version screens for domains most relevant to psychological symptoms in adults.",
+        "evidence": "Felitti VJ et al. (1998). Am J Prev Med. 14(4):245–258. / Hughes K et al. (2017). Adverse childhood experiences and other sources of childhood stress. BMC Public Health. 17:953.",
+        "questions": [
+          { "id": "ACE_1", "text": "A parent or adult in my household often insulted, humiliated, or put me down, OR acted in a way that made me afraid I might be physically hurt." },
+          { "id": "ACE_2", "text": "I did not have enough food, clothing, or felt that no one in my family cared about or looked out for me." },
+          { "id": "ACE_3", "text": "My parents were separated or divorced." },
+          { "id": "ACE_4", "text": "Someone in my household had problems with alcohol or drugs." },
+          { "id": "ACE_5", "text": "I witnessed a family member being physically hurt by another family member." },
+          { "id": "ACE_6", "text": "I experienced or witnessed something so frightening or traumatic that I still think about it sometimes." }
+        ],
+        "scoring": {
+          "ace_count": "count of checked items",
+          "cutoffs": {
+            "high": { "condition": "ace_count >= 4", "flag": "high_ACE", "next": "L5_CHILDHOOD_SCREEN" },
+            "moderate": { "condition": "ace_count 2-3", "flag": "moderate_ACE", "next": "L5_CHILDHOOD_SCREEN" },
+            "low": { "condition": "ace_count <= 1", "next": "L5_PERSONAL_SCHEMAS" }
+          }
+        }
+      },
+
+      "L3_FAM_EXPECTATIONS": {
+        "id": "L3_FAM_EXPECTATIONS",
+        "type": "likert_set",
+        "label": "How well do these statements fit your experience?",
+        "scale_labels": ["Not at all", "Slightly", "Moderately", "Quite a bit", "Completely"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "rationale": "Family expectations and conditional approval are core drivers of the Subjugation, Approval-Seeking/Recognition-Seeking, and Failure schemas (Young). Parental bonding research shows that high control + low care parenting predicts these schemas.",
+        "evidence": "Parker G et al. (1979). Br J Med Psychol. 52(1):1–10. / Young JE et al. (2003). Schema Therapy. Guilford.",
+        "questions": [
+          { "id": "EXP_1", "text": "I feel I can never meet the expectations my family has of me." },
+          { "id": "EXP_2", "text": "My family's approval has always mattered more to me than my own desires." },
+          { "id": "EXP_3", "text": "I was criticized by family when I made mistakes or fell short." },
+          { "id": "EXP_4", "text": "I felt I had to be successful to be loved or valued in my family." },
+          { "id": "EXP_5", "text": "Even now, I feel anxious about disappointing my family." }
+        ],
+        "scoring": {
+          "high": { "condition": "mean >= 3.5", "flag": "conditional_approval_family", "next": "L5_NEED_FOR_APPROVAL" },
+          "moderate": { "condition": "mean 2.5-3.4", "next": "L5_PERFECTIONISM_SCREEN" },
+          "low": { "next": "L5_PERSONAL_SCHEMAS" }
+        }
+      },
+
+      "L3_FAM_NEGLECT": {
+        "id": "L3_FAM_NEGLECT",
+        "type": "likert_set",
+        "instrument": "PBI Care subscale (adapted)",
+        "label": "Thinking about your relationship with your parents or primary caregivers growing up, how true are these statements?",
+        "scale_labels": ["Very unlike", "Unlike", "Like", "Very like"],
+        "scale_values": [0, 1, 2, 3],
+        "rationale": "Parental Bonding Instrument Care subscale measures perceived warmth and emotional support from parents. Low parental care predicts depressive and anxiety disorders, insecure attachment, and Emotional Deprivation schema in adulthood.",
+        "evidence": "Parker G, Tupling H, Brown LB (1979). Br J Med Psychol. 52(1):1–10.",
+        "questions": [
+          { "id": "PBI_C1", "text": "My mother/father spoke to me with a warm and friendly voice." },
+          { "id": "PBI_C2", "text": "My mother/father did not help me as much as I needed." },
+          { "id": "PBI_C3", "text": "My mother/father was emotionally cold to me." },
+          { "id": "PBI_C4", "text": "My mother/father seemed emotionally cold and distant." },
+          { "id": "PBI_C5", "text": "My mother/father was affectionate to me." }
+        ],
+        "scoring": {
+          "reverse_items": ["PBI_C2", "PBI_C3", "PBI_C4"],
+          "low_care": { "condition": "sum <= 8", "flag": "low_parental_care", "next": "L5_EMOTIONAL_NEGLECT_SCREEN" },
+          "moderate_care": { "condition": "sum 9-12", "next": "L5_PERSONAL_SCHEMAS" },
+          "high_care": { "next": "L5_PERSONAL_SCHEMAS" }
+        }
+      },
+
+      "L3_FAM_PARENTS": {
+        "id": "L3_FAM_PARENTS",
+        "type": "single_select",
+        "label": "What best describes what's hard right now with your parents?",
+        "rationale": "Distinguishes current vs. historical parent difficulties to route appropriately.",
+        "options": [
+          { "id": "criticism_now", "label": "They criticise or judge me now", "next": "L4_SHAME_SCREEN" },
+          { "id": "guilt", "label": "They make me feel guilty or responsible for them", "next": "L5_NEED_FOR_APPROVAL" },
+          { "id": "distance", "label": "We are emotionally distant", "next": "L3_FAM_NEGLECT" },
+          { "id": "enmeshment", "label": "It's hard to have boundaries or be separate from them", "next": "L4_SCHEMA_SUBJUGATION" }
+        ]
+      },
+
+      "L2_SELF_SCREEN": {
+        "id": "L2_SELF_SCREEN",
+        "type": "single_select",
+        "label": "What feels hardest about your inner world right now?",
+        "options": [
+          { "id": "low_self_worth", "label": "I don't feel good enough or worthy", "next": "L3_SELF_ESTEEM" },
+          { "id": "harshness", "label": "I am very hard on myself / self-critical", "next": "L5_PERFECTIONISM_SCREEN" },
+          { "id": "emptiness", "label": "I feel empty or lost — like I don't know who I am", "next": "L3_IDENTITY_SCREEN" },
+          { "id": "shame", "label": "I carry a lot of shame about who I am", "next": "L4_SHAME_SCREEN" },
+          { "id": "anxiety", "label": "Persistent anxiety or worry", "next": "L3_GAD_SCREEN" },
+          { "id": "mood", "label": "Low mood or lack of motivation", "next": "L3_PHQ_SCREEN" }
+        ]
+      },
+
+      "L3_SELF_ESTEEM": {
+        "id": "L3_SELF_ESTEEM",
+        "type": "scale_set",
+        "instrument": "RSES",
+        "label": "How strongly do you agree or disagree with each statement?",
+        "scale_labels": ["Strongly agree", "Agree", "Disagree", "Strongly disagree"],
+        "scale_values": [4, 3, 2, 1],
+        "rationale": "The Rosenberg Self-Esteem Scale is the most widely used and validated measure of global self-esteem. Low self-esteem predicts depression, anxiety, relationship problems, and is a transdiagnostic vulnerability factor underlying many psychological difficulties.",
+        "evidence": "Rosenberg M (1965). Society and the Adolescent Self-Image. Princeton University Press. / Schmitt DP, Allik J (2005). Simultaneous administration of the RSES in 53 nations. J Pers Soc Psychol. 89(4):623–642.",
+        "questions": [
+          { "id": "RSES_1", "text": "On the whole, I am satisfied with myself." },
+          { "id": "RSES_2", "text": "At times I think I am no good at all.", "reverse": true },
+          { "id": "RSES_3", "text": "I feel that I have a number of good qualities." },
+          { "id": "RSES_4", "text": "I am able to do things as well as most other people." },
+          { "id": "RSES_5", "text": "I feel I do not have much to be proud of.", "reverse": true },
+          { "id": "RSES_6", "text": "I certainly feel useless at times.", "reverse": true },
+          { "id": "RSES_7", "text": "I feel that I'm a person of worth, at least on an equal plane with others." },
+          { "id": "RSES_8", "text": "I wish I could have more respect for myself.", "reverse": true },
+          { "id": "RSES_9", "text": "All in all, I am inclined to feel that I am a failure.", "reverse": true },
+          { "id": "RSES_10", "text": "I take a positive attitude toward myself." }
+        ],
+        "scoring": {
+          "reverse_items": ["RSES_2","RSES_5","RSES_6","RSES_8","RSES_9"],
+          "sum": "all 10 items",
+          "cutoffs": {
+            "low": { "condition": "sum < 25", "flag": "low_self_esteem", "next": "L5_EMOTIONAL_NEGLECT_SCREEN" },
+            "moderate": { "condition": "sum 25-30", "next": "L5_PERSONAL_SCHEMAS" },
+            "high": { "next": "L3_PHQ_SCREEN" }
+          }
+        }
+      },
+
+      "L3_GAD_SCREEN": {
+        "id": "L3_GAD_SCREEN",
+        "type": "scale_set",
+        "instrument": "GAD-7",
+        "label": "Over the last 2 weeks, how often have you been bothered by the following?",
+        "scale_labels": ["Not at all", "Several days", "More than half the days", "Nearly every day"],
+        "scale_values": [0, 1, 2, 3],
+        "rationale": "The GAD-7 is the standard evidence-based brief screen for generalised anxiety. Scores ≥10 detect GAD with 89% sensitivity and 82% specificity. Used here to quantify anxiety severity and trigger appropriate depth of exploration and referral logic.",
+        "evidence": "Spitzer RL et al. (2006). Arch Intern Med. 166(10):1092–1097.",
+        "questions": [
+          { "id": "GAD_1", "text": "Feeling nervous, anxious, or on edge" },
+          { "id": "GAD_2", "text": "Not being able to stop or control worrying" },
+          { "id": "GAD_3", "text": "Worrying too much about different things" },
+          { "id": "GAD_4", "text": "Trouble relaxing" },
+          { "id": "GAD_5", "text": "Being so restless that it's hard to sit still" },
+          { "id": "GAD_6", "text": "Becoming easily annoyed or irritable" },
+          { "id": "GAD_7", "text": "Feeling afraid, as if something awful might happen" }
+        ],
+        "scoring": {
+          "sum": "GAD_1 through GAD_7",
+          "cutoffs": {
+            "minimal": { "condition": "0-4", "next": "L5_PERSONAL_SCHEMAS" },
+            "mild": { "condition": "5-9", "flag": "mild_anxiety", "next": "L5_PERSONAL_SCHEMAS" },
+            "moderate": { "condition": "10-14", "flag": "moderate_anxiety", "next": "L5_EMOTIONAL_NEGLECT_SCREEN" },
+            "severe": { "condition": "15-21", "flag": "severe_anxiety", "referral_trigger": true, "next": "L5_EMOTIONAL_NEGLECT_SCREEN" }
+          }
+        }
+      },
+
+      "L3_PHQ_SCREEN": {
+        "id": "L3_PHQ_SCREEN",
+        "type": "scale_set",
+        "instrument": "PHQ-9",
+        "label": "Over the last 2 weeks, how often have you been bothered by any of the following?",
+        "scale_labels": ["Not at all", "Several days", "More than half the days", "Nearly every day"],
+        "scale_values": [0, 1, 2, 3],
+        "rationale": "PHQ-9 is the gold standard validated screen for depressive disorder severity. Item 9 screens for passive suicidal ideation. A score ≥10 detects major depression with 88% sensitivity, 88% specificity. Required when mood difficulties are a primary concern.",
+        "evidence": "Kroenke K et al. (2001). J Gen Intern Med. 16(9):606–613.",
+        "questions": [
+          { "id": "PHQ_1", "text": "Little interest or pleasure in doing things" },
+          { "id": "PHQ_2", "text": "Feeling down, depressed, or hopeless" },
+          { "id": "PHQ_3", "text": "Trouble falling or staying asleep, or sleeping too much" },
+          { "id": "PHQ_4", "text": "Feeling tired or having little energy" },
+          { "id": "PHQ_5", "text": "Poor appetite or overeating" },
+          { "id": "PHQ_6", "text": "Feeling bad about yourself — or that you are a failure or have let yourself or your family down" },
+          { "id": "PHQ_7", "text": "Trouble concentrating on things, such as reading the news or watching TV" },
+          { "id": "PHQ_8", "text": "Moving or speaking so slowly that other people could have noticed? Or the opposite — being so fidgety or restless that you've been moving around a lot more than usual" },
+          { "id": "PHQ_9", "text": "Thoughts that you would be better off dead or of hurting yourself in some way", "safety_item": true }
+        ],
+        "scoring": {
+          "sum": "PHQ_1 through PHQ_9",
+          "safety_rule": "IF PHQ_9 >= 1: immediately display crisis support resources regardless of total score",
+          "cutoffs": {
+            "none": { "condition": "0-4", "next": "L5_PERSONAL_SCHEMAS" },
+            "mild": { "condition": "5-9", "flag": "mild_depression", "next": "L5_PERSONAL_SCHEMAS" },
+            "moderate": { "condition": "10-14", "flag": "moderate_depression", "next": "L5_EMOTIONAL_NEGLECT_SCREEN" },
+            "mod_severe": { "condition": "15-19", "flag": "moderately_severe_depression", "referral_trigger": true, "next": "L5_EMOTIONAL_NEGLECT_SCREEN" },
+            "severe": { "condition": "20-27", "flag": "severe_depression", "referral_trigger": true, "next": "L5_EMOTIONAL_NEGLECT_SCREEN" }
+          }
+        }
+      },
+
+      "L3_IDENTITY_SCREEN": {
+        "id": "L3_IDENTITY_SCREEN",
+        "type": "likert_set",
+        "label": "How much do these statements describe you?",
+        "scale_labels": ["Not at all", "A little", "Somewhat", "Quite a bit", "Completely"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "rationale": "Identity diffusion is central to Schema Therapy's Disconnection/Rejection domain and is a key feature in borderline personality organisation. These items tap the Defectiveness/Shame and Identity diffusion constructs.",
+        "evidence": "Young JE et al. (2003). Schema Therapy: A Practitioner's Guide. Guilford. / Erikson EH (1968). Identity: Youth and Crisis. Norton.",
+        "questions": [
+          { "id": "ID_1", "text": "I'm not sure who I am or what I truly value." },
+          { "id": "ID_2", "text": "My sense of self changes depending on who I'm with." },
+          { "id": "ID_3", "text": "I feel like there is something fundamentally wrong with me, though I can't always name what it is." },
+          { "id": "ID_4", "text": "I often feel like an outsider — as if I don't truly belong anywhere." }
+        ],
+        "scoring": {
+          "next": "L4_SHAME_SCREEN"
+        }
+      },
+
+      "L2_SOC_SCREEN": {
+        "id": "L2_SOC_SCREEN",
+        "type": "likert_set",
+        "label": "How much do these statements describe how you feel about your social life?",
+        "scale_labels": ["Not at all", "A little", "Moderately", "Quite a bit", "Very much"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "rationale": "Social difficulties in adults typically involve Social Anxiety, Rejection Sensitivity, or Emotional Deprivation schemas. This screen differentiates between loneliness, social anxiety, and interpersonal rejection sensitivity.",
+        "evidence": "Cacioppo JT, Hawkley LC (2009). Perceived social isolation and cognition. Trends Cogn Sci. 13(10):447–454.",
+        "questions": [
+          { "id": "SOC_1", "text": "I feel lonely even when I'm around people." },
+          { "id": "SOC_2", "text": "I'm afraid of saying the wrong thing or embarrassing myself socially." },
+          { "id": "SOC_3", "text": "I feel like others don't really want to be my friend." },
+          { "id": "SOC_4", "text": "I tend to hold back in social situations to protect myself from rejection." }
+        ],
+        "scoring": {
+          "high_2_4": { "condition": "SOC_2 >= 4 OR SOC_4 >= 4", "flag": "social_anxiety", "next": "L3_GAD_SCREEN" },
+          "high_1_3": { "condition": "SOC_1 >= 4 OR SOC_3 >= 4", "flag": "emotional_deprivation", "next": "L5_EMOTIONAL_NEGLECT_SCREEN" },
+          "default": { "next": "L5_PERSONAL_SCHEMAS" }
+        }
+      },
+
+      "L2_HEALTH_SCREEN": {
+        "id": "L2_HEALTH_SCREEN",
+        "type": "single_select",
+        "label": "What aspect of health weighs on you most?",
+        "rationale": "Health stress can be a primary concern or a somatic expression of psychological distress. Screening distinguishes physical illness worry, somatic symptoms of anxiety/depression, and health anxiety.",
+        "options": [
+          { "id": "chronic", "label": "I have an ongoing physical health issue", "next": "L3_PHQ_SCREEN" },
+          { "id": "worry", "label": "I worry a lot about getting ill", "flag": "health_anxiety", "next": "L3_GAD_SCREEN" },
+          { "id": "somatic", "label": "I feel my stress shows up physically (headaches, stomach, tension)", "next": "L3_GAD_SCREEN" },
+          { "id": "habits", "label": "I'm struggling to maintain healthy habits", "next": "L3_PHQ_SCREEN" }
+        ]
+      },
+
+      "L2_MONEY_SCREEN": {
+        "id": "L2_MONEY_SCREEN",
+        "type": "single_select",
+        "label": "What feels hardest about your financial situation?",
+        "rationale": "Financial stress is a significant psychological stressor. The pathway explores whether the distress is primarily situational (objective scarcity), catastrophic thinking (cognitive distortion), or schema-driven (Failure/Vulnerability schemas).",
+        "options": [
+          { "id": "scarcity", "label": "I genuinely don't have enough money", "next": "L3_PHQ_SCREEN" },
+          { "id": "worry", "label": "I worry constantly about money even when it's okay", "next": "L3_GAD_SCREEN" },
+          { "id": "shame", "label": "I feel ashamed or like a failure about money", "next": "L4_SHAME_SCREEN" },
+          { "id": "comparison", "label": "I compare myself to others and feel like I'm falling behind", "next": "L5_PERFECTIONISM_SCREEN" }
+        ]
+      },
+
+      "L4_SHAME_SCREEN": {
+        "id": "L4_SHAME_SCREEN",
+        "type": "scale_set",
+        "instrument": "ISS (abbreviated — Shame subscale)",
+        "label": "How often do you experience the following?",
+        "scale_labels": ["Never", "Seldom", "Sometimes", "Often", "Almost always"],
+        "scale_values": [0, 1, 2, 3, 4],
+        "rationale": "Shame is a global, negative self-evaluation ('I am bad') distinct from guilt (behaviour-focused: 'I did something bad'). Internalized shame is transdiagnostic — it underlies depression, social anxiety, eating disorders, perfectionism, and many personality difficulties. The Internalized Shame Scale distinguishes shame from low self-esteem.",
+        "evidence": "Cook DR (1994). Internalized Shame Scale. Alcohol Treat Q. 12(2):197–211. / Tangney JP, Dearing RL (2002). Shame and Guilt. Guilford. / Lewis HB (1971). Shame and Guilt in Neurosis. International Universities Press.",
+        "questions": [
+          { "id": "ISS_1", "text": "I feel empty inside." },
+          { "id": "ISS_2", "text": "I feel as though there is something deeply wrong with me as a person." },
+          { "id": "ISS_3", "text": "When I compare myself to others, I feel inferior." },
+          { "id": "ISS_4", "text": "I feel incompetent and stupid." },
+          { "id": "ISS_5", "text": "I feel worthless." },
+          { "id": "ISS_6", "text": "I feel powerless and helpless." },
+          { "id": "ISS_7", "text": "I feel like I want to hide." },
+          { "id": "ISS_8", "text": "I feel like I don't measure up to others." }
+        ],
+        "scoring": {
+          "sum": "all 8 items",
+          "cutoffs": {
+            "low": { "condition": "0-10", "next": "L5_PERSONAL_SCHEMAS" },
+            "moderate": { "condition": "11-19", "flag": "moderate_shame", "next": "L5_EMOTIONAL_NEGLECT_SCREEN" },
+            "high": { "condition": "20-32", "flag": "high_shame", "next": "L5_EMOTIONAL_NEGLECT_SCREEN" }
+          }
+        }
+      },
+
+      "L4_INJUSTICE_SCREEN": {
+        "id": "L4_INJUSTICE_SCREEN",
+        "type": "likert_set",
+        "label": "How strongly do these statements apply to your work situation?",
+        "scale_labels": ["Not at all", "A little", "Moderately", "Quite a bit", "Completely"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "rationale": "Organisational justice (Greenberg 1987) describes employees' perceptions of fairness in outcomes (distributive), procedures (procedural), and interpersonal treatment (interactional). Injustice perceptions — especially interactional injustice — predict burnout, cynicism, and moral injury.",
+        "evidence": "Greenberg J (1987). A taxonomy of organizational justice theories. Acad Manage Rev. 12(1):9–22. / Colquitt JA et al. (2001). Justice at the millennium. J Appl Psychol. 86(3):425–445.",
+        "questions": [
+          { "id": "INJ_1", "text": "I am not rewarded fairly for the level of effort I put in." },
+          { "id": "INJ_2", "text": "My work situation treats me with dignity and respect." },
+          { "id": "INJ_3", "text": "When decisions are made that affect me, my point of view is not considered." },
+          { "id": "INJ_4", "text": "I feel treated fairly compared to others in similar roles." }
+        ],
+        "scoring": {
+          "next": "L5_PERSONAL_SCHEMAS"
+        }
+      },
+
+      "L4_SCHEMA_UNRELENTING": {
+        "id": "L4_SCHEMA_UNRELENTING",
+        "type": "likert_set",
+        "instrument": "YSQ-S3 (Unrelenting Standards schema items)",
+        "label": "How well do these statements describe you? Be honest — there are no right or wrong answers.",
+        "scale_labels": ["Completely untrue of me", "Mostly untrue", "Slightly more true than untrue", "Moderately true of me", "Mostly true", "Describes me perfectly"],
+        "scale_values": [1, 2, 3, 4, 5, 6],
+        "rationale": "The Unrelenting Standards schema (Young) drives a compulsive need to meet extremely high standards, often to the detriment of pleasure, health, and relationships. It underlies perfectionism, burnout, and workaholism. Commonly rooted in conditional approval from caregivers.",
+        "evidence": "Young JE et al. (2003). Schema Therapy: A Practitioner's Guide. Guilford. / Masley SA, Gillanders DT, Simpson SG, Taylor MA (2012). A systematic review of the evidence base for schema therapy. Cogn Behav Ther. 41(3):185–202.",
+        "questions": [
+          { "id": "US_1", "text": "I must meet all my responsibilities — falling short even slightly is not acceptable." },
+          { "id": "US_2", "text": "I put enormous pressure on myself to accomplish things." },
+          { "id": "US_3", "text": "I feel I can't allow myself to relax or have fun until my work is finished." },
+          { "id": "US_4", "text": "I'm always trying to be the best." },
+          { "id": "US_5", "text": "If I can't do something perfectly, I'd rather not do it at all." }
+        ],
+        "scoring": {
+          "mean": "mean of 5 items",
+          "high": { "condition": "mean >= 4", "flag": "unrelenting_standards_schema", "next": "L5_PERFECTIONISM_SCREEN" },
+          "moderate": { "condition": "mean 3-3.9", "next": "L5_PERFECTIONISM_SCREEN" },
+          "low": { "next": "L5_PERSONAL_SCHEMAS" }
+        }
+      },
+
+      "L4_SCHEMA_SUBJUGATION": {
+        "id": "L4_SCHEMA_SUBJUGATION",
+        "type": "likert_set",
+        "instrument": "YSQ-S3 (Subjugation schema items)",
+        "label": "How well do these statements describe you?",
+        "scale_labels": ["Completely untrue of me", "Mostly untrue", "Slightly more true than untrue", "Moderately true of me", "Mostly true", "Describes me perfectly"],
+        "scale_values": [1, 2, 3, 4, 5, 6],
+        "rationale": "Subjugation schema involves surrendering control to others to avoid negative consequences, driven by the belief that one's own needs, feelings, or decisions will not be accepted. Often rooted in overcontrolling or enmeshed family systems.",
+        "evidence": "Young JE et al. (2003). Schema Therapy: A Practitioner's Guide. Guilford.",
+        "questions": [
+          { "id": "SUBJ_1", "text": "I let others control my choices to avoid conflict or rejection." },
+          { "id": "SUBJ_2", "text": "I suppress my emotions because I fear that expressing them would lead to punishment or rejection." },
+          { "id": "SUBJ_3", "text": "My own needs feel less important than keeping others happy." },
+          { "id": "SUBJ_4", "text": "I resent others because I constantly put their needs before mine." }
+        ],
+        "scoring": {
+          "next": "L5_NEED_FOR_APPROVAL"
+        }
+      },
+
+      "L5_PERFECTIONISM_SCREEN": {
+        "id": "L5_PERFECTIONISM_SCREEN",
+        "type": "scale_set",
+        "instrument": "FMPS (Concern over Mistakes + Doubts about Actions subscales)",
+        "label": "How strongly do you agree or disagree with each statement?",
+        "scale_labels": ["Strongly disagree", "Disagree", "Neither", "Agree", "Strongly agree"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "rationale": "Frost's Concern over Mistakes (CM) subscale measures the most psychopathologically relevant dimension of perfectionism — the distress about imperfection, not the pursuit of high standards per se. CM predicts depression, anxiety, eating disorders, and OCD. Doubts about Actions (DA) measures indecisiveness and rumination about choices — linked to procrastination and social anxiety.",
+        "evidence": "Frost RO et al. (1990). Cogn Ther Res. 14(5):449–468. / Stoeber J, Otto K (2006). Positive conceptions of perfectionism. Pers Soc Psychol Rev. 10(4):295–319.",
+        "questions": [
+          { "id": "CM_1", "text": "If I fail partly, it is as bad as being a complete failure." },
+          { "id": "CM_2", "text": "I should be upset if I make a mistake." },
+          { "id": "CM_3", "text": "If I do not do as well as other people, it means I am an inferior person." },
+          { "id": "CM_4", "text": "I hate being less than the best at things." },
+          { "id": "DA_1", "text": "I usually have doubts about the simple everyday things I do." },
+          { "id": "DA_2", "text": "Even when I do something very carefully, I often feel that it is not quite right." }
+        ],
+        "scoring": {
+          "CM_sum": "CM_1 + CM_2 + CM_3 + CM_4",
+          "DA_sum": "DA_1 + DA_2",
+          "flags": {
+            "high_CM": { "condition": "CM_sum >= 14", "flag": "maladaptive_perfectionism" },
+            "high_DA": { "condition": "DA_sum >= 7", "flag": "doubt_rumination" }
+          },
+          "next": "L5_SELF_COMPASSION"
+        }
+      },
+
+      "L5_NEED_FOR_APPROVAL": {
+        "id": "L5_NEED_FOR_APPROVAL",
+        "type": "likert_set",
+        "instrument": "YSQ-S3 (Approval-Seeking schema items)",
+        "label": "How well do these statements describe you?",
+        "scale_labels": ["Completely untrue of me", "Mostly untrue", "Slightly more true than untrue", "Moderately true of me", "Mostly true", "Describes me perfectly"],
+        "scale_values": [1, 2, 3, 4, 5, 6],
+        "rationale": "Approval-Seeking/Recognition-Seeking is one of Young's 18 schemas. It involves placing excessive emphasis on the approval, recognition, or attention of others, at the expense of one's own authentic sense of self. It develops in families where acceptance was conditional on performance or pleasing others.",
+        "evidence": "Young JE et al. (2003). Schema Therapy: A Practitioner's Guide. Guilford.",
+        "questions": [
+          { "id": "AS_1", "text": "My self-esteem depends mostly on how others see me." },
+          { "id": "AS_2", "text": "I spend a lot of time worrying about what others think of me." },
+          { "id": "AS_3", "text": "I put a lot of effort into winning people's approval or admiration." },
+          { "id": "AS_4", "text": "I tend to change who I am or what I say to please others." }
+        ],
+        "scoring": {
+          "mean": "mean of 4 items",
+          "high": { "condition": "mean >= 4", "flag": "approval_seeking_schema", "next": "L5_SELF_COMPASSION" },
+          "default": { "next": "L5_SELF_COMPASSION" }
+        }
+      },
+
+      "L5_EMOTIONAL_NEGLECT_SCREEN": {
+        "id": "L5_EMOTIONAL_NEGLECT_SCREEN",
+        "type": "likert_set",
+        "instrument": "YSQ-S3 (Emotional Deprivation schema items)",
+        "label": "How well do these statements describe your general experience in life?",
+        "scale_labels": ["Completely untrue of me", "Mostly untrue", "Slightly more true than untrue", "Moderately true of me", "Mostly true", "Describes me perfectly"],
+        "scale_values": [1, 2, 3, 4, 5, 6],
+        "rationale": "Emotional Deprivation schema (Young) involves the belief that one's need for emotional nurturance, empathy, and protection will not be adequately met by others. It is one of the schemas most strongly linked to early emotional neglect, depression, and chronic relationship dissatisfaction.",
+        "evidence": "Young JE et al. (2003). Schema Therapy. Guilford. / Arntz A, Van Genderen H (2009). Schema Therapy for Borderline Personality Disorder. Wiley-Blackwell.",
+        "questions": [
+          { "id": "ED_1", "text": "I don't feel truly understood by those close to me." },
+          { "id": "ED_2", "text": "I have rarely had someone who genuinely cares about my feelings and wants to know about my life." },
+          { "id": "ED_3", "text": "I feel that my emotional needs are rarely met by others." },
+          { "id": "ED_4", "text": "I have rarely had someone who was there to give me warmth, holding, and care." }
+        ],
+        "scoring": {
+          "mean": "mean of 4 items",
+          "high": { "condition": "mean >= 4", "flag": "emotional_deprivation_schema", "next": "L5_SELF_COMPASSION" },
+          "default": { "next": "L5_SELF_COMPASSION" }
+        }
+      },
+
+      "L5_CHILDHOOD_SCREEN": {
+        "id": "L5_CHILDHOOD_SCREEN",
+        "type": "likert_set",
+        "label": "Thinking about how your childhood experiences affect you now as an adult, how much do you agree?",
+        "scale_labels": ["Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "rationale": "Following CTQ/ACE flags, assess degree of current functional impact of childhood experiences. This helps determine depth of psychological exploration needed and referral threshold.",
+        "evidence": "McLaughlin KA et al. (2010). Childhood adversities and adult psychiatric disorders in the national comorbidity survey replication. Arch Gen Psychiatry. 67(2):113–123.",
+        "questions": [
+          { "id": "CI_1", "text": "Experiences from my childhood still affect how I feel about myself today." },
+          { "id": "CI_2", "text": "I often react emotionally in the present as though I am still in a past situation." },
+          { "id": "CI_3", "text": "I find it hard to trust people or get close to them." },
+          { "id": "CI_4", "text": "I sometimes feel a sense of inner pain that is hard to explain." }
+        ],
+        "scoring": {
+          "next": "L5_SELF_COMPASSION"
+        }
+      },
+
+      "L5_PERSONAL_SCHEMAS": {
+        "id": "L5_PERSONAL_SCHEMAS",
+        "type": "scale_set",
+        "instrument": "YSQ-S3 (core schemas screening — 5 key domains)",
+        "label": "How well does each statement describe your long-standing beliefs about yourself?",
+        "scale_labels": ["Completely untrue of me", "Mostly untrue", "Slightly more true than untrue", "Moderately true of me", "Mostly true", "Describes me perfectly"],
+        "scale_values": [1, 2, 3, 4, 5, 6],
+        "rationale": "Schema therapy's 18 Early Maladaptive Schemas (Young 1998) represent deep, self-defeating life themes. These 10 screening items cover the 5 most common schemas in adult stress presentations. Elevated schemas (≥4 mean) indicate core belief structures maintaining distress and should be explored in therapy.",
+        "evidence": "Young JE (1998). Young Schema Questionnaire – Short Form. Cognitive Therapy Center of New York. / Cockram DM, Drummond PD, Lee CW (2010). Role and treatment of early maladaptive schemas in Vietnam veterans with PTSD. Clin Psychol Psychother. 17(3):165–182.",
+        "questions": [
+          { "id": "DEFSHAM_1", "text": "I am fundamentally flawed and different from other people.", "schema": "Defectiveness/Shame" },
+          { "id": "FAIL_1", "text": "I am fundamentally inadequate compared to my peers in the areas of achievement.", "schema": "Failure" },
+          { "id": "VULNHARM_1", "text": "I feel that a catastrophe could strike at any time — I am always on guard for disasters.", "schema": "Vulnerability to Harm" },
+          { "id": "EMIT_1", "text": "I suppress my emotions because I am not entitled to them or because others won't accept them.", "schema": "Emotional Inhibition" },
+          { "id": "ENTIT_1", "text": "I am special and should not have to accept the normal constraints that apply to other people.", "schema": "Entitlement/Grandiosity" },
+          { "id": "DEP_1", "text": "I believe I'm incompetent and unable to handle everyday responsibilities without help from others.", "schema": "Dependence/Incompetence" },
+          { "id": "ISOL_1", "text": "I feel alienated from other people — no one truly understands or connects with me.", "schema": "Social Isolation/Alienation" },
+          { "id": "PUNISH_1", "text": "I feel I deserve to be punished when I make mistakes.", "schema": "Punitiveness" }
+        ],
+        "scoring": {
+          "per_item": "flag any schema item ≥ 4 as active",
+          "next": "L5_SELF_COMPASSION"
+        }
+      },
+
+      "L5_SELF_COMPASSION": {
+        "id": "L5_SELF_COMPASSION",
+        "type": "scale_set",
+        "instrument": "SCS-SF",
+        "label": "How do you typically respond to yourself in difficult times or when you notice something you don't like about yourself?",
+        "scale_labels": ["Almost never", "Rarely", "Sometimes", "Often", "Almost always"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "rationale": "Self-compassion (Neff 2003) — treating oneself with kindness rather than harsh criticism during difficulty — is a powerful protective factor against depression, anxiety, burnout, and perfectionism. It is also a primary therapeutic target. The SCS-SF measures three paired dimensions: Self-kindness vs. Self-judgment; Common humanity vs. Isolation; Mindfulness vs. Over-identification.",
+        "evidence": "Neff KD (2003). The development and validation of a scale to measure self-compassion. Self Identity. 2(3):223–250. / Raes F et al. (2011). Clin Psychol Psychother. 18(3):250–255. / MacBeth A, Gumley A (2012). Exploring compassion: A meta-analysis of the association between self-compassion and psychopathology. Clin Psychol Rev. 32(6):545–552.",
+        "questions": [
+          { "id": "SCS_SK1", "text": "I try to be understanding and patient toward those aspects of my personality I don't like.", "subscale": "self_kindness" },
+          { "id": "SCS_SJ1", "text": "I'm disapproving and judgmental about my own flaws and inadequacies.", "subscale": "self_judgment", "reverse": true },
+          { "id": "SCS_CH1", "text": "I try to see my failings as part of the human condition.", "subscale": "common_humanity" },
+          { "id": "SCS_IS1", "text": "When I think about my inadequacies, it tends to make me feel more separate and cut off from the rest of the world.", "subscale": "isolation", "reverse": true },
+          { "id": "SCS_MI1", "text": "When something upsets me I try to keep my emotions in balance.", "subscale": "mindfulness" },
+          { "id": "SCS_OI1", "text": "When I'm feeling down I tend to obsess and fixate on everything that's wrong.", "subscale": "over_identification", "reverse": true },
+          { "id": "SCS_SK2", "text": "I'm kind to myself when I'm experiencing suffering.", "subscale": "self_kindness" },
+          { "id": "SCS_SJ2", "text": "I can be a bit cold-hearted towards myself when I'm experiencing suffering.", "subscale": "self_judgment", "reverse": true },
+          { "id": "SCS_CH2", "text": "When things are going badly for me, I see the difficulties as part of life that everyone goes through.", "subscale": "common_humanity" },
+          { "id": "SCS_IS2", "text": "When I fail at something that's important to me I tend to feel alone in my failure.", "subscale": "isolation", "reverse": true },
+          { "id": "SCS_MI2", "text": "When something painful happens I try to take a balanced view of the situation.", "subscale": "mindfulness" },
+          { "id": "SCS_OI2", "text": "When I'm feeling down, I tend to feel like most other people are probably happier than I am.", "subscale": "over_identification", "reverse": true }
+        ],
+        "scoring": {
+          "mean": "mean of all 12 items (after reverse-scoring SCS_SJ1, SCS_IS1, SCS_OI1, SCS_SJ2, SCS_IS2, SCS_OI2)",
+          "cutoffs": {
+            "low": { "condition": "mean <= 2.5", "flag": "low_self_compassion" },
+            "moderate": { "condition": "mean 2.51-3.5", "flag": "moderate_self_compassion" },
+            "high": { "condition": "mean > 3.5" }
+          },
+          "next": "L5_EMOTION_REGULATION"
+        }
+      },
+
+      "L5_EMOTION_REGULATION": {
+        "id": "L5_EMOTION_REGULATION",
+        "type": "scale_set",
+        "instrument": "DERS-16",
+        "label": "Please indicate how often these statements apply to you.",
+        "scale_labels": ["Almost never (0–10%)", "Sometimes (11–35%)", "About half the time (36–65%)", "Most of the time (66–90%)", "Almost always (91–100%)"],
+        "scale_values": [1, 2, 3, 4, 5],
+        "rationale": "Emotion Regulation difficulties are transdiagnostic — they cut across depression, anxiety, PTSD, BPD, and substance use. The DERS-16 identifies six specific dimensions of dysregulation: Nonacceptance (rejecting emotions), Goals (difficulty concentrating when distressed), Impulse (difficulty controlling impulses), Awareness (not attending to one's emotions), Strategies (limited coping repertoire), and Clarity (confusion about emotions). This informs tailored intervention.",
+        "evidence": "Gratz KL, Roemer L (2004). Multidimensional assessment of emotion regulation and dysregulation. J Psychopathol Behav Assess. 26(1):41–54. / Bjureberg J et al. (2016). J Psychopathol Behav Assess. 38(2):284–296.",
+        "questions": [
+          { "id": "DERS_1", "text": "When I'm upset, I feel ashamed of myself for feeling that way.", "subscale": "nonacceptance" },
+          { "id": "DERS_2", "text": "When I'm upset, I have difficulty getting work done.", "subscale": "goals" },
+          { "id": "DERS_3", "text": "When I'm upset, I lose control over my behaviours.", "subscale": "impulse" },
+          { "id": "DERS_4", "text": "I pay attention to how I feel.", "subscale": "awareness", "reverse": true },
+          { "id": "DERS_5", "text": "I have difficulty making sense out of my feelings.", "subscale": "clarity" },
+          { "id": "DERS_6", "text": "When I'm upset, I believe there is nothing I can do to make myself feel better.", "subscale": "strategies" },
+          { "id": "DERS_7", "text": "When I'm upset, I become angry with myself for feeling that way.", "subscale": "nonacceptance" },
+          { "id": "DERS_8", "text": "When I'm upset, I have difficulty focusing on other things.", "subscale": "goals" },
+          { "id": "DERS_9", "text": "When I'm upset, I lose control over my behaviours.", "subscale": "impulse" },
+          { "id": "DERS_10", "text": "When I'm upset, I am still able to get things done.", "subscale": "goals", "reverse": true },
+          { "id": "DERS_11", "text": "I am confused about how I feel.", "subscale": "clarity" },
+          { "id": "DERS_12", "text": "When I'm upset, I believe that I will remain that way for a long time.", "subscale": "strategies" }
+        ],
+        "scoring": {
+          "total": "sum all 12 items (reverse DERS_4, DERS_10)",
+          "subscale_flags": {
+            "nonacceptance": "DERS_1 + DERS_7 >= 6",
+            "goals_difficulty": "DERS_2 + DERS_8 - DERS_10 >= 5",
+            "impulse": "DERS_3 + DERS_9 >= 6",
+            "low_awareness": "DERS_4 <= 2",
+            "strategies_limited": "DERS_6 + DERS_12 >= 6",
+            "clarity_low": "DERS_5 + DERS_11 >= 6"
+          },
+          "next": "GENERATE_PROFILE"
+        }
+      },
+
+      "GENERATE_PROFILE": {
+        "id": "GENERATE_PROFILE",
+        "type": "terminal",
+        "label": "Generating your psychological stress profile",
+        "description": "All assessment data is now processed to create your personalised profile. The profile identifies likely contributing psychological factors with evidence-based confidence levels.",
+        "output_schema": {
+          "primary_stressor_domain": "string",
+          "identified_flags": "array of flag strings collected across the session",
+          "profile_summary": {
+            "burnout_level": "none | low | moderate | high — from MBI-EE/DP",
+            "anxiety_severity": "minimal | mild | moderate | severe — from GAD-7",
+            "depression_severity": "none | mild | moderate | moderately_severe | severe — from PHQ-9",
+            "self_compassion_level": "low | moderate | high — from SCS-SF",
+            "emotion_regulation_difficulty": "low | moderate | high — from DERS-16"
+          },
+          "active_schemas": "array of schema names with score >= 4",
+          "attachment_style": "secure | preoccupied | dismissing | fearful | not_assessed",
+          "childhood_factors": {
+            "ace_score": "number or null",
+            "emotional_neglect_flag": "boolean",
+            "emotional_abuse_flag": "boolean",
+            "low_parental_care_flag": "boolean"
+          },
+          "perfectionism": {
+            "maladaptive_perfectionism": "boolean",
+            "doubt_rumination": "boolean"
+          },
+          "other_flags": {
+            "rejection_sensitivity": "none | elevated | high",
+            "shame_level": "low | moderate | high",
+            "need_for_approval": "boolean",
+            "job_strain": "boolean",
+            "ERI_imbalance": "boolean"
+          },
+          "confidence_notes": "narrative summary listing supporting evidence and noting any areas with insufficient data for strong conclusions",
+          "referral_trigger": "boolean — true if PHQ-9 >= 10, GAD-7 >= 15, or PHQ-9 item 9 >= 1",
+          "suggested_focus_areas": "array of 3-5 psychoeducational focus areas based on flags",
+          "disclaimer": "This profile is based on self-report data and validated screening instruments only. It is not a clinical diagnosis. Please discuss results with a qualified mental health professional."
+        }
+      }
+    }
+  },
+
+  "referral_protocol": {
+    "auto_trigger_conditions": [
+      "PHQ_9 >= 1 (item 9 — suicidal ideation)",
+      "PHQ total >= 10",
+      "GAD-7 total >= 15",
+      "high_ACE AND high_shame AND low_self_compassion"
+    ],
+    "crisis_resources": {
+      "thailand": { "line": "1323 (Dept Mental Health hotline, 24hr)", "text": "Samaritans Thailand: 02-713-6793" },
+      "international": "https://findahelpline.com"
+    },
+    "referral_message": "Your responses suggest you may be experiencing significant distress. This tool is not a substitute for professional support. We recommend speaking with a licensed psychologist or counsellor. The resources above offer immediate help."
+  },
+
+  "scoring_engine_notes": {
+    "adaptive_logic": "The assessment engine tracks all collected flags in a session state object. At each node, the branching decision is: (1) apply scoring rules, (2) check session flags, (3) route to next node. Nodes already visited are skipped if reached again via a different path.",
+    "minimum_path": "L1_BROAD_SCREEN → domain screen → 2-3 instrument nodes → L5_SELF_COMPASSION → L5_EMOTION_REGULATION → GENERATE_PROFILE. Minimum ~12 questions.",
+    "maximum_path": "L1_BROAD_SCREEN → all screens for complex presentations → all Level 5 instruments. Maximum ~70 questions.",
+    "language_note": "All question text should be translated and culturally adapted for Thai and Korean by qualified bilingual clinical psychologists. Some Western constructs (e.g. shame, emotional expression norms) have different culturally specific expressions."
+  }
+}
