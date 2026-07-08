@@ -388,3 +388,160 @@ class AssessmentProfile(Base):
 
     session: Mapped["AssessmentSession"] = relationship("AssessmentSession", back_populates="profile")
     user:    Mapped["User"]              = relationship("User")
+
+
+# ── AEHQ v2.0 — Adaptive Emotional Self-Reflection Questionnaire ──────────────
+
+class AEHQSession(Base):
+    """One AEHQ session per emotional check-in.
+
+    state_json stores the full mutable state: track (D/S/R), running scores,
+    question queue, emotion words, body data, if-then text, etc.
+    """
+    __tablename__ = "aehq_sessions"
+
+    id:         Mapped[int]           = mapped_column(primary_key=True)
+    user_id:    Mapped[int]           = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    next_step:  Mapped[str]           = mapped_column(String(40), default="SAFETY", nullable=False)
+    state_json: Mapped[str]           = mapped_column(Text, default="{}", nullable=False)
+    status:     Mapped[str]           = mapped_column(String(20), default="active", nullable=False)
+    # status: active | complete | crisis_exit | grounding_pause
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    user:      Mapped["User"]                 = relationship("User")
+    responses: Mapped[list["AEHQResponse"]]   = relationship(
+        "AEHQResponse", back_populates="session",
+        cascade="all, delete-orphan", order_by="AEHQResponse.created_at",
+    )
+    result: Mapped[Optional["AEHQResult"]] = relationship(
+        "AEHQResult", back_populates="session", uselist=False, cascade="all, delete-orphan",
+    )
+
+
+class AEHQResponse(Base):
+    """One row per screen answered within an AEHQ session."""
+    __tablename__ = "aehq_responses"
+
+    id:          Mapped[int]  = mapped_column(primary_key=True)
+    session_id:  Mapped[int]  = mapped_column(ForeignKey("aehq_sessions.id"), nullable=False, index=True)
+    step:        Mapped[str]  = mapped_column(String(40), nullable=False)
+    answer_json: Mapped[str]  = mapped_column(Text, nullable=False)
+    created_at:  Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+    session: Mapped["AEHQSession"] = relationship("AEHQSession", back_populates="responses")
+
+
+class AEHQResult(Base):
+    """Final computed result for a completed AEHQ session."""
+    __tablename__ = "aehq_results"
+
+    id:         Mapped[int]           = mapped_column(primary_key=True)
+    session_id: Mapped[int]           = mapped_column(ForeignKey("aehq_sessions.id"), unique=True, nullable=False)
+    user_id:    Mapped[int]           = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+
+    framework_code: Mapped[Optional[str]] = mapped_column(String(20),  nullable=True)
+    framework_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    situation_key:  Mapped[Optional[str]] = mapped_column(String(40),  nullable=True)
+    track:          Mapped[Optional[str]] = mapped_column(String(2),   nullable=True)
+
+    hypothesis_text:    Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    technique_text:     Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    evidence_text:      Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    ifthen_text:        Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    selfcompassion_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    closure_text:       Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    suds_start:  Mapped[Optional[int]] = mapped_column(nullable=True)
+    suds_end:    Mapped[Optional[int]] = mapped_column(nullable=True)
+    scores_json: Mapped[str]           = mapped_column(Text, default="{}", nullable=False)
+    exit_type:   Mapped[str]           = mapped_column(String(20), default="complete", nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+    session: Mapped["AEHQSession"] = relationship("AEHQSession", back_populates="result")
+    user:    Mapped["User"]        = relationship("User")
+
+
+# ── AEHQ v2.0 — Knowledge base (DB-stored, loaded into an in-memory cache) ─────
+# These reference tables hold the content + mapping logic the engine used to
+# hard-code. Seeded by seed_aehq.py; the service reads them once and caches.
+
+class AEHQFramework(Base):
+    """One therapeutic framework — its technique summary and evidence tier."""
+    __tablename__ = "aehq_frameworks"
+
+    code:      Mapped[str]           = mapped_column(String(20), primary_key=True)  # e.g. "F3_CFT"
+    name:      Mapped[str]           = mapped_column(String(120), nullable=False)
+    evidence:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    tier:      Mapped[Optional[str]] = mapped_column(String(4), nullable=True)      # A / B / C
+    technique: Mapped[str]           = mapped_column(Text, nullable=False)
+
+
+class AEHQSituation(Base):
+    """One emotional situation card. List/dict fields are stored as JSON text."""
+    __tablename__ = "aehq_situations"
+
+    key:                Mapped[str]           = mapped_column(String(40), primary_key=True)  # e.g. "grief"
+    label:              Mapped[str]           = mapped_column(String(120), nullable=False)
+    icon:               Mapped[str]           = mapped_column(String(8),  nullable=False)
+    emotion_words_json: Mapped[str]           = mapped_column(Text, default="[]", nullable=False)
+    unmet_needs_json:   Mapped[str]           = mapped_column(Text, default="[]", nullable=False)
+    self_compassion:    Mapped[str]           = mapped_column(Text, nullable=False)
+    ifthen_template:    Mapped[str]           = mapped_column(Text, nullable=False)
+    priors_json:        Mapped[str]           = mapped_column(Text, default="{}", nullable=False)
+    sort_order:         Mapped[int]           = mapped_column(default=0, nullable=False)
+
+    items: Mapped[list["AEHQSituationItem"]] = relationship(
+        "AEHQSituationItem", back_populates="situation",
+        cascade="all, delete-orphan", order_by="AEHQSituationItem.sort_order",
+    )
+
+
+class AEHQSituationItem(Base):
+    """One question within a situation, tagged by adaptive track (S / D / R)."""
+    __tablename__ = "aehq_situation_items"
+
+    id:            Mapped[int]           = mapped_column(primary_key=True)
+    situation_key: Mapped[str]           = mapped_column(ForeignKey("aehq_situations.key"), nullable=False, index=True)
+    item_key:      Mapped[str]           = mapped_column(String(30), nullable=False)   # e.g. "g_s1"
+    track:         Mapped[str]           = mapped_column(String(2),  nullable=False)   # S / D / R
+    sort_order:    Mapped[int]           = mapped_column(default=0, nullable=False)
+    input_type:    Mapped[str]           = mapped_column(String(20), nullable=False)   # text/single_select/slider
+    skippable:     Mapped[bool]          = mapped_column(default=False, nullable=False)
+    question:      Mapped[str]           = mapped_column(Text, nullable=False)
+    subtext:       Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    options_json:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # single_select choices
+    slider_json:   Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # {min,max,step,labels}
+    score_deltas_json: Mapped[str]       = mapped_column(Text, default="{}", nullable=False)
+    value_scoring: Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
+
+    situation: Mapped["AEHQSituation"] = relationship("AEHQSituation", back_populates="items")
+
+
+class AEHQFrameworkRule(Base):
+    """One row of the framework-selection priority stack (the mapping logic).
+
+    Evaluated in ascending sort_order; the first rule whose score satisfies
+    [min_val, max_val) wins. score_var='__default__' is the always-match fallback.
+    """
+    __tablename__ = "aehq_framework_rules"
+
+    id:             Mapped[int]           = mapped_column(primary_key=True)
+    sort_order:     Mapped[int]           = mapped_column(nullable=False, index=True)
+    priority_label: Mapped[str]           = mapped_column(String(10), nullable=False)  # P1, P3m, DEFAULT
+    score_var:      Mapped[str]           = mapped_column(String(40), nullable=False)
+    min_val:        Mapped[float]         = mapped_column(Float, default=0.0, nullable=False)
+    max_val:        Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # None = open-ended
+    framework_code: Mapped[str]           = mapped_column(String(20), nullable=False)
+
+
+class AEHQScoreDelta(Base):
+    """Score nudges keyed by an emotion word or body-quality chip."""
+    __tablename__ = "aehq_score_deltas"
+
+    id:          Mapped[int] = mapped_column(primary_key=True)
+    kind:        Mapped[str] = mapped_column(String(10), nullable=False, index=True)  # emotion / body
+    trigger_key: Mapped[str] = mapped_column(String(60), nullable=False, index=True)
+    deltas_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)

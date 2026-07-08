@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { ArrowLeft, ArrowRight, Check, AlertTriangle, Loader, ChevronDown, ChevronUp } from 'lucide-react'
+import AEHQSession from './AEHQSession'
 
 const fontSans  = "'Geist', ui-sans-serif, system-ui, sans-serif"
 const fontSerif = "'Instrument Serif', ui-serif, Georgia, serif"
@@ -750,9 +751,96 @@ function ProfileResult({ profile: raw, onBack }) {
   )
 }
 
+/* ── Mode selector ───────────────────────────────────────────── */
+
+function ModeSelector({ onSelect }) {
+  const modes = [
+    {
+      id: 'aehq',
+      icon: '🌿',
+      title: 'Emotional Check-in',
+      subtitle: 'AEHQ v2.0 — adaptive, one question at a time',
+      desc: 'A warm, screen-by-screen session that meets you where you are. Includes intensity tracking, a matched therapeutic technique, and a personalised if-then plan.',
+      badge: 'Recommended',
+      accent: '#4A7B6F',
+    },
+    {
+      id: 'assessment',
+      icon: '📋',
+      title: 'Psychological Assessment',
+      subtitle: 'PHQ-2 · GAD-2 · Self-compassion · Schema',
+      desc: 'A structured questionnaire covering mood, anxiety, emotion regulation, self-compassion, and core belief patterns. Generates a full profile.',
+      badge: null,
+      accent: '#7B6FAF',
+    },
+  ]
+
+  return (
+    <div>
+      <div style={{
+        display: 'inline-block', fontSize: '10px', textTransform: 'uppercase',
+        letterSpacing: '0.14em', color: '#4A7B6F', background: '#F0F7F5',
+        padding: '3px 9px', borderRadius: '6px', fontWeight: 500, marginBottom: '12px',
+      }}>
+        Consult &amp; Healing
+      </div>
+      <h2 style={{
+        fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400,
+        fontSize: '26px', color: '#1B1B19', margin: '0 0 6px',
+      }}>
+        How would you like to begin?
+      </h2>
+      <p style={{ fontSize: '13px', color: '#9A9A95', margin: '0 0 28px', lineHeight: 1.55 }}>
+        Both are private and stored only in your account.
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {modes.map(m => (
+          <button
+            key={m.id}
+            onClick={() => onSelect(m.id)}
+            style={{
+              padding: '18px 20px', borderRadius: '14px', cursor: 'pointer',
+              border: `1px solid #E0DED6`, background: '#FFFFFF',
+              textAlign: 'left', fontFamily: fontSans,
+              transition: 'box-shadow 0.15s, border-color 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = m.accent; e.currentTarget.style.boxShadow = `0 0 0 3px ${m.accent}11` }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E0DED6'; e.currentTarget.style.boxShadow = 'none' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+              <span style={{ fontSize: '24px', flexShrink: 0 }}>{m.icon}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                  <span style={{ fontSize: '15px', fontWeight: 600, color: '#1B1B19' }}>{m.title}</span>
+                  {m.badge && (
+                    <span style={{
+                      fontSize: '10px', padding: '2px 7px', borderRadius: '4px',
+                      background: '#F0F7F5', color: '#4A7B6F', fontWeight: 500,
+                    }}>
+                      {m.badge}
+                    </span>
+                  )}
+                </div>
+                <p style={{ fontSize: '11px', color: m.accent, margin: '0 0 6px', fontWeight: 500 }}>
+                  {m.subtitle}
+                </p>
+                <p style={{ fontSize: '13px', color: '#7A7A72', margin: 0, lineHeight: 1.55 }}>
+                  {m.desc}
+                </p>
+              </div>
+              <ArrowRight size={16} color="#C8C6BC" strokeWidth={1.8} style={{ flexShrink: 0, marginTop: '4px' }} />
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 /* ── Main ConsultDashboard ───────────────────────────────────── */
 
 export default function ConsultDashboard({ token, onBack }) {
+  const [mode,       setMode]       = useState('select')  // 'select' | 'aehq' | 'assessment'
   const [phase,      setPhase]      = useState('idle')
   const [sessionId,  setSessionId]  = useState(null)
   const [node,       setNode]       = useState(null)
@@ -777,7 +865,10 @@ export default function ConsultDashboard({ token, onBack }) {
     }
   }, [token])
 
-  useEffect(() => { startSession() }, [startSession])
+  // Only auto-start when mode is explicitly 'assessment'
+  useEffect(() => {
+    if (mode === 'assessment') startSession()
+  }, [mode, startSession])
 
   const submitAnswer = async (answers) => {
     setSubmitting(true)
@@ -838,6 +929,24 @@ export default function ConsultDashboard({ token, onBack }) {
       </div>
     </div>
   )
+
+  // ── AEHQ mode — delegate entirely to the new component ──────
+  if (mode === 'aehq') {
+    return (
+      <AEHQSession
+        token={token}
+        onBack={() => setMode('select')}
+        onDone={() => {}}
+      />
+    )
+  }
+
+  // ── Mode selector ─────────────────────────────────────────────
+  if (mode === 'select') {
+    return shell(<ModeSelector onSelect={m => setMode(m)} />)
+  }
+
+  // ── Legacy assessment flow below ──────────────────────────────
 
   if (phase === 'loading') {
     return shell(

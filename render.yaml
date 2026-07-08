@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: boong-api
+    name: personalcolorv2
     runtime: python
     rootDir: strategy_engine_release
     buildCommand: pip install -r requirements.txt
