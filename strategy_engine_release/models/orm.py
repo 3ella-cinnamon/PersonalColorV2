@@ -402,10 +402,15 @@ class AEHQSession(Base):
 
     id:         Mapped[int]           = mapped_column(primary_key=True)
     user_id:    Mapped[int]           = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    next_step:  Mapped[str]           = mapped_column(String(40), default="SAFETY", nullable=False)
+    next_step:  Mapped[str]           = mapped_column(String(40), default="CONSENT", nullable=False)
     state_json: Mapped[str]           = mapped_column(Text, default="{}", nullable=False)
     status:     Mapped[str]           = mapped_column(String(20), default="active", nullable=False)
     # status: active | complete | crisis_exit | grounding_pause
+
+    # ── Informed consent (PDPA) — captured at the CONSENT gate ──
+    consent_agreed:  Mapped[bool] = mapped_column(default=False, nullable=False)   # required to proceed
+    training_opt_in: Mapped[bool] = mapped_column(default=False, nullable=False)   # SEPARATE opt-in
+    consent_at:      Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
@@ -428,6 +433,9 @@ class AEHQResponse(Base):
     session_id:  Mapped[int]  = mapped_column(ForeignKey("aehq_sessions.id"), nullable=False, index=True)
     step:        Mapped[str]  = mapped_column(String(40), nullable=False)
     answer_json: Mapped[str]  = mapped_column(Text, nullable=False)
+    # Provenance — required to make consented answers usable as training data
+    content_version: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # e.g. "aehq-2.2.1"
+    lang_shown:      Mapped[Optional[str]] = mapped_column(String(8),  nullable=True)  # th / en — what the user saw
     created_at:  Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     session: Mapped["AEHQSession"] = relationship("AEHQSession", back_populates="responses")
@@ -457,6 +465,37 @@ class AEHQResult(Base):
     suds_end:    Mapped[Optional[int]] = mapped_column(nullable=True)
     scores_json: Mapped[str]           = mapped_column(Text, default="{}", nullable=False)
     exit_type:   Mapped[str]           = mapped_column(String(20), default="complete", nullable=False)
+
+    # Trauma-informed flags (detect/route, never probe)
+    trauma_flagged:   Mapped[bool] = mapped_column(default=False, nullable=False)
+    referral_offered: Mapped[bool] = mapped_column(default=False, nullable=False)
+    # 2Q-derived low-mood pattern (support routing, never a diagnosis label)
+    low_mood_flagged: Mapped[bool] = mapped_column(default=False, nullable=False)
+    # TDS-grounded chasing/gambling-harm pattern (trading situation only)
+    chasing_flagged:  Mapped[bool] = mapped_column(default=False, nullable=False)
+    # Client's own-words goal (S1 anchor) — stored raw + its language tag
+    goal_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    goal_lang: Mapped[Optional[str]] = mapped_column(String(8), nullable=True)  # th / en / mixed
+    # Content provenance — which content version produced this result
+    content_version: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    # Bottom Line (S2 formulation) — the negative core belief + belief-strength %
+    bottom_line_text:   Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    bottom_line_belief: Mapped[Optional[int]] = mapped_column(nullable=True)   # 0–100 %
+    bottom_line_lang:   Mapped[Optional[str]] = mapped_column(String(8), nullable=True)
+    # Automatic thought (S3-S4) — the user's own-words thought; with trigger +
+    # emotion_words + suds pre/post this completes the structured thought record.
+    thought_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    thought_lang: Mapped[Optional[str]] = mapped_column(String(8), nullable=True)
+    # Inner critic (S5) — Branch C classification + hated-self escalation flag
+    critic_function:      Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    critic_protects_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    hated_self_flagged:   Mapped[bool] = mapped_column(default=False, nullable=False)
+    # Self-compassion (S6-S7) — fear-of-compassion + Branch D + soothing feedback
+    foc_level:      Mapped[Optional[str]] = mapped_column(String(12), nullable=True)  # natural/awkward/undeserved
+    compassion_mode: Mapped[Optional[str]] = mapped_column(String(12), nullable=True) # direct/others_first
+    soothe_rating:  Mapped[Optional[int]] = mapped_column(nullable=True)  # 0–10 post-practice
+    # Goal-attainment (S12 closure) — how much closer to the S1 own-words goal
+    goal_attainment: Mapped[Optional[int]] = mapped_column(nullable=True)  # 0–10
 
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
@@ -491,6 +530,7 @@ class AEHQSituation(Base):
     self_compassion:    Mapped[str]           = mapped_column(Text, nullable=False)
     ifthen_template:    Mapped[str]           = mapped_column(Text, nullable=False)
     priors_json:        Mapped[str]           = mapped_column(Text, default="{}", nullable=False)
+    followup_json:      Mapped[str]           = mapped_column(Text, default="{}", nullable=False)
     sort_order:         Mapped[int]           = mapped_column(default=0, nullable=False)
 
     items: Mapped[list["AEHQSituationItem"]] = relationship(
@@ -516,6 +556,11 @@ class AEHQSituationItem(Base):
     slider_json:   Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # {min,max,step,labels}
     score_deltas_json: Mapped[str]       = mapped_column(Text, default="{}", nullable=False)
     value_scoring: Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
+    # Bottom Line template for text items, e.g. "I am {}" (S2 formulation)
+    bottom_line:   Mapped[Optional[str]] = mapped_column(String(80), nullable=True)
+    # Structured-capture tag, e.g. "critic_protects" (S5) — routes the answer
+    # into a dedicated field instead of only free text.
+    capture:       Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
 
     situation: Mapped["AEHQSituation"] = relationship("AEHQSituation", back_populates="items")
 
@@ -545,3 +590,18 @@ class AEHQScoreDelta(Base):
     kind:        Mapped[str] = mapped_column(String(10), nullable=False, index=True)  # emotion / body
     trigger_key: Mapped[str] = mapped_column(String(60), nullable=False, index=True)
     deltas_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)
+
+
+class AEHQTranslation(Base):
+    """Translated AEHQ copy, keyed by the exact source (EN) string.
+
+    src conventions:  plain EN string → UI/question/label copy;
+    "technique:<code>" → framework technique text; "note:<NAME>" → long scripts.
+    Editing dst in the DB changes the served copy after a cache reload.
+    """
+    __tablename__ = "aehq_translations"
+
+    id:   Mapped[int] = mapped_column(primary_key=True)
+    lang: Mapped[str] = mapped_column(String(8), nullable=False, index=True)  # e.g. "th"
+    src:  Mapped[str] = mapped_column(Text, nullable=False)
+    dst:  Mapped[str] = mapped_column(Text, nullable=False)

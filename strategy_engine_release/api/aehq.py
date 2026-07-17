@@ -17,6 +17,7 @@ router = APIRouter()
 class AnswerIn(BaseModel):
     step: str
     answer: Any
+    lang: str = "en"   # language the client was showing when the user answered
 
 
 @router.post("/start")
@@ -51,7 +52,7 @@ def submit_answer(
     current_user: User = Depends(get_current_user),
     db: DBSession = Depends(get_db),
 ):
-    return aehq_service.submit_answer(session_id, current_user.id, body.step, body.answer, db)
+    return aehq_service.submit_answer(session_id, current_user.id, body.step, body.answer, db, lang=body.lang)
 
 
 @router.get("/{session_id}/result")

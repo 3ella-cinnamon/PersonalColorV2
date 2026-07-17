@@ -9,6 +9,7 @@ Screen flow:
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from typing import Any, Optional
 
 from fastapi import HTTPException
@@ -18,7 +19,55 @@ from sqlalchemy.orm import Session as DBSession
 from models.orm import (
     AEHQSession, AEHQResponse, AEHQResult,
     AEHQFramework, AEHQSituation, AEHQSituationItem, AEHQFrameworkRule, AEHQScoreDelta,
+    AEHQTranslation,
 )
+from services import aehq_i18n_th as _i18n_th
+
+# Version of the AEHQ content/question bank. Bump on any content change so
+# consented training records stay attributable to exactly what was shown —
+# AND so _ensure_cache auto-reseeds stale DBs on deploy (self-migrating).
+CONTENT_VERSION = "aehq-2.4.0"
+
+# Thai copy — module defaults double as seed source; the DB copy (loaded by
+# the cache) wins once seeded, so operators can edit Thai text without a deploy.
+TH_STRINGS:    dict[str, str] = dict(_i18n_th.TH_STRINGS)
+TH_TECHNIQUES: dict[str, str] = dict(_i18n_th.TH_TECHNIQUES)
+TH_NOTES:      dict[str, str] = {
+    "SAFETY_SCRIPT":          _i18n_th.SAFETY_SCRIPT_TH,
+    "GROUNDING_PAUSE_SCRIPT": _i18n_th.GROUNDING_PAUSE_SCRIPT_TH,
+    "REFERRAL_SCRIPT":        _i18n_th.REFERRAL_SCRIPT_TH,
+    "TRAUMA_ACK":             _i18n_th.TRAUMA_ACK_TH,
+    "LOW_MOOD_NOTE":          _i18n_th.LOW_MOOD_NOTE_TH,
+    "CHASING_NOTE":           _i18n_th.CHASING_NOTE_TH,
+    "critic_driver":               _i18n_th.CRITIC_DRIVER_TH,
+    "critic_social_threat":        _i18n_th.CRITIC_SOCIAL_THREAT_TH,
+    "critic_internalized_attacker":_i18n_th.CRITIC_ATTACKER_TH,
+    "HATED_SELF_NOTE":             _i18n_th.HATED_SELF_NOTE_TH,
+    "OTHERS_FIRST_LEAD":           _i18n_th.OTHERS_FIRST_LEAD_TH,
+    "BACKDRAFT_NOTE":              _i18n_th.BACKDRAFT_NOTE_TH,
+}
+
+
+def _th(s: Any) -> Optional[str]:
+    return TH_STRINGS.get(s) if isinstance(s, str) else None
+
+
+def _localize(payload: dict) -> dict:
+    """Attach *_th fields for every translatable string in a screen payload.
+    English always remains; Thai rides alongside so the client can toggle."""
+    for k in ("question", "subtext", "heading", "validation_copy", "prefill", "body", "optin_label"):
+        t = _th(payload.get(k))
+        if t:
+            payload[k + "_th"] = t
+    for opt in (payload.get("options") or []):
+        t = _th(opt.get("label"))
+        if t:
+            opt["label_th"] = t
+    if payload.get("slider_labels"):
+        payload["slider_labels_th"] = {
+            k2: (_th(v2) or v2) for k2, v2 in payload["slider_labels"].items()
+        }
+    return payload
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -29,9 +78,29 @@ SITUATIONS: dict[str, dict] = {
     "work": {
         "label": "Work or study pressure",
         "icon": "💼",
-        "emotion_words": ["overwhelmed", "pressured", "depleted", "trapped", "resentful", "dread", "foggy", "inadequate"],
+        "emotion_words": ["overwhelmed", "pressured", "depleted", "burned out", "running on empty",
+                          "trapped", "resentful", "dread", "foggy", "inadequate"],
         "items": {
             "S": [
+                {
+                    # Detachment probe — the single most discriminating work item.
+                    # Psychological detachment is the recovery experience most
+                    # protective against fatigue (meta-analysis, 54 samples,
+                    # N=26,592); its absence (work rumination) is the bridge
+                    # from job stress to poor sleep and low mood.
+                    "id": "w_s0", "input_type": "single_select", "skippable": False,
+                    "question": "When you finish work for the day — does your mind clock out with you?",
+                    "subtext": "Evenings and weekends count. Just your honest average.",
+                    "options": [
+                        {"id": "clocks_out", "label": "Mostly yes — work stays at work",
+                         "score_deltas": {"problem_control": 1}},
+                        {"id": "follows",    "label": "It follows me home some evenings",
+                         "score_deltas": {"rumination": 2}},
+                        {"id": "never_off",  "label": "It never really switches off",
+                         "score_deltas": {"rumination": 4, "anxiety_catastrophising": 1}},
+                    ],
+                    "score_deltas": {},
+                },
                 {
                     "id": "w_s1", "input_type": "text", "skippable": False,
                     "question": "What's actually on the pile right now? Telegraph style — just the things, no full sentences needed.",
@@ -40,9 +109,22 @@ SITUATIONS: dict[str, dict] = {
                 },
                 {
                     "id": "w_s2", "input_type": "text", "skippable": True,
-                    "question": "Finish this honestly: \"If I don't get this done, it means I am ___\"",
+                    "question": "Under the pressure there's sometimes a quieter sentence. If yours is there, finish it: \"If I don't get this done, it means I am ___\"",
                     "subtext": "Only if something rings true — there's no right answer here.",
                     "score_deltas": {"shame_selfattack": 2, "anxiety_catastrophising": 1},
+                    "bottom_line": "I am {}",
+                },
+                {
+                    # Energy-depletion gauge — burnout presents as depletion, not
+                    # "overwhelm" (exhaustion-disorder literature). Low tank feeds
+                    # numbness_shutdown, the engine's depletion channel.
+                    "id": "w_s3", "input_type": "slider", "skippable": False,
+                    "question": "By the time you finish a normal workday — how much is left in your tank?",
+                    "subtext": "0 means completely empty, 100 means plenty left for your own life.",
+                    "slider_min": 0, "slider_max": 100, "slider_step": 10,
+                    "slider_labels": {"0": "Completely empty", "50": "About half", "100": "Plenty left"},
+                    "score_deltas": {},
+                    "value_scoring": "energy_left",
                 },
             ],
             "D": [
@@ -59,6 +141,24 @@ SITUATIONS: dict[str, dict] = {
                     "question": "Is this a season with an end date, or a structure with no exit? What's the evidence for each?",
                     "subtext": "Take your time — no need to be certain.",
                     "score_deltas": {"problem_control": 2},
+                },
+                {
+                    # Effort–reward imbalance probe (Siegrist): unreciprocated
+                    # effort prospectively predicts depressive-disorder onset
+                    # (8 cohorts, N=84,963). Imbalance reads as hidden hurt +
+                    # unrecognised-effort shame, not as a workload problem.
+                    "id": "w_r2", "input_type": "single_select", "skippable": False,
+                    "question": "Put what you give on one side of the scale — effort, hours, care. On the other side, what comes back: pay, thanks, recognition. How do the scales sit?",
+                    "subtext": "Your gut read is the right answer.",
+                    "options": [
+                        {"id": "balanced",  "label": "Roughly balanced",
+                         "score_deltas": {}},
+                        {"id": "tilted",    "label": "More goes out than comes back",
+                         "score_deltas": {"anger_hidden_hurt": 2, "shame_selfattack": 1}},
+                        {"id": "one_sided", "label": "It's one-sided — and it's been that way a while",
+                         "score_deltas": {"anger_hidden_hurt": 3, "shame_selfattack": 1, "numbness_shutdown": 1}},
+                    ],
+                    "score_deltas": {},
                 },
             ],
         },
@@ -184,16 +284,53 @@ SITUATIONS: dict[str, dict] = {
         "items": {
             "S": [
                 {
+                    # Guilt vs. shame — the single highest-leverage routing item.
+                    # "I did something bad" (guilt) → problem-solving / behavioural.
+                    # "I am bad" (shame) → self-compassion (CFT).
+                    "id": "sc_s0", "input_type": "single_select", "skippable": False,
+                    "question": "When you think about what happened, which feels closer right now?",
+                    "subtext": "There's no right answer — just whichever rings truer this moment.",
+                    "options": [
+                        # Guilt is behaviour-focused and reparative → problem-solving.
+                        {"id": "did_bad", "label": "I did something bad",
+                         "score_deltas": {"problem_control": 5}},
+                        # Shame is self-focused → self-compassion (CFT).
+                        # The shame answers surface a negative core belief (Bottom Line).
+                        {"id": "am_bad",  "label": "I am the mistake",
+                         "score_deltas": {"shame_selfattack": 6}, "bottom_line": "I am the mistake"},
+                        {"id": "both",    "label": "Honestly, both",
+                         "score_deltas": {"shame_selfattack": 3, "problem_control": 2}, "bottom_line": "I am the mistake"},
+                    ],
+                    "score_deltas": {},
+                },
+                {
+                    # Branch C — classify the critic's FUNCTION and route on it.
+                    # driver / social-threat / internalized-attacker each fork.
+                    "id": "sc_c", "input_type": "single_select", "skippable": False,
+                    "question": "When the critic fires — what job does it think it's doing?",
+                    "subtext": "Most critics have a job, even when they do it cruelly.",
+                    "options": [
+                        {"id": "driver", "label": "Pushing me so I don't fail or fall behind",
+                         "score_deltas": {"problem_control": 1}, "critic_function": "driver"},
+                        {"id": "social_threat", "label": "Warning me before other people judge me",
+                         "score_deltas": {"relationship_threat": 2, "shame_selfattack": 1}, "critic_function": "social_threat"},
+                        {"id": "attacker", "label": "Not protecting anything — it's just contempt",
+                         "score_deltas": {"shame_selfattack": 2}, "critic_function": "internalized_attacker", "hated_self": True},
+                    ],
+                    "score_deltas": {},
+                },
+                {
                     "id": "sc_s1", "input_type": "text", "skippable": True,
                     "question": "What are the critic's exact words? Quote it — or paraphrase if that's easier.",
                     "subtext": "Only if you're willing. Naming the voice often weakens it a little.",
-                    "score_deltas": {"shame_selfattack": 3},
+                    # Light: this describes the critic, it shouldn't outvote sc_s0.
+                    "score_deltas": {"shame_selfattack": 1.5},
                 },
                 {
                     "id": "sc_s2", "input_type": "text", "skippable": False,
                     "question": "Whose voice does the critic borrow? Does the accent belong to someone from your past?",
                     "subtext": "Just a rough guess. Even 'not sure' is useful.",
-                    "score_deltas": {"shame_selfattack": 1},
+                    "score_deltas": {"shame_selfattack": 0.5},
                 },
             ],
             "D": [
@@ -210,6 +347,7 @@ SITUATIONS: dict[str, dict] = {
                     "question": "What is the critic trying to protect you from? It usually has a job — even if it does it badly.",
                     "subtext": "A rough guess is more than enough.",
                     "score_deltas": {},
+                    "capture": "critic_protects",
                 },
             ],
         },
@@ -443,7 +581,7 @@ SITUATIONS: dict[str, dict] = {
             "R": [
                 {
                     "id": "r_r1", "input_type": "text", "skippable": False,
-                    "question": "When the fear says \"they're leaving\" — how often has that alarm been right before? What's its actual track record?",
+                    "question": "When the fear says \"they're leaving\" — how often has that alarm been right before? What's its track record, gently reviewed?",
                     "subtext": "Just a rough sense — no need to count every time.",
                     "score_deltas": {"relationship_threat": 1},
                 },
@@ -488,7 +626,7 @@ SITUATIONS: dict[str, dict] = {
             "R": [
                 {
                     "id": "t_r1", "input_type": "text", "skippable": False,
-                    "question": "Whose rule is \"a good person doesn't refuse\"? Did you ever actually agree to it?",
+                    "question": "Whose rule is \"a good person doesn't refuse\"? Did you ever choose it — or did it just arrive with you?",
                     "subtext": "Where did that rule come from?",
                     "score_deltas": {"shame_selfattack": 1, "avoidance": 1},
                 },
@@ -502,6 +640,105 @@ SITUATIONS: dict[str, dict] = {
         ],
         "self_compassion": "A no to them is often a yes to you — that's not selfish, it's a boundary. Your limits are information, not betrayal.",
         "ifthen_template": "If a request lands this week, my first sentence is \"Let me check and come back to you\" — the no gets to be a two-step.",
+    },
+    "trading": {
+        # Grounded in: Lo/Repin/Steenbarger 2005 (emotional reactivity ↔ worse
+        # performance), Odean 1998 (disposition effect), Palomäki 2013 (tilt:
+        # loss → unfairness → chasing), Fenton-O'Creevy (reappraisal works,
+        # suppression doesn't; experts close charts + journal).
+        "label": "Trading or investment stress",
+        "icon": "📉",
+        "emotion_words": ["tilted", "wiped out", "regret", "FOMO", "frozen at the screen",
+                          "revenge mode", "greedy-then-ashamed", "it's unfair",
+                          "can't look away", "sick of the charts"],
+        "items": {
+            "S": [
+                {
+                    # The four canonical trader wounds — each routes differently.
+                    "id": "tr_s0", "input_type": "single_select", "skippable": False,
+                    "question": "Which is closest to what just happened?",
+                    "subtext": "Rough category is enough — the details can stay yours.",
+                    "options": [
+                        {"id": "took_loss",  "label": "A loss — bigger than it should have been, and it stings",
+                         "score_deltas": {"shame_selfattack": 1, "anger_hidden_hurt": 1}},
+                        {"id": "missed_move","label": "Missed the move — watched it go without me",
+                         "score_deltas": {"anxiety_catastrophising": 2, "rumination": 1}},
+                        {"id": "cant_pull",  "label": "Frozen — my plan says go and my hand won't",
+                         "score_deltas": {"avoidance": 2, "anxiety_catastrophising": 1}},
+                        {"id": "gave_back",  "label": "Won big, then gave it all back",
+                         "score_deltas": {"shame_selfattack": 2, "anger_hidden_hurt": 1}},
+                    ],
+                    "score_deltas": {},
+                },
+                {
+                    # Tilt / chasing check — the load-bearing item. "Win it back
+                    # now" is within-session chasing (Palomäki; TDS criterion).
+                    "id": "tr_s1", "input_type": "single_select", "skippable": False,
+                    "question": "Right now — what's the strongest pull?",
+                    "subtext": "Honest answer beats the correct-sounding one.",
+                    "options": [
+                        {"id": "win_back",   "label": "Get it back — today, now",
+                         "score_deltas": {"anger_hidden_hurt": 2, "anxiety_catastrophising": 1, "problem_control": -1}},
+                        {"id": "replay",     "label": "Replaying every candle on loop",
+                         "score_deltas": {"rumination": 3}},
+                        {"id": "step_away",  "label": "Never opening that app again",
+                         "score_deltas": {"avoidance": 2, "numbness_shutdown": 0.5}},
+                        {"id": "numb_scroll","label": "Nothing — just numbly scrolling charts",
+                         "score_deltas": {"numbness_shutdown": 2}},
+                    ],
+                    "score_deltas": {},
+                },
+                {
+                    # P&L–self-worth fusion — the trading version of the shame gate.
+                    "id": "tr_s2", "input_type": "text", "skippable": True,
+                    "question": "Some losses come with a quiet sentence attached. If yours does, finish it: \"This loss means I am ___\"",
+                    "subtext": "Only if something rings true. A number on a screen often smuggles in a verdict about us.",
+                    "score_deltas": {"shame_selfattack": 2},
+                    "bottom_line": "I am {}",
+                },
+            ],
+            "D": [
+                {
+                    # Distanced reappraisal — the exact strategy shown to reduce
+                    # the disposition effect (suppression doesn't).
+                    "id": "tr_d1", "input_type": "text", "skippable": False,
+                    "question": "If a trader you respect took this exact trade, with the same information you had at the time — what would you say happened?",
+                    "subtext": "Judge the decision with what was knowable then, not with the chart you can see now.",
+                    "score_deltas": {},
+                },
+            ],
+            "R": [
+                {
+                    # Process vs outcome — the core trading-psychology distinction.
+                    "id": "tr_r1", "input_type": "single_select", "skippable": False,
+                    "question": "Set the result aside for a second. Looking only at the decision — how close did it stay to your own plan?",
+                    "subtext": "Good decisions lose sometimes; bad ones win sometimes. That's exactly why the result can't answer this one.",
+                    "options": [
+                        {"id": "followed", "label": "Close — the plan was fine, the market did market things",
+                         "score_deltas": {"problem_control": 2}},
+                        {"id": "broke",    "label": "It drifted — I crossed a rule I'd set for myself",
+                         "score_deltas": {"shame_selfattack": 1, "rumination": 1, "avoidance": 1}},
+                        {"id": "no_rules", "label": "There wasn't really a plan yet",
+                         "score_deltas": {"problem_control": 2, "anxiety_catastrophising": 0.5}},
+                    ],
+                    "score_deltas": {},
+                },
+                {
+                    "id": "tr_r2", "input_type": "text", "skippable": False,
+                    "question": "If this has visited before — the loss, the promise, the repeat — what usually sets the loop going?",
+                    "subtext": "If it's a first, that counts as an answer too. Patterns only need to be seen once to start loosening.",
+                    "score_deltas": {"rumination": 1},
+                },
+            ],
+        },
+        "unmet_need_options": [
+            {"id": "make_it_back",    "label": "Making the money back — nothing else matters right now"},
+            {"id": "competent",       "label": "Feeling like I know what I'm doing again"},
+            {"id": "calm_decisions",  "label": "Deciding calmly — not from the edge"},
+            {"id": "permission_pause","label": "Permission to step away for a while"},
+        ],
+        "self_compassion": "A red day is a fact about a trade — not a verdict on you. The account and your worth are two different ledgers.",
+        "ifthen_template": "If I take a loss, then I close the platform for 20 minutes before any new order — timer on, screen off.",
     },
     "other": {
         "label": "Something else",
@@ -557,13 +794,18 @@ SITUATION_PRIORS: dict[str, dict[str, float]] = {
     "work":           {"problem_control": 3},
     "dismissed":      {"relationship_threat": 3, "shame_selfattack": 1},
     "authority":      {"anger_hidden_hurt": 2, "problem_control": 2},
-    "self_criticism": {"shame_selfattack": 4},
+    # Deliberately faint: the guilt-vs-shame item (sc_s0) decides this route.
+    # A heavy prior here would drown the distinction and send guilt to CFT too.
+    "self_criticism": {"shame_selfattack": 1},
     "anxiety":        {"anxiety_catastrophising": 4},
     "grief":          {"grief_meaningloss": 4},
     "anger":          {"anger_hidden_hurt": 4},
     "numbness":       {"numbness_shutdown": 4},
     "relationship":   {"relationship_threat": 4},
     "trapped":        {"avoidance": 3, "problem_control": 1},
+    # Faint on purpose — tr_s0/tr_s1 differentiate the four trader wounds;
+    # a heavy prior would flatten them into one route.
+    "trading":        {"anxiety_catastrophising": 1.5, "rumination": 1.5},
     "other":          {},
 }
 
@@ -642,11 +884,50 @@ UNMET_NEED_DELTAS: dict[str, dict[str, float]] = {
     "trapped:room_to_choose":       {"avoidance": 1, "problem_control": 1},
     "trapped:rest":                 {"avoidance": 0.5, "numbness_shutdown": 1.5},
     "trapped:relationship_survives":{"relationship_threat": 2},
+    # trading
+    "trading:make_it_back":         {"anger_hidden_hurt": 1, "anxiety_catastrophising": 1},  # + chasing hit (handled in transition)
+    "trading:competent":            {"shame_selfattack": 1.5},
+    "trading:calm_decisions":       {"anxiety_catastrophising": 1.5},
+    "trading:permission_pause":     {"avoidance": 1, "numbness_shutdown": 1},
     # other
     "other:understood":             {"relationship_threat": 1},
     "other:rest":                   {"numbness_shutdown": 1},
     "other:clarity":                {"rumination": 1.5},
     "other:company":                {"relationship_threat": 1},
+}
+
+
+# Per-situation follow-up (Part 3). Intervals are construct-appropriate — action
+# checks in days, symptom/affect tracks in weeks, grief in months — but framed
+# warmly (no instrument jargon). Every session is self-contained; the check-in is
+# strictly opt-in, because most users won't return (median 15-day retention ~3.9%,
+# Baumel et al. 2019). action_check_hours reflects implementation-intention
+# research (24–72h; Sheeran & Gollwitzer 2024).
+FOLLOWUP_CONFIG: dict[str, dict] = {
+    "work":           {"interval_days": 7,  "action_check_hours": 48,
+                       "checkin": "How are your evenings this week — any easier to switch off?"},
+    "dismissed":      {"interval_days": 10, "action_check_hours": 48,
+                       "checkin": "Since we talked, did you get to say the thing you wanted seen?"},
+    "authority":      {"interval_days": 10, "action_check_hours": 48,
+                       "checkin": "Did you find a way to name what felt unfair — even to yourself?"},
+    "self_criticism": {"interval_days": 17, "action_check_hours": 48,
+                       "checkin": "How has the critic's volume been this week?"},
+    "anxiety":        {"interval_days": 14, "action_check_hours": 48,
+                       "checkin": "Is the worry still taking the same amount of room?"},
+    "grief":          {"interval_days": 90, "action_check_hours": 72,
+                       "checkin": "How has it been to carry this lately — any okay days?"},
+    "anger":          {"interval_days": 14, "action_check_hours": 48,
+                       "checkin": "When the anger showed up again, could you find the hurt under it?"},
+    "numbness":       {"interval_days": 10, "action_check_hours": 48,
+                       "checkin": "Have you noticed even one small thing you could feel this week?"},
+    "relationship":   {"interval_days": 14, "action_check_hours": 48,
+                       "checkin": "When the fear said 'they're leaving' this week — was it right?"},
+    "trapped":        {"interval_days": 10, "action_check_hours": 48,
+                       "checkin": "Did a two-step 'let me get back to you' get any easier?"},
+    "trading":        {"interval_days": 7,  "action_check_hours": 48,
+                       "checkin": "Did the 20-minute pause rule survive contact with the market this week?"},
+    "other":          {"interval_days": 14, "action_check_hours": 48,
+                       "checkin": "How has this been sitting with you since we talked?"},
 }
 
 
@@ -680,6 +961,11 @@ FRAMEWORKS: dict[str, dict] = {
         "evidence": "Neff & Germer (2013) RCT; Kirby et al. (2017) meta-analysis",
         "tier": "A",
         "technique": (
+            "**A quick map — your three systems:** emotion runs on three systems — a "
+            "**threat** system (alarms, self-criticism), a **drive** system (chasing, "
+            "achieving), and a **soothing** system (safeness, warmth). Self-attack means "
+            "the threat system is loud and the soothing one is offline. This practice "
+            "switches soothing back on — it's a skill, not a mood.\n\n"
             "**Self-Compassion Break (3 minutes):**\n"
             "1. Place a hand on your heart. Say: \"This is a moment of suffering.\"\n"
             "2. Say: \"Suffering is part of being human. I am not alone in this.\"\n"
@@ -768,13 +1054,20 @@ FRAMEWORKS: dict[str, dict] = {
     },
     "F2_BA": {
         "name": "Behavioural Activation",
-        "evidence": "Ekers et al. (2014) meta-analysis; Jacobson et al. (1996)",
+        "evidence": "Ekers et al. (2014) meta-analysis; NICE NG222 first-line; Noetel et al. (2024) BMJ exercise NMA",
         "tier": "A",
         "technique": (
-            "**One 5-minute thing** that used to give even 1% of something:\n\n"
-            "It doesn't have to feel good — just schedule it. Do it. "
-            "Then notice: did your mood shift even slightly after vs before?\n\n"
-            "The goal is re-engagement, not enjoyment yet."
+            "**Action first, mood second.** When mood is low, waiting to feel like it "
+            "is the trap — doing comes before feeling.\n\n"
+            "**1. One 5-minute thing** that used to give even 1% of something. "
+            "It doesn't have to feel good — schedule it, do it, then notice: "
+            "did anything shift, even slightly, after vs before?\n\n"
+            "**2. Add movement — any kind counts.** The strongest evidence is for "
+            "brisk walking or jogging, strength training, yoga, or dance — even "
+            "20 minutes, and a bit of intensity helps more. Pick the one that feels "
+            "least impossible this week.\n\n"
+            "**3. Repeat tomorrow.** Same small thing or a new one. "
+            "The goal is re-engagement, not enjoyment yet — enjoyment comes back later."
         ),
     },
     "F12_ifthen": {
@@ -845,6 +1138,206 @@ GROUNDING_PAUSE_SCRIPT = (
     "Come back when you're ready. There's no rush."
 )
 
+# ── Trauma-pattern recognition (Tier C — suggestive, NEVER diagnostic) ────────
+# Detected from the user's OWN free text. The flag only ADDS caution: it caps
+# depth (grounding-first), offers a warm referral, and locks deep-processing
+# frameworks. It never unlocks a deeper track and never asks the user to
+# recount anything. (Pennebaker/LIWC markers; SAMHSA 2014 four Rs / six
+# principles; PC-PTSD-5 & ITQ inform the domains, not a probing screen.)
+TRAUMA_MARKERS: dict[str, list[str]] = {
+    "dissociation": [
+        "not real", "wasn't real", "watching myself", "outside my body",
+        "out of my body", "far away", "floating", "detached", "like a dream",
+        "unreal", "disconnected", "numb all over", "not really here", "on autopilot",
+    ],
+    "hyperarousal": [
+        "on edge", "can't switch off", "cant switch off", "can't relax", "cant relax",
+        "jumpy", "startle", "on guard", "always alert", "heart pounding",
+        "constantly scanning", "bracing", "waiting for it to happen again",
+    ],
+    "intrusion": [
+        "keeps replaying", "can't stop seeing", "cant stop seeing", "flashback",
+        "keeps coming back", "over and over", "haunts me", "nightmares",
+        "keeps happening in my head", "can't get it out of my head",
+    ],
+    "avoidance": [
+        "can't talk about", "cant talk about", "won't go there", "wont go there",
+        "block it out", "push it down", "can't go back", "cant go back",
+        "don't want to remember", "shut it away",
+    ],
+    "foreshortened_future": [
+        "no point planning", "no future", "don't see a future", "dont see a future",
+        "no point in trying", "nothing ahead",
+    ],
+}
+
+# Categories that on their own are strong enough to raise caution.
+_STRONG_TRAUMA_CATEGORIES = {"dissociation", "intrusion", "foreshortened_future"}
+
+# Warm, choice-preserving referral (SAMHSA: empowerment, voice & choice).
+REFERRAL_SCRIPT = (
+    "Some of what you've described sounds genuinely heavy — heavier than a "
+    "self-reflection tool is built to hold.\n\n"
+    "This isn't a substitute for talking with a person trained for this, and "
+    "reaching out is a strength, not a failure. If it would help, here are some options:\n"
+    "• **Crisis text:** Text HOME to 741741\n"
+    "• **Lifeline:** 988 (call or text, US)\n"
+    "• **Thailand:** 1323 (กรมสุขภาพจิต)\n"
+    "• **International:** findahelpline.com\n\n"
+    "You're in control of what happens next — there's nothing you have to explain here."
+)
+
+# Trauma-safe acknowledgment: names the weight, then steadies. Never probes.
+TRAUMA_ACK = (
+    "Some of what you're describing sounds really heavy. Rather than going "
+    "deeper, let's slow down and focus on steadying things right now — that's "
+    "the kinder move when a feeling is this big."
+)
+
+
+# ── Low-mood pattern check (2Q-derived soft gate — detect, never diagnose) ────
+# Grounded in the Thai DMH 2Q screener (หดหู่/เศร้า/ท้อแท้ + เบื่อ ทำอะไรก็ไม่
+# เพลิดเพลิน, 2-week window) and PHQ-2. AEHQ detects the PATTERN only: both
+# items endorsed "most days" → route to Behavioural Activation (NICE NG222
+# first-line for less severe depression) + a warm, normalising note. The word
+# "depression" is never used as a verdict. A "no" is not safety; a "yes" is
+# not illness — the flag only adds support, never a label.
+MOOD_CHECK_QUESTIONS: dict[str, dict] = {
+    "MOOD1": {
+        "question": "One gentle check before we wrap the questions — over the last two weeks, counting today, have there been days your mood sat low: heavy, sad, or drained of hope?",
+        "subtext": "Not about today only — the general weather of the last two weeks.",
+        "options": [
+            {"id": "not_really", "label": "Not really", "weight": 0},
+            {"id": "some_days",  "label": "Some days, yes", "weight": 0.5},
+            {"id": "most_days",  "label": "Most days, honestly", "weight": 1},
+        ],
+    },
+    "MOOD2": {
+        "question": "And in those same two weeks — the things you usually enjoy: have they gone quiet? Less pull, less fun, less taste?",
+        "subtext": "Food, music, people, hobbies — anything that normally gives you something back.",
+        "options": [
+            {"id": "not_really", "label": "Not really — they still land", "weight": 0},
+            {"id": "some_days",  "label": "Somewhat — dimmer than usual", "weight": 0.5},
+            {"id": "most_days",  "label": "Yes — almost nothing lands lately", "weight": 1},
+        ],
+    },
+}
+
+# Situations where the mood check is offered. Grief is deliberately excluded —
+# low mood inside grief is normal grief, and screening it risks medicalising
+# a healthy process (per the contested PGD timing thresholds). Trading is
+# included: excessive trading co-occurs with depression and anxiety.
+MOOD_CHECK_SITUATIONS = {"work", "numbness", "other", "trapped", "trading"}
+
+# ── Chasing / gambling-harm pattern (TDS-grounded — detect, never probe) ─────
+# Markers mirror the validated Trading Disorder Scale criteria (13 items,
+# cutoff ≥5; concealment, borrowing, escalation, preoccupation, chasing) and
+# the tilt→chasing sequence (Palomäki 2013). Scanned ONLY inside the trading
+# situation, from the user's own free text. Graded: one strong category flags;
+# otherwise hits accumulate (weak text categories + structural answers) and
+# flag at 3. The flag only adds caution: urge-focused routing + a warm note.
+CHASING_MARKERS: dict[str, list[str]] = {
+    "concealment": [  # strong — TDS deception criterion
+        "hiding it from", "haven't told", "havent told", "lied about", "lying about",
+        "secret account", "she doesn't know", "he doesn't know", "no one knows",
+        "don't know how much i've lost", "dont know how much",
+    ],
+    "borrowing": [    # strong — TDS financial-dependence criterion
+        "borrowed", "loan to trade", "credit card", "in debt", "owe",
+        "margin call", "rent money", "savings are gone", "borrowed money",
+        "emergency fund",
+    ],
+    "escalation": [   # weak alone — tolerance / chasing
+        "double down", "doubled my position", "all in", "one more trade",
+        "win it back", "make it back", "chasing", "bigger size", "revenge trade",
+    ],
+    "preoccupation": [  # weak alone — salience
+        "can't sleep", "cant sleep", "first thing i check", "checking all night",
+        "dreaming about charts", "can't stop checking", "cant stop checking",
+    ],
+}
+_STRONG_CHASING_CATEGORIES = {"concealment", "borrowing"}
+
+CHASING_NOTE = (
+    "One pattern in what you shared is worth naming gently: the pull to win it "
+    "back. Research on traders and players calls this **chasing** — and it's the "
+    "single pattern most strongly linked to losses getting away from people. "
+    "It's not a character flaw; it's how loss wires urgency into anyone.\n\n"
+    "**The urge itself passes.** Urges crest and fall like waves — usually within "
+    "20 minutes. Timer on, platform closed, and watch the urge without obeying "
+    "it. Surfing one urge, once, weakens the next one.\n\n"
+    "If money stress from trading is touching rent, debt, or things you're "
+    "keeping private — that's a weight worth sharing with someone who knows "
+    "this territory:\n"
+    "• **Thailand:** สายด่วนสุขภาพจิต 1323 (free, 24 hrs)\n"
+    "• **International:** findahelpline.com — gambling-support lines listed by country\n\n"
+    "No verdicts here. Just a pattern worth catching early."
+)
+
+# ── Inner critic (S5) — Branch C reframes + hated-self escalation ────────────
+# The critic's protective-intention card. Names the job, keeps the standard,
+# drops the cruelty. The internalized-attacker (hated-self) branch routes to a
+# warm referral — the unguided-tool equivalent of a supervision flag.
+CRITIC_FUNCTION_REFRAMES: dict[str, str] = {
+    "driver": (
+        "Your critic is a **driver** — it pushes so you won't fail. The fear-fuel "
+        "does work, but it burns the engine out. You're allowed to keep the standard "
+        "and drop the whip: the same push can come from wanting good things for yourself, "
+        "not from dread."
+    ),
+    "social_threat": (
+        "Your critic is a **lookout** — it scans for other people's judgment and tries "
+        "to catch it first, so the rejection won't blindside you. It's guarding a real "
+        "fear. The hidden cost: to stay ahead of their verdict, you deliver it to "
+        "yourself first, every day."
+    ),
+    "internalized_attacker": (
+        "This one isn't protecting anything — it's **contempt you learned**, often in a "
+        "voice borrowed from someone else. That's the hardest kind to face alone, and "
+        "you don't have to. Talking it through with someone trained genuinely helps here."
+    ),
+}
+
+HATED_SELF_NOTE = (
+    "The way you're talking to yourself right now is closer to an attack than a "
+    "correction — and that's worth taking seriously, gently. You wouldn't be handed "
+    "this voice if something hadn't taught it to you. A trained person can help you "
+    "set it down; you don't have to carry it alone.\n"
+    "• **Thailand:** สายด่วนสุขภาพจิต 1323 (free, 24 hrs)\n"
+    "• **International:** findahelpline.com"
+)
+
+# ── Self-compassion (S6-S7) — fear-of-compassion, Branch D, backdraft ────────
+# High fear-of-compassion → deliver kindness OTHERS-FIRST (imagine a loved one,
+# then turn it inward). Backdraft = the grief/pain surge that can rise when
+# warmth turns inward; named as normal, with a visible pause pathway.
+OTHERS_FIRST_LEAD = (
+    "Kindness aimed straight at yourself can feel fake or undeserved — that's "
+    "common, not a flaw. So let's start sideways: picture someone you love feeling "
+    "exactly what you're feeling. What would you want them to hear? Now, just for a "
+    "moment, let that same sentence turn toward you:"
+)
+BACKDRAFT_NOTE = (
+    "A heads-up: turning warmth inward can make a wave rise — grief, or a sharp "
+    "\"I don't deserve this.\" That's called **backdraft** — old pain thawing, not "
+    "failure. If it's a lot right now, tap pause and we'll steady instead."
+)
+
+# Warm, normalising note attached to the result when the pattern is present.
+LOW_MOOD_NOTE = (
+    "One thing worth saying plainly, and kindly: you told us your mood has been "
+    "low most days for a couple of weeks, and that things you enjoy have gone "
+    "quiet. That combination is worth taking seriously — not as a verdict, but "
+    "as a signal.\n\n"
+    "When it sticks around past two weeks, talking to someone trained really "
+    "does help — earlier is easier.\n"
+    "• **Thailand:** สายด่วนสุขภาพจิต 1323 (กรมสุขภาพจิต, free, 24 hrs)\n"
+    "• **International:** findahelpline.com\n\n"
+    "Meanwhile, the technique below is chosen for exactly this pattern — small "
+    "scheduled actions first, mood follows after. Movement helps too: even a "
+    "daily 20-minute walk measurably lifts mood over a few weeks."
+)
+
 
 # Emotion-word picks each carry +1 toward the variable they signal.
 EMOTION_WORD_DELTAS: dict[str, dict[str, float]] = {
@@ -889,6 +1382,21 @@ EMOTION_WORD_DELTAS: dict[str, dict[str, float]] = {
     "cornered": {"avoidance": 1}, "suffocated": {"avoidance": 1},
     "overwhelmed": {"anxiety_catastrophising": 0.5}, "depleted": {"numbness_shutdown": 0.5},
     "exhausted": {"numbness_shutdown": 0.5},
+    # burnout-core words — exhaustion is the depression-adjacent core of
+    # burnout (Bianchi 14-sample meta-analytic/bifactor work)
+    "burned out": {"numbness_shutdown": 1.5},
+    "running on empty": {"numbness_shutdown": 1.5},
+    # trading — tilt vocabulary (Palomäki: loss → unfairness → chasing)
+    "tilted": {"anger_hidden_hurt": 1.5},
+    "wiped out": {"numbness_shutdown": 1, "grief_meaningloss": 0.5},
+    "regret": {"rumination": 1, "shame_selfattack": 0.5},
+    "FOMO": {"anxiety_catastrophising": 1},
+    "frozen at the screen": {"numbness_shutdown": 1, "avoidance": 0.5},
+    "revenge mode": {"anger_hidden_hurt": 1.5},
+    "greedy-then-ashamed": {"shame_selfattack": 1.5},
+    "it's unfair": {"anger_hidden_hurt": 1},
+    "can't look away": {"rumination": 1, "anxiety_catastrophising": 0.5},
+    "sick of the charts": {"numbness_shutdown": 1},
 }
 
 
@@ -899,13 +1407,95 @@ def _apply_deltas(state: dict, deltas: dict[str, float]) -> None:
             state["scores"][k] = round(min(10.0, max(0.0, state["scores"][k] + v)), 1)
 
 
+def _scan_trauma(state: dict, text: Any) -> None:
+    """Scan the user's own free text for trauma-pattern markers and, if found,
+    raise the trauma flag. Suggestive only — this never probes, never diagnoses,
+    and only ever ADDS caution downstream."""
+    if not text or not isinstance(text, str):
+        return
+    low = text.lower()
+    hits = state.setdefault("trauma_markers", [])
+    categories = set(state.setdefault("trauma_categories", []))
+    for category, phrases in TRAUMA_MARKERS.items():
+        for phrase in phrases:
+            if phrase in low:
+                if phrase not in hits:
+                    hits.append(phrase)
+                categories.add(category)
+                break
+    state["trauma_categories"] = sorted(categories)
+    # Flag when a strong category appears, or when any two categories co-occur.
+    strong = bool(categories & _STRONG_TRAUMA_CATEGORIES)
+    if strong or len(categories) >= 2:
+        state["trauma_flag"] = True
+
+
+def _scan_chasing(state: dict, text: Any) -> None:
+    """Scan trading free text for gambling-harm markers (TDS-grounded).
+    Strong category (concealment/borrowing) flags immediately; weak text
+    categories add hits that combine with structural answers (win_back,
+    make_it_back). Total hits >= 3 flags. Caution-only, never a verdict."""
+    if not text or not isinstance(text, str):
+        return
+    low = text.lower()
+    cats = set(state.setdefault("chasing_categories", []))
+    for category, phrases in CHASING_MARKERS.items():
+        for phrase in phrases:
+            if phrase in low and category not in cats:
+                cats.add(category)
+                state["chasing_hits"] = state.get("chasing_hits", 0) + 1
+                break
+    state["chasing_categories"] = sorted(cats)
+    if cats & _STRONG_CHASING_CATEGORIES or state.get("chasing_hits", 0) >= 3:
+        state["chasing_flag"] = True
+
+
+def _chasing_structural_hit(state: dict) -> None:
+    """A chasing-pattern answer (not text): win_back pull, make_it_back need."""
+    state["chasing_hits"] = state.get("chasing_hits", 0) + 1
+    if state["chasing_hits"] >= 3:
+        state["chasing_flag"] = True
+
+
 # ═══════════════════════════════════════════════════════════════
 # INITIAL STATE
 # ═══════════════════════════════════════════════════════════════
 
+def _detect_lang(text: str) -> str:
+    """Cheap language tag for stored free text: th / en / mixed / unknown."""
+    if not text or not isinstance(text, str):
+        return "unknown"
+    has_thai = any("฀" <= ch <= "๿" for ch in text)
+    has_latin = any("a" <= ch.lower() <= "z" for ch in text)
+    if has_thai and has_latin:
+        return "mixed"
+    if has_thai:
+        return "th"
+    if has_latin:
+        return "en"
+    return "unknown"
+
+
 def _initial_state() -> dict:
     return {
-        "next_step": "SAFETY",
+        "next_step": "CONSENT",
+        "consent_agreed": False,
+        "training_opt_in": False,
+        "goal_text": None,
+        "goal_lang": None,
+        "bottom_line_text": None,
+        "bottom_line_belief": None,
+        "bottom_line_lang": None,
+        "bottom_line_rated": False,
+        "thought_text": None,
+        "thought_lang": None,
+        "critic_function": None,
+        "critic_protects_text": None,
+        "hated_self_flag": False,
+        "foc_level": None,
+        "compassion_mode": None,
+        "soothe_rating": None,
+        "goal_attainment": None,
         "track": None,
         "situation_key": None,
         "suds_start": None,
@@ -919,6 +1509,14 @@ def _initial_state() -> dict:
         "unmet_need": None,
         "ifthen_text": None,
         "validation_index": 0,
+        "trauma_flag": False,
+        "trauma_markers": [],
+        "trauma_categories": [],
+        "low_mood_flag": False,
+        "mood_answers": {},
+        "chasing_flag": False,
+        "chasing_hits": 0,
+        "chasing_categories": [],
         "scores": {
             "suds": 0,
             "shame_selfattack": 0.0,
@@ -940,7 +1538,58 @@ def _initial_state() -> dict:
 # ═══════════════════════════════════════════════════════════════
 
 def _screen(step: str, **kw) -> dict:
-    return {"step": step, "done": False, **kw}
+    return _localize({"step": step, "done": False, **kw})
+
+
+def _build_consent() -> dict:
+    # Informed consent gate (PDPA). A required agreement to proceed + a SEPARATE
+    # optional opt-in for anonymized service/model improvement. The primary
+    # button IS the agreement; the checkbox carries the training opt-in only.
+    return _screen(
+        "CONSENT", type="consent",
+        heading="Before we begin",
+        question="A quick, honest heads-up",
+        body=(
+            "This is a **self-reflection tool — not therapy, and not a diagnosis.**\n\n"
+            "• **Your privacy:** your answers are stored privately in your account so you can look back on them.\n"
+            "• **Safety:** if you mention thoughts of self-harm, we'll pause and show support options — nothing is reported anywhere.\n"
+            "• **Not a substitute:** in a crisis, please contact a professional or a helpline (Thailand 1323).\n\n"
+            "Tapping **“I understand — begin”** means you agree to the above."
+        ),
+        # the one separate, optional, default-off opt-in
+        optin_label="You may use my anonymized answers to improve this tool (optional).",
+        options=[{"id": "agree", "label": "I understand — begin"}],
+        validation_copy=None, skippable=False,
+    )
+
+
+def _build_goal() -> dict:
+    return _screen(
+        "GOAL", type="text",
+        heading=None,
+        question="Before we dig in — in one sentence, what made you open this today?",
+        subtext="Your own words, any language. You can skip this if nothing comes.",
+        validation_copy=None, skippable=True,
+        question_id="GOAL",
+    )
+
+
+def _build_belief(belief_text: str) -> dict:
+    # Belief-strength rating on the Bottom Line — a cheap, sensitive progress
+    # metric (S2). The belief text is the user's own words, shown verbatim.
+    scr = _screen(
+        "BELIEF", type="slider",
+        heading="One quick reading.",
+        question=f"“{belief_text}” — right now, how much do you believe that?",
+        subtext="0% = not at all · 100% = completely. Just today's number — it's a snapshot, not a fact.",
+        slider_min=0, slider_max=100, slider_step=10,
+        slider_labels={"0": "Don't believe it", "50": "Half and half", "100": "Completely true"},
+        validation_copy=None, skippable=False,
+    )
+    scr["belief_text"] = belief_text
+    scr["question_th"] = f"“{belief_text}” — ตอนนี้คุณเชื่อประโยคนี้แค่ไหน?"
+    scr["subtext_th"]  = "0% = ไม่เชื่อเลย · 100% = เชื่อสุด ๆ เอาแค่ตัวเลขของวันนี้ — มันคือภาพช็อตหนึ่ง ไม่ใช่ความจริง"
+    return scr
 
 
 def _build_safety() -> dict:
@@ -972,7 +1621,7 @@ def _build_suds_initial() -> dict:
 
 def _build_grounding(round_num: int) -> dict:
     hint = "Take as long as you need." if round_num == 1 else "One more round — you're doing well."
-    return _screen(
+    scr = _screen(
         "GROUNDING", type="grounding",
         heading="Let's slow things down a little first.",
         question="4-7-8 breathing",
@@ -983,6 +1632,11 @@ def _build_grounding(round_num: int) -> dict:
         options=[{"id": "done", "label": "Done"}],
         validation_copy=hint, skippable=False,
     )
+    scr["subtext_th"] = (
+        f"หายใจ**เข้า**นับ 4\nกลั้นไว้นับ 7\nหายใจ**ออก**นับ 8\n\n"
+        f"รอบที่ {round_num} จาก 2 — เสร็จแล้วแตะ 'เสร็จแล้ว'"
+    )
+    return scr
 
 
 def _build_suds_rerate() -> dict:
@@ -1010,17 +1664,20 @@ def _build_situation() -> dict:
 
 
 def _build_body_location() -> dict:
+    # body_map: rendered as a tappable body silhouette (S3-S4 interoception).
+    # zone=None options render as buttons below the figure. Same IDs as before,
+    # so BODY_LOCATION_DELTAS scoring is unchanged.
     return _screen(
-        "BODY_LOC", type="chip_select",
+        "BODY_LOC", type="body_map",
         heading=None,
         question="Where do you feel it most in your body?",
-        subtext="Pick as many as fit. Your body often knows before words do.",
+        subtext="Tap where it sits. Your body often knows before words do.",
         options=[
-            {"id": "chest",         "label": "Chest"},
-            {"id": "throat",        "label": "Throat"},
-            {"id": "stomach",       "label": "Stomach"},
-            {"id": "shoulders_jaw", "label": "Shoulders / jaw"},
-            {"id": "head",          "label": "Head"},
+            {"id": "head",          "label": "Head",           "zone": "head"},
+            {"id": "throat",        "label": "Throat",         "zone": "throat"},
+            {"id": "shoulders_jaw", "label": "Shoulders / jaw","zone": "shoulders"},
+            {"id": "chest",         "label": "Chest",          "zone": "chest"},
+            {"id": "stomach",       "label": "Stomach",        "zone": "stomach"},
             {"id": "everywhere",    "label": "Everywhere"},
             {"id": "nowhere_numb",  "label": "Nowhere — numb"},
         ],
@@ -1062,26 +1719,86 @@ def _build_emotions(situation_key: str) -> dict:
 
 
 def _build_question(item: dict, q_num: int, q_total: int, validation: Optional[str]) -> dict:
-    base = _screen(
-        "QUESTION",
-        heading=None,
-        question=item["question"],
-        subtext=item.get("subtext"),
-        validation_copy=validation,
-        skippable=item.get("skippable", False),
-        question_id=item["id"],
-        q_num=q_num,
-        q_total=q_total,
-        type=item.get("input_type", "text"),
-    )
+    # Build the raw payload first, attach options/slider, THEN localize — so
+    # option labels and slider labels get their *_th counterparts too.
+    base = {
+        "step": "QUESTION", "done": False,
+        "heading": None,
+        "question": item["question"],
+        "subtext": item.get("subtext"),
+        "validation_copy": validation,
+        "skippable": item.get("skippable", False),
+        "question_id": item["id"],
+        "q_num": q_num,
+        "q_total": q_total,
+        "type": item.get("input_type", "text"),
+    }
     if item.get("input_type") == "single_select":
-        base["options"] = item.get("options", [])
+        # copy options so we never mutate the cached situation dict
+        base["options"] = [dict(o) for o in item.get("options", [])]
     elif item.get("input_type") == "slider":
         base["slider_min"]    = item.get("slider_min", 0)
         base["slider_max"]    = item.get("slider_max", 100)
         base["slider_step"]   = item.get("slider_step", 10)
         base["slider_labels"] = item.get("slider_labels", {})
-    return base
+    return _localize(base)
+
+
+def _build_mood_check(step: str) -> dict:
+    q = MOOD_CHECK_QUESTIONS[step]
+    return _screen(
+        step, type="button_choice",
+        heading="Checking the weather, not judging it.",
+        question=q["question"],
+        subtext=q["subtext"],
+        options=[{"id": o["id"], "label": o["label"]} for o in q["options"]],
+        validation_copy=None, skippable=False,
+    )
+
+
+def _mood_check_eligible(state: dict) -> bool:
+    """Offer the 2-item mood check when depletion signals warrant it.
+    Grief is excluded — see MOOD_CHECK_SITUATIONS."""
+    sit = state.get("situation_key") or "other"
+    if sit == "grief":
+        return False
+    if sit in MOOD_CHECK_SITUATIONS:
+        return True
+    return float(state["scores"].get("numbness_shutdown", 0)) >= 4
+
+
+def _mood_weight(step: str, answer: Any) -> float:
+    for o in MOOD_CHECK_QUESTIONS[step]["options"]:
+        if o["id"] == answer:
+            return o["weight"]
+    return 0.0
+
+
+def _compassion_relevant(state: dict) -> bool:
+    """Gauge fear-of-compassion only when self-kindness is the focus — high
+    shame or the self-criticism situation. Keeps low-shame sessions fast."""
+    if state.get("situation_key") == "self_criticism":
+        return True
+    return float(state["scores"].get("shame_selfattack", 0)) >= 4
+
+
+def _next_after_belief(state: dict) -> dict:
+    """Route from the end of the belief step onward: mood check → unmet need."""
+    sit_key = state.get("situation_key") or "other"
+    if _mood_check_eligible(state):
+        state["next_step"] = "MOOD1"
+        return _build_mood_check("MOOD1")
+    state["next_step"] = "UNMET_NEED"
+    return _build_unmet_need(sit_key)
+
+
+def _next_after_questions(state: dict) -> dict:
+    """After the situation questions: rate the Bottom Line (if one surfaced),
+    then continue to the mood check / unmet need."""
+    if state.get("bottom_line_text") and not state.get("bottom_line_rated"):
+        state["next_step"] = "BELIEF"
+        return _build_belief(state["bottom_line_text"])
+    return _next_after_belief(state)
 
 
 def _build_unmet_need(situation_key: str) -> dict:
@@ -1097,19 +1814,64 @@ def _build_unmet_need(situation_key: str) -> dict:
     )
 
 
-def _build_self_compassion(situation_key: str) -> dict:
-    text = SITUATIONS.get(situation_key, {}).get("self_compassion", "")
+def _build_foc() -> dict:
+    # Fear-of-Compassion probe (Gilbert) — runs before the compassion practice
+    # when self-kindness is the focus. Routes Branch D (others-first sequencing).
     return _screen(
+        "FOC", type="button_choice",
+        heading="One gentle gauge first.",
+        question="When you try to turn kindness toward yourself — what usually happens?",
+        subtext="However it lands is useful. There's no wrong answer.",
+        options=[
+            {"id": "natural",    "label": "It feels okay — natural enough"},
+            {"id": "awkward",    "label": "A bit awkward or uncomfortable"},
+            {"id": "undeserved", "label": "Like I don't deserve it, or it feels fake"},
+        ],
+        validation_copy=None, skippable=False,
+    )
+
+
+def _build_self_compassion(situation_key: str, mode: str = "direct", with_pause: bool = False) -> dict:
+    text = SITUATIONS.get(situation_key, {}).get("self_compassion", "")
+    question = f"{OTHERS_FIRST_LEAD}\n\n{text}" if mode == "others_first" else text
+    opts = [
+        {"id": "ok",   "label": "Okay"},
+        {"id": "skip", "label": "Skip this one"},
+    ]
+    scr = _screen(
         "COMPASSION", type="display_confirm",
         heading="One small reminder.",
-        question=text,
+        question=question,
         subtext="Take a breath with it. You don't have to believe it fully — just let it land.",
-        options=[
-            {"id": "ok",   "label": "Okay"},
-            {"id": "skip", "label": "Skip this one"},
-        ],
+        options=opts,
         validation_copy=None, skippable=True,
     )
+    if with_pause:
+        # backdraft-aware: offer a visible pause pathway to grounding.
+        scr["options"] = opts + [{"id": "pause", "label": "This is bringing up a lot — pause"}]
+        scr["backdraft_note"] = BACKDRAFT_NOTE
+        scr["backdraft_note_th"] = TH_NOTES.get("BACKDRAFT_NOTE")
+        if mode == "others_first":
+            # the lead-in is generic; give it its own TH so the whole screen localizes
+            th_lead = TH_NOTES.get("OTHERS_FIRST_LEAD", "")
+            th_text = _th(text) or text
+            scr["question_th"] = f"{th_lead}\n\n{th_text}" if th_lead else scr.get("question_th")
+    return scr
+
+
+def _build_soothe() -> dict:
+    # Post-practice 2-tap feedback (soothing 0–10) — feeds Branch D pacing +
+    # creates outcome-labelled data.
+    scr = _screen(
+        "SOOTHE", type="slider",
+        heading="Quick check.",
+        question="Did that soothe things even a little?",
+        subtext="0 = not at all · 10 = a real settling. Whatever's true is fine.",
+        slider_min=0, slider_max=10, slider_step=1,
+        slider_labels={"0": "Not at all", "5": "A little", "10": "A real settling"},
+        validation_copy=None, skippable=False,
+    )
+    return scr
 
 
 def _build_ifthen(situation_key: str, current_text: Optional[str]) -> dict:
@@ -1124,8 +1886,24 @@ def _build_ifthen(situation_key: str, current_text: Optional[str]) -> dict:
     )
 
 
+def _build_goal_attain(goal_text: str) -> dict:
+    # Goal-attainment scaling (S12 closure) against the S1 own-words goal.
+    scr = _screen(
+        "GOAL_ATTAIN", type="slider",
+        heading="Back to why you came.",
+        question=f"You opened this hoping: “{goal_text}”. Any closer, right now?",
+        subtext="0 = no change · 10 = right there. Small movement counts.",
+        slider_min=0, slider_max=10, slider_step=1,
+        slider_labels={"0": "No change", "5": "A little closer", "10": "Right there"},
+        validation_copy=None, skippable=False,
+    )
+    scr["question_th"] = f"คุณเปิดแอปนี้ด้วยความหวังว่า “{goal_text}” — ตอนนี้ใกล้ขึ้นบ้างไหม?"
+    scr["subtext_th"]  = "0 = ไม่เปลี่ยน · 10 = ถึงแล้ว การขยับเล็กน้อยก็นับ"
+    return scr
+
+
 def _build_rerate(suds_start: int) -> dict:
-    return _screen(
+    scr = _screen(
         "RERATE", type="slider",
         heading="Almost there.",
         question="Where is the intensity now — after all of this?",
@@ -1134,14 +1912,56 @@ def _build_rerate(suds_start: int) -> dict:
         slider_labels={"0": "Calm", "5": "Moderate", "10": "Overwhelming"},
         validation_copy=None, skippable=False,
     )
+    scr["subtext_th"] = f"คุณเริ่มมาที่ {suds_start} — จะลงตรงไหนก็ไม่มีคำตอบที่ผิด"
+    return scr
 
 
 # ═══════════════════════════════════════════════════════════════
 # FRAMEWORK SELECTION — priority stack P0–P10
 # ═══════════════════════════════════════════════════════════════
 
-def _select_framework(scores: dict) -> tuple[str, str]:
-    """Walk FRAMEWORK_RULES (DB-driven cache) and return the first match."""
+# Frameworks that involve deeper emotional processing — LOCKED when the
+# trauma flag is on (Tier-C rule: the flag may only add caution, never depth).
+_DEEP_FRAMEWORKS = {"F6_EFT", "F3_CFT", "F15_attachment", "F14_grief"}
+# The grounding / self-distancing subset the trauma flag routes into instead.
+_GROUNDING_FRAMEWORKS = {"F8_somatic", "F5_DBT", "F9_MBCT"}
+
+
+def _select_framework(scores: dict, trauma_flag: bool = False,
+                      low_mood_flag: bool = False,
+                      chasing_flag: bool = False) -> tuple[str, str]:
+    """Walk FRAMEWORK_RULES (DB-driven cache) and return the first match.
+
+    Two flags sit above the score-driven stack (below crisis, in this order):
+    - trauma_flag: restricts selection to the grounding / self-distancing
+      subset (+ warm referral, added by the caller). Caps depth, never adds it.
+    - low_mood_flag: the 2Q pattern (low mood + anhedonia, most days, 2 weeks)
+      routes to Behavioural Activation — NICE NG222 first-line for less severe
+      depression, SMD ≈ -0.74 vs control — plus a normalising note.
+    """
+    if trauma_flag:
+        # Dissociation/numbness → somatic grounding; high arousal → DBT skills;
+        # otherwise mindful self-distancing. All shallow, all safe.
+        if float(scores.get("numbness_shutdown", 0)) >= 4:
+            return "F8_somatic", "T-ground"
+        if int(scores.get("suds", 0)) >= 7:
+            return "F5_DBT", "T-ground"
+        return "F9_MBCT", "T-ground"
+
+    if chasing_flag:
+        # Chasing is an urge problem before it is a thinking problem:
+        # high arousal → DBT regulation; otherwise ACT urge/willingness work.
+        # The caller attaches CHASING_NOTE (urge-surfing + support lines).
+        if int(scores.get("suds", 0)) >= 7:
+            return "F5_DBT", "GH"
+        return "F4_ACT", "GH"
+
+    if low_mood_flag:
+        # Acute distress still takes precedence over the activation plan.
+        if int(scores.get("suds", 0)) >= 8:
+            return "F5_DBT", "P1"
+        return "F2_BA", "LM"
+
     for rule in FRAMEWORK_RULES:
         var = rule["score_var"]
         if var == "__default__":
@@ -1197,6 +2017,61 @@ def _build_hypothesis(situation_key: str, scores: dict, fw_code: str,
     return " ".join(parts)
 
 
+def _build_hypothesis_th(situation_key: str, scores: dict, fw_code: str,
+                         emotion_words: Optional[list] = None,
+                         need_label: str = "") -> str:
+    """Thai mirror of _build_hypothesis — composed from translated fragments."""
+    sit = SITUATIONS.get(situation_key, {})
+    sit_th = _th(sit.get("label", "")) or "สิ่งที่คุณเล่ามา"
+    fw_en  = FRAMEWORKS.get(fw_code, {}).get("name", "")
+    fw_th  = _th(fw_en) or fw_en
+
+    threads = []
+    s = scores
+    if s.get("shame_selfattack", 0) >= 4:        threads.append("some self-criticism")
+    if s.get("anxiety_catastrophising", 0) >= 4: threads.append("worry about what happens next")
+    if s.get("anger_hidden_hurt", 0) >= 4:       threads.append("hurt underneath the surface")
+    if s.get("grief_meaningloss", 0) >= 4:       threads.append("a real sense of loss")
+    if s.get("numbness_shutdown", 0) >= 4:       threads.append("some emotional flatness")
+    if s.get("relationship_threat", 0) >= 4:     threads.append("worry about your place in this relationship")
+    if s.get("avoidance", 0) >= 4:               threads.append("tension around choices")
+    threads_th = [(_th(t) or t) for t in threads[:2]]
+
+    parts: list[str] = []
+    if threads_th:
+        parts.append(f"ฟังดูเหมือนเรื่อง{sit_th} กำลังพา{('และ'.join(threads_th))}ขึ้นมาด้วย")
+    else:
+        parts.append(f"คุณเพิ่งเล่าเรื่อง{sit_th}ออกมาในคำของคุณเอง")
+
+    words = [w for w in (emotion_words or []) if w][:2]
+    if words:
+        quoted = " และ ".join(f"“{_th(w) or w}”" for w in words)
+        parts.append(f"คุณเรียกชื่อมันเองว่า {quoted}")
+
+    if need_label:
+        need_th = _th(need_label) or need_label
+        short = need_th.split(" — ")[0].strip()
+        parts.append(f"และลึกลงไป สิ่งที่ขาดหายตอนนี้คือ{short}")
+
+    parts.append(f"แนวทางที่เข้ากับแพทเทิร์นนี้ที่สุดคือ **{fw_th}** — มันทำงานกับแพทเทิร์นแบบนี้โดยตรง")
+    return " ".join(parts)
+
+
+def _build_closure_th(suds_start: int, suds_end: int) -> str:
+    delta = suds_start - suds_end
+    if delta >= 3:
+        return f"คุณเข้ามาที่ {suds_start} และกำลังจะกลับที่ {suds_end} — คุณทำได้ด้วยคำพูดล้วน ๆ นั่นมีความหมายมาก"
+    if delta >= 1:
+        return f"คุณเริ่มที่ {suds_start} ตอนนี้อยู่ที่ {suds_end} — การขยับแม้เล็กน้อยก็เป็นของจริง เทคนิคด้านบนเป็นของคุณ ใช้ซ้ำได้เสมอ"
+    if delta == 0:
+        return f"ตัวเลขยังอยู่ที่ {suds_end} — ไม่เป็นไรเลย บางครั้งการได้เรียกชื่อความรู้สึกก็คือประเด็นทั้งหมด แล้วการเปลี่ยนแปลงจะตามมาทีหลัง"
+    return (
+        f"ตอนนี้อยู่ที่ {suds_end} สูงขึ้นจาก {suds_start} — เกิดขึ้นได้ "
+        "การพูดถึงบางเรื่องทำให้มันขุ่นขึ้นก่อนจะตกตะกอน เทคนิคด้านบนช่วยได้ "
+        "และกลับมาได้เสมอเมื่อต้องการ"
+    )
+
+
 def _build_closure(suds_start: int, suds_end: int) -> str:
     delta = suds_start - suds_end
     if delta >= 3:
@@ -1249,13 +2124,32 @@ def _next_validation(state: dict) -> str:
 def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
     """Apply answer, update state, return (next_screen_payload, updated_state)."""
 
+    if step == "CONSENT":
+        # answer: {"agreed": bool, "training": bool} — must agree to proceed.
+        agreed = bool(answer.get("agreed")) if isinstance(answer, dict) else bool(answer)
+        if not agreed:
+            # cannot pass the gate without agreement — re-present it.
+            state["next_step"] = "CONSENT"
+            return _build_consent(), state
+        state["consent_agreed"] = True
+        state["training_opt_in"] = bool(answer.get("training")) if isinstance(answer, dict) else False
+        state["next_step"] = "SAFETY"
+        return _build_safety(), state
+
+    if step == "GOAL":
+        if answer and answer != "__skip__":
+            state["goal_text"] = str(answer).strip()[:1000]
+            state["goal_lang"] = _detect_lang(state["goal_text"])
+        state["next_step"] = "BODY_LOC"
+        return _build_body_location(), state
+
     if step == "SAFETY":
         if answer in ("yes", "not_sure"):
             state["next_step"] = "CRISIS"
             return {
                 "step": "CRISIS", "done": True, "exit_type": "crisis_exit",
                 "type": "crisis_exit", "heading": "Your safety comes first.",
-                "question": SAFETY_SCRIPT, "options": [],
+                "question": SAFETY_SCRIPT, "question_th": TH_NOTES["SAFETY_SCRIPT"], "options": [],
             }, state
         state["next_step"] = "SUDS_INIT"
         return _build_suds_initial(), state
@@ -1288,7 +2182,7 @@ def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
                 return {
                     "step": "PAUSE", "done": True, "exit_type": "grounding_pause",
                     "type": "grounding_pause", "heading": "Let's pause here.",
-                    "question": GROUNDING_PAUSE_SCRIPT, "options": [],
+                    "question": GROUNDING_PAUSE_SCRIPT, "question_th": TH_NOTES["GROUNDING_PAUSE_SCRIPT"], "options": [],
                 }, state
             state["next_step"] = "GROUNDING"
             return _build_grounding(state["grounding_rounds"] + 1), state
@@ -1300,8 +2194,9 @@ def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
         sit_key = answer if answer in SITUATIONS else "other"
         state["situation_key"] = sit_key
         _apply_deltas(state, SITUATION_PRIORS.get(sit_key, {}))
-        state["next_step"] = "BODY_LOC"
-        return _build_body_location(), state
+        # Capture the client's own-words goal once the context is chosen.
+        state["next_step"] = "GOAL"
+        return _build_goal(), state
 
     if step == "BODY_LOC":
         locs = answer if isinstance(answer, list) else ([answer] if answer else [])
@@ -1338,8 +2233,15 @@ def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
             state["next_step"] = "QUESTION"
             item = _item_by_id(sit_key, queue[0])
             return _build_question(item, 1, len(queue), _next_validation(state)), state
-        state["next_step"] = "UNMET_NEED"
-        return _build_unmet_need(sit_key), state
+        return _next_after_questions(state), state
+
+    if step == "BELIEF":
+        try:
+            state["bottom_line_belief"] = int(answer)
+        except (TypeError, ValueError):
+            state["bottom_line_belief"] = None
+        state["bottom_line_rated"] = True
+        return _next_after_belief(state), state
 
     if step == "QUESTION":
         sit_key = state.get("situation_key") or "other"
@@ -1348,13 +2250,34 @@ def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
         if q_idx < len(queue):
             item = _item_by_id(sit_key, queue[q_idx])
             if item and answer != "__skip__":
+                # Pattern recognition from the user's own words (text items).
+                if item.get("input_type") == "text":
+                    _scan_trauma(state, answer)
+                    if sit_key == "trading":
+                        _scan_chasing(state, answer)
+                    # Structured thought record: keep the first own-words thought.
+                    if not state.get("thought_text") and isinstance(answer, str) and len(answer.strip()) >= 3:
+                        state["thought_text"] = answer.strip()[:500]
+                        state["thought_lang"] = _detect_lang(answer)
                 _apply_deltas(state, item.get("score_deltas", {}))
+                # capture the critic's protective intention (S5 formulation)
+                if item.get("capture") == "critic_protects" and isinstance(answer, str) and answer.strip():
+                    state["critic_protects_text"] = answer.strip()[:400]
                 # per-option deltas: the chosen option carries its own signal
                 if item.get("input_type") == "single_select":
                     for opt in item.get("options", []):
                         if opt["id"] == answer:
                             _apply_deltas(state, opt.get("score_deltas", {}))
+                            # Branch C: classify the critic's function; the
+                            # contemptuous attacker raises the hated-self flag.
+                            if opt.get("critic_function"):
+                                state["critic_function"] = opt["critic_function"]
+                            if opt.get("hated_self"):
+                                state["hated_self_flag"] = True
                             break
+                    # "get it back now" is within-session chasing (structural hit)
+                    if sit_key == "trading" and answer == "win_back":
+                        _chasing_structural_hit(state)
                 # value scoring: the slider's number IS the signal
                 elif item.get("value_scoring") == "percent_control":
                     try:
@@ -1366,12 +2289,51 @@ def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
                     _apply_deltas(state, {"problem_control": pct / 25.0})
                     if pct <= 20:
                         _apply_deltas(state, {"avoidance": 1, "anxiety_catastrophising": 1})
+                elif item.get("value_scoring") == "energy_left":
+                    # empty tank = depletion — the burnout/low-mood channel
+                    try:
+                        energy = float(answer)
+                    except (TypeError, ValueError):
+                        energy = 50.0
+                    _apply_deltas(state, {"numbness_shutdown": (100 - energy) / 33.0})
+                # ── Bottom Line capture (S2 formulation) ──
+                if not state.get("bottom_line_text"):
+                    tmpl = item.get("bottom_line")
+                    if tmpl and isinstance(answer, str) and answer.strip() and "{}" in tmpl:
+                        # text elicitor, e.g. "I am {}" ← user's blank
+                        state["bottom_line_text"] = tmpl.format(answer.strip())[:300]
+                        state["bottom_line_lang"] = _detect_lang(answer)
+                    elif item.get("input_type") == "single_select":
+                        # the chosen option may carry its own Bottom Line
+                        for opt in item.get("options", []):
+                            if opt["id"] == answer and opt.get("bottom_line"):
+                                state["bottom_line_text"] = opt["bottom_line"]
+                                state["bottom_line_lang"] = "en"
+                                break
         next_idx = q_idx + 1
         state["question_index"] = next_idx
         if next_idx < len(queue):
             state["next_step"] = "QUESTION"
             next_item = _item_by_id(sit_key, queue[next_idx])
             return _build_question(next_item, next_idx + 1, len(queue), _next_validation(state)), state
+        return _next_after_questions(state), state
+
+    if step == "MOOD1":
+        state["mood_answers"]["MOOD1"] = answer
+        state["next_step"] = "MOOD2"
+        return _build_mood_check("MOOD2"), state
+
+    if step == "MOOD2":
+        state["mood_answers"]["MOOD2"] = answer
+        w1 = _mood_weight("MOOD1", state["mood_answers"].get("MOOD1"))
+        w2 = _mood_weight("MOOD2", answer)
+        # Both "most days" (2Q-positive on both gates) → the full pattern.
+        if w1 + w2 >= 2:
+            state["low_mood_flag"] = True
+        # Partial endorsement nudges the depletion channel without overriding.
+        elif w1 + w2 >= 1:
+            _apply_deltas(state, {"numbness_shutdown": 2})
+        sit_key = state.get("situation_key") or "other"
         state["next_step"] = "UNMET_NEED"
         return _build_unmet_need(sit_key), state
 
@@ -1380,10 +2342,47 @@ def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
         sit_key = state.get("situation_key") or "other"
         if answer and answer != "none":
             _apply_deltas(state, UNMET_NEED_DELTAS.get(f"{sit_key}:{answer}", {}))
+            if sit_key == "trading" and answer == "make_it_back":
+                _chasing_structural_hit(state)
+        # When self-kindness is the therapeutic focus, gauge fear-of-compassion
+        # first (Branch D). Otherwise deliver the compassion line directly.
+        if _compassion_relevant(state):
+            state["next_step"] = "FOC"
+            return _build_foc(), state
         state["next_step"] = "COMPASSION"
         return _build_self_compassion(sit_key), state
 
+    if step == "FOC":
+        state["foc_level"] = answer
+        # high fear-of-compassion → others-first sequencing (Branch D)
+        state["compassion_mode"] = "others_first" if answer in ("awkward", "undeserved") else "direct"
+        sit_key = state.get("situation_key") or "other"
+        state["next_step"] = "COMPASSION"
+        return _build_self_compassion(sit_key, mode=state["compassion_mode"], with_pause=True), state
+
     if step == "COMPASSION":
+        sit_key = state.get("situation_key") or "other"
+        # backdraft pause pathway → grounding, no re-entry this session
+        if answer == "pause":
+            state["status"] = "grounding_pause"
+            state["next_step"] = "PAUSE"
+            return {
+                "step": "PAUSE", "done": True, "exit_type": "grounding_pause",
+                "type": "grounding_pause", "heading": "Let's pause here.",
+                "question": GROUNDING_PAUSE_SCRIPT, "question_th": TH_NOTES["GROUNDING_PAUSE_SCRIPT"], "options": [],
+            }, state
+        # if we gauged fear-of-compassion, close the loop with 2-tap feedback
+        if state.get("foc_level"):
+            state["next_step"] = "SOOTHE"
+            return _build_soothe(), state
+        state["next_step"] = "IFTHEN"
+        return _build_ifthen(sit_key, None), state
+
+    if step == "SOOTHE":
+        try:
+            state["soothe_rating"] = int(answer)
+        except (TypeError, ValueError):
+            state["soothe_rating"] = None
         sit_key = state.get("situation_key") or "other"
         state["next_step"] = "IFTHEN"
         return _build_ifthen(sit_key, None), state
@@ -1391,6 +2390,18 @@ def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
     if step == "IFTHEN":
         if answer and answer != "__skip__":
             state["ifthen_text"] = str(answer)
+        # If the user named a goal at S1, close with goal-attainment scaling.
+        if state.get("goal_text"):
+            state["next_step"] = "GOAL_ATTAIN"
+            return _build_goal_attain(state["goal_text"]), state
+        state["next_step"] = "RERATE"
+        return _build_rerate(state.get("suds_start") or 5), state
+
+    if step == "GOAL_ATTAIN":
+        try:
+            state["goal_attainment"] = int(answer)
+        except (TypeError, ValueError):
+            state["goal_attainment"] = None
         state["next_step"] = "RERATE"
         return _build_rerate(state.get("suds_start") or 5), state
 
@@ -1399,7 +2410,10 @@ def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
         suds_start = state.get("suds_start") or suds_end
         state["suds_end"]        = suds_end
         state["scores"]["suds"]  = suds_end
-        fw_code, priority        = _select_framework(state["scores"])
+        trauma_flag              = bool(state.get("trauma_flag"))
+        low_mood_flag            = bool(state.get("low_mood_flag"))
+        chasing_flag             = bool(state.get("chasing_flag"))
+        fw_code, priority        = _select_framework(state["scores"], trauma_flag, low_mood_flag, chasing_flag)
         fw                       = FRAMEWORKS.get(fw_code, FRAMEWORKS["F12_ifthen"])
         sit_key                  = state.get("situation_key") or "other"
         sit                      = SITUATIONS.get(sit_key, {})
@@ -1411,14 +2425,26 @@ def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
                 (o["label"] for o in sit.get("unmet_need_options", []) if o["id"] == need_id),
                 need_id,
             )
+        # A warm referral is offered when the trauma flag is on, OR when severity
+        # is high enough that a person trained for this would serve them better.
+        hated_self_flag = bool(state.get("hated_self_flag"))
+        refer = (trauma_flag or suds_end >= 8
+                 or state["scores"].get("shame_selfattack", 0) >= 9 or hated_self_flag)
+        critic_fn = state.get("critic_function")
+        ifthen_action = state.get("ifthen_text") or sit.get("ifthen_template", "")
+        followup = FOLLOWUP_CONFIG.get(sit_key)
+        if followup:
+            followup = {**followup, "checkin_th": _th(followup.get("checkin")) or followup.get("checkin")}
         state["next_step"] = "DONE"
         return {
             "step": "DONE", "done": True, "exit_type": "complete",
             "type": "result",
             "closure_text": _build_closure(suds_start, suds_end),
+            "closure_text_th": _build_closure_th(suds_start, suds_end),
             "result": {
                 "framework_code":    fw_code,
                 "framework_name":    fw["name"],
+                "framework_name_th": _th(fw["name"]) or fw["name"],
                 "evidence":          fw.get("evidence"),
                 "tier":              fw.get("tier"),
                 "hypothesis":        _build_hypothesis(
@@ -1426,18 +2452,70 @@ def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
                     emotion_words=state.get("emotion_words"),
                     need_label=need_label,
                 ),
+                "hypothesis_th":     _build_hypothesis_th(
+                    sit_key, state["scores"], fw_code,
+                    emotion_words=state.get("emotion_words"),
+                    need_label=need_label,
+                ),
                 "technique":         fw["technique"],
-                "ifthen_action":     state.get("ifthen_text") or sit.get("ifthen_template", ""),
+                "technique_th":      TH_TECHNIQUES.get(fw_code, fw["technique"]),
+                "ifthen_action":     ifthen_action,
+                "ifthen_action_th":  _th(ifthen_action) or ifthen_action,
+                # client's own-words goal — the S1 outcome anchor (raw, not translated)
+                "goal_text":         state.get("goal_text"),
+                "goal_lang":         state.get("goal_lang"),
+                # Bottom Line + belief-strength (S2 formulation)
+                "bottom_line_text":   state.get("bottom_line_text"),
+                "bottom_line_belief": state.get("bottom_line_belief"),
+                "bottom_line_lang":   state.get("bottom_line_lang"),
+                # Automatic thought (S3-S4) — completes the structured record
+                "thought_text":      state.get("thought_text"),
+                "thought_lang":      state.get("thought_lang"),
+                # Inner critic (S5) — Branch C reframe + hated-self escalation
+                "critic_function":   critic_fn,
+                "critic_reframe":    CRITIC_FUNCTION_REFRAMES.get(critic_fn) if critic_fn else None,
+                "critic_reframe_th": TH_NOTES.get(f"critic_{critic_fn}") if critic_fn else None,
+                "critic_protects_text": state.get("critic_protects_text"),
+                "hated_self_flagged": hated_self_flag,
+                "hated_self_note":    HATED_SELF_NOTE if hated_self_flag else None,
+                "hated_self_note_th": TH_NOTES.get("HATED_SELF_NOTE") if hated_self_flag else None,
+                # Self-compassion (S6-S7) — FOC/Branch D + soothing feedback
+                "foc_level":         state.get("foc_level"),
+                "compassion_mode":   state.get("compassion_mode"),
+                "soothe_rating":     state.get("soothe_rating"),
+                # Goal-attainment (S12 closure) — vs the S1 goal
+                "goal_attainment":   state.get("goal_attainment"),
                 "selfcompassion_text": sit.get("self_compassion", ""),
+                "selfcompassion_text_th": _th(sit.get("self_compassion", "")) or sit.get("self_compassion", ""),
+                "situation_key":     sit_key,
                 "situation_label":   sit.get("label", ""),
+                "situation_label_th": _th(sit.get("label", "")) or sit.get("label", ""),
                 "situation_icon":    sit.get("icon", ""),
                 "emotion_words":     state.get("emotion_words", []),
+                "emotion_words_th":  [(_th(w) or w) for w in state.get("emotion_words", [])],
                 "unmet_need":        need_label,
+                "unmet_need_th":     _th(need_label) or need_label,
                 "suds_start":        suds_start,
                 "suds_end":          suds_end,
                 "track":             state.get("track"),
                 "scores":            state["scores"],
                 "priority":          priority,
+                # ── Trauma-informed additions (detect, never probe) ──
+                "trauma_flagged":    trauma_flag,
+                "trauma_ack":        TRAUMA_ACK if trauma_flag else None,
+                "trauma_ack_th":     TH_NOTES.get("TRAUMA_ACK") if trauma_flag else None,
+                "referral":          REFERRAL_SCRIPT if refer else None,
+                "referral_th":       TH_NOTES.get("REFERRAL_SCRIPT") if refer else None,
+                # ── Low-mood pattern (2Q-derived; support, never a label) ──
+                "low_mood_flagged":  low_mood_flag,
+                "low_mood_note":     LOW_MOOD_NOTE if low_mood_flag else None,
+                "low_mood_note_th":  TH_NOTES.get("LOW_MOOD_NOTE") if low_mood_flag else None,
+                # ── Chasing pattern (TDS-grounded; urge support, no verdict) ──
+                "chasing_flagged":   chasing_flag,
+                "chasing_note":      CHASING_NOTE if chasing_flag else None,
+                "chasing_note_th":   TH_NOTES.get("CHASING_NOTE") if chasing_flag else None,
+                # ── Follow-up (self-contained session; check-in is opt-in) ──
+                "followup":          followup,
             },
         }, state
 
@@ -1448,6 +2526,8 @@ def _transition(step: str, answer: Any, state: dict) -> tuple[dict, dict]:
 
 def _rebuild_current(step: str, state: dict) -> dict:
     sit = state.get("situation_key") or "other"
+    if step == "CONSENT":    return _build_consent()
+    if step == "GOAL":       return _build_goal()
     if step == "SAFETY":     return _build_safety()
     if step == "SUDS_INIT":  return _build_suds_initial()
     if step == "GROUNDING":  return _build_grounding(state.get("grounding_rounds", 0) + 1)
@@ -1456,9 +2536,17 @@ def _rebuild_current(step: str, state: dict) -> dict:
     if step == "BODY_LOC":   return _build_body_location()
     if step == "BODY_QUAL":  return _build_body_quality()
     if step == "EMOTIONS":   return _build_emotions(sit)
+    if step == "BELIEF":     return _build_belief(state.get("bottom_line_text") or "")
+    if step == "MOOD1":      return _build_mood_check("MOOD1")
+    if step == "MOOD2":      return _build_mood_check("MOOD2")
     if step == "UNMET_NEED": return _build_unmet_need(sit)
-    if step == "COMPASSION": return _build_self_compassion(sit)
+    if step == "FOC":        return _build_foc()
+    if step == "SOOTHE":     return _build_soothe()
+    if step == "COMPASSION":
+        return _build_self_compassion(sit, mode=state.get("compassion_mode") or "direct",
+                                      with_pause=bool(state.get("foc_level")))
     if step == "IFTHEN":     return _build_ifthen(sit, state.get("ifthen_text"))
+    if step == "GOAL_ATTAIN": return _build_goal_attain(state.get("goal_text") or "")
     if step == "RERATE":     return _build_rerate(state.get("suds_start") or 5)
     if step == "QUESTION":
         queue = state.get("questions_queue", [])
@@ -1487,9 +2575,11 @@ def _load_globals_from_db(db: DBSession) -> None:
     """Refresh the in-memory knowledge base from the DB tables."""
     global SITUATIONS, SITUATION_PRIORS, FRAMEWORKS, FRAMEWORK_RULES
     global EMOTION_WORD_DELTAS, BODY_QUALITY_DELTAS, BODY_LOCATION_DELTAS, UNMET_NEED_DELTAS
+    global FOLLOWUP_CONFIG
 
     situations: dict[str, dict] = {}
     priors: dict[str, dict] = {}
+    followups: dict[str, dict] = {}
     for srow in db.query(AEHQSituation).order_by(AEHQSituation.sort_order).all():
         items: dict[str, list] = {"S": [], "D": [], "R": []}
         for it in srow.items:  # ordered by sort_order via relationship
@@ -1511,6 +2601,10 @@ def _load_globals_from_db(db: DBSession) -> None:
                 d["slider_labels"] = sj.get("labels", {})
             if it.value_scoring:
                 d["value_scoring"] = it.value_scoring
+            if it.bottom_line:
+                d["bottom_line"] = it.bottom_line
+            if it.capture:
+                d["capture"] = it.capture
             items.setdefault(it.track, []).append(d)
         situations[srow.key] = {
             "label": srow.label,
@@ -1522,6 +2616,9 @@ def _load_globals_from_db(db: DBSession) -> None:
             "ifthen_template": srow.ifthen_template,
         }
         priors[srow.key] = json.loads(srow.priors_json or "{}")
+        fu = json.loads(srow.followup_json or "{}")
+        if fu:
+            followups[srow.key] = fu
 
     frameworks = {
         r.code: {"name": r.name, "evidence": r.evidence, "tier": r.tier, "technique": r.technique}
@@ -1545,16 +2642,44 @@ def _load_globals_from_db(db: DBSession) -> None:
     if by_kind["body"]:      BODY_QUALITY_DELTAS = by_kind["body"]
     if by_kind["body_loc"]:  BODY_LOCATION_DELTAS = by_kind["body_loc"]
     if by_kind["need"]:      UNMET_NEED_DELTAS = by_kind["need"]
+    if followups:            FOLLOWUP_CONFIG = followups
+
+    # Translations: DB copy wins so operators can edit Thai without a deploy.
+    global TH_STRINGS, TH_TECHNIQUES, TH_NOTES
+    tr_strings: dict[str, str] = {}
+    tr_techniques: dict[str, str] = {}
+    tr_notes: dict[str, str] = {}
+    for row in db.query(AEHQTranslation).filter(AEHQTranslation.lang == "th").all():
+        if row.src.startswith("technique:"):
+            tr_techniques[row.src.split(":", 1)[1]] = row.dst
+        elif row.src.startswith("note:"):
+            tr_notes[row.src.split(":", 1)[1]] = row.dst
+        else:
+            tr_strings[row.src] = row.dst
+    if tr_strings:    TH_STRINGS = tr_strings
+    if tr_techniques: TH_TECHNIQUES = tr_techniques
+    if tr_notes:      TH_NOTES = tr_notes
 
 
 def _ensure_cache(db: DBSession) -> None:
-    """Seed the DB from the module defaults if empty, then load the cache once."""
+    """Seed/refresh the DB content, then load the cache once per process.
+
+    Self-migrating: a meta row stores the content version that last seeded the
+    DB. When the running code carries a newer CONTENT_VERSION (a deploy), the
+    content tables are refreshed automatically — no manual reseed step.
+    User sessions/results are never touched by the refresh."""
     global _CACHE_LOADED
     if _CACHE_LOADED:
         return
-    if db.query(AEHQFramework).count() == 0:
-        from seed_aehq import seed_aehq  # lazy import avoids an import cycle
-        seed_aehq(db)
+    from seed_aehq import seed_aehq, ensure_aehq_columns  # lazy — avoids a cycle
+    # Bring late-added columns in on already-seeded DBs (prod upgrade path).
+    ensure_aehq_columns(db.get_bind())
+    stored_version = db.execute(
+        select(AEHQTranslation.dst).where(
+            AEHQTranslation.lang == "meta", AEHQTranslation.src == "content_version")
+    ).scalar_one_or_none()
+    if db.query(AEHQFramework).count() == 0 or stored_version != CONTENT_VERSION:
+        seed_aehq(db, reset=True)
     _load_globals_from_db(db)
     _CACHE_LOADED = True
 
@@ -1573,11 +2698,11 @@ def reload_cache(db: DBSession) -> None:
 def create_session(user_id: int, db: DBSession) -> dict:
     _ensure_cache(db)
     state = _initial_state()
-    sess = AEHQSession(user_id=user_id, next_step="SAFETY", state_json=json.dumps(state), status="active")
+    sess = AEHQSession(user_id=user_id, next_step="CONSENT", state_json=json.dumps(state), status="active")
     db.add(sess)
     db.commit()
     db.refresh(sess)
-    return {"session_id": sess.id, **_build_safety()}
+    return {"session_id": sess.id, **_build_consent()}
 
 
 def get_current_screen(session_id: int, user_id: int, db: DBSession) -> dict:
@@ -1591,16 +2716,17 @@ def get_current_screen(session_id: int, user_id: int, db: DBSession) -> dict:
     if sess.status == "crisis_exit":
         return {"session_id": sess.id, "step": "CRISIS", "done": True, "exit_type": "crisis_exit",
                 "type": "crisis_exit", "heading": "Your safety comes first.",
-                "question": SAFETY_SCRIPT, "options": []}
+                "question": SAFETY_SCRIPT, "question_th": TH_NOTES["SAFETY_SCRIPT"], "options": []}
     if sess.status == "grounding_pause":
         return {"session_id": sess.id, "step": "PAUSE", "done": True, "exit_type": "grounding_pause",
                 "type": "grounding_pause", "heading": "Let's pause here.",
-                "question": GROUNDING_PAUSE_SCRIPT, "options": []}
+                "question": GROUNDING_PAUSE_SCRIPT, "question_th": TH_NOTES["GROUNDING_PAUSE_SCRIPT"], "options": []}
 
     return {"session_id": sess.id, **_rebuild_current(state.get("next_step", "SAFETY"), state)}
 
 
-def submit_answer(session_id: int, user_id: int, step: str, answer: Any, db: DBSession) -> dict:
+def submit_answer(session_id: int, user_id: int, step: str, answer: Any, db: DBSession,
+                  lang: str = "en") -> dict:
     _ensure_cache(db)
     sess  = _load(session_id, user_id, db)
     state = json.loads(sess.state_json)
@@ -1608,11 +2734,21 @@ def submit_answer(session_id: int, user_id: int, step: str, answer: Any, db: DBS
     if state.get("next_step") != step:
         raise HTTPException(400, f"Expected step {state.get('next_step')!r}, got {step!r}")
 
-    db.add(AEHQResponse(session_id=sess.id, step=step, answer_json=json.dumps(answer)))
+    lang_shown = lang if lang in ("th", "en") else "en"
+    db.add(AEHQResponse(
+        session_id=sess.id, step=step, answer_json=json.dumps(answer),
+        content_version=CONTENT_VERSION, lang_shown=lang_shown,
+    ))
 
     payload, state = _transition(step, answer, state)
     sess.state_json = json.dumps(state)
-    sess.next_step  = state.get("next_step", "SAFETY")
+    sess.next_step  = state.get("next_step", "CONSENT")
+
+    # Persist consent immediately at the gate (PDPA auditability).
+    if step == "CONSENT" and state.get("consent_agreed"):
+        sess.consent_agreed  = True
+        sess.training_opt_in = bool(state.get("training_opt_in"))
+        sess.consent_at      = datetime.utcnow()
 
     if payload.get("done"):
         exit_type   = payload.get("exit_type", "complete")
@@ -1635,9 +2771,35 @@ def submit_answer(session_id: int, user_id: int, step: str, answer: Any, db: DBS
                 suds_end=state.get("suds_end"),
                 scores_json=json.dumps(state.get("scores", {})),
                 exit_type=exit_type,
+                trauma_flagged=bool(r.get("trauma_flagged")),
+                referral_offered=bool(r.get("referral")),
+                low_mood_flagged=bool(r.get("low_mood_flagged")),
+                chasing_flagged=bool(r.get("chasing_flagged")),
+                goal_text=state.get("goal_text"),
+                goal_lang=state.get("goal_lang"),
+                content_version=CONTENT_VERSION,
+                bottom_line_text=state.get("bottom_line_text"),
+                bottom_line_belief=state.get("bottom_line_belief"),
+                bottom_line_lang=state.get("bottom_line_lang"),
+                thought_text=state.get("thought_text"),
+                thought_lang=state.get("thought_lang"),
+                critic_function=state.get("critic_function"),
+                critic_protects_text=state.get("critic_protects_text"),
+                hated_self_flagged=bool(state.get("hated_self_flag")),
+                foc_level=state.get("foc_level"),
+                compassion_mode=state.get("compassion_mode"),
+                soothe_rating=state.get("soothe_rating"),
+                goal_attainment=state.get("goal_attainment"),
             ))
 
     db.commit()
+
+    # S11 — attach the belief trajectory vs. prior sessions with the same Bottom Line.
+    if payload.get("result") and payload["result"].get("bottom_line_text"):
+        payload["result"]["belief_trajectory"] = _belief_trajectory(
+            user_id, payload["result"]["bottom_line_text"],
+            payload["result"].get("bottom_line_belief"), db, sess.id,
+        )
     return {"session_id": sess.id, **payload}
 
 
@@ -1646,23 +2808,93 @@ def get_result(session_id: int, user_id: int, db: DBSession) -> dict:
     if not sess.result:
         raise HTTPException(404, "Session not complete")
     r = sess.result
+    scores = json.loads(r.scores_json) if r.scores_json else {}
+    followup = FOLLOWUP_CONFIG.get(r.situation_key)
+    if followup:
+        followup = {**followup, "checkin_th": _th(followup.get("checkin")) or followup.get("checkin")}
+    sit = SITUATIONS.get(r.situation_key or "", {})
     return {
         "session_id":    sess.id,
         "exit_type":     r.exit_type,
         "framework_code":r.framework_code,
         "framework_name":r.framework_name,
+        "framework_name_th": _th(r.framework_name) or r.framework_name,
         "situation_key": r.situation_key,
+        "situation_label_th": _th(sit.get("label", "")) or sit.get("label", ""),
         "track":         r.track,
         "hypothesis":    r.hypothesis_text,
+        "hypothesis_th": _build_hypothesis_th(r.situation_key or "other", scores, r.framework_code or "F12_ifthen"),
         "technique":     r.technique_text,
+        "technique_th":  TH_TECHNIQUES.get(r.framework_code or "", r.technique_text),
         "evidence":      r.evidence_text,
         "ifthen_action": r.ifthen_text,
+        "ifthen_action_th": _th(r.ifthen_text) or r.ifthen_text,
+        "goal_text":     r.goal_text,
+        "goal_lang":     r.goal_lang,
+        "bottom_line_text":   r.bottom_line_text,
+        "bottom_line_belief": r.bottom_line_belief,
+        "bottom_line_lang":   r.bottom_line_lang,
+        "thought_text":       r.thought_text,
+        "thought_lang":       r.thought_lang,
+        "critic_function":    r.critic_function,
+        "critic_reframe":     CRITIC_FUNCTION_REFRAMES.get(r.critic_function) if r.critic_function else None,
+        "critic_reframe_th":  TH_NOTES.get(f"critic_{r.critic_function}") if r.critic_function else None,
+        "critic_protects_text": r.critic_protects_text,
+        "hated_self_flagged": r.hated_self_flagged,
+        "hated_self_note":    HATED_SELF_NOTE if r.hated_self_flagged else None,
+        "hated_self_note_th": TH_NOTES.get("HATED_SELF_NOTE") if r.hated_self_flagged else None,
+        "foc_level":         r.foc_level,
+        "compassion_mode":   r.compassion_mode,
+        "soothe_rating":     r.soothe_rating,
+        "goal_attainment":   r.goal_attainment,
+        "belief_trajectory": _belief_trajectory(user_id, r.bottom_line_text, r.bottom_line_belief, db, sess.id),
         "selfcompassion_text": r.selfcompassion_text,
+        "selfcompassion_text_th": _th(r.selfcompassion_text) or r.selfcompassion_text,
         "closure_text":  r.closure_text,
+        "closure_text_th": _build_closure_th(r.suds_start or 0, r.suds_end or 0),
         "suds_start":    r.suds_start,
         "suds_end":      r.suds_end,
-        "scores":        json.loads(r.scores_json) if r.scores_json else {},
+        "scores":        scores,
+        "trauma_flagged": r.trauma_flagged,
+        "trauma_ack":    TRAUMA_ACK if r.trauma_flagged else None,
+        "trauma_ack_th": TH_NOTES.get("TRAUMA_ACK") if r.trauma_flagged else None,
+        "referral":      REFERRAL_SCRIPT if r.referral_offered else None,
+        "referral_th":   TH_NOTES.get("REFERRAL_SCRIPT") if r.referral_offered else None,
+        "low_mood_flagged": r.low_mood_flagged,
+        "low_mood_note": LOW_MOOD_NOTE if r.low_mood_flagged else None,
+        "low_mood_note_th": TH_NOTES.get("LOW_MOOD_NOTE") if r.low_mood_flagged else None,
+        "chasing_flagged": r.chasing_flagged,
+        "chasing_note": CHASING_NOTE if r.chasing_flagged else None,
+        "chasing_note_th": TH_NOTES.get("CHASING_NOTE") if r.chasing_flagged else None,
+        "followup":      followup,
         "created_at":    r.created_at.isoformat() if r.created_at else None,
+    }
+
+
+def _belief_trajectory(user_id: int, bottom_line_text: Optional[str],
+                       current_belief: Optional[int], db: DBSession,
+                       exclude_session_id: int) -> Optional[dict]:
+    """S11 — if the same Bottom Line was rated in a PRIOR session, return the
+    movement so the client can show 'visible change consolidates identity shift.'"""
+    if not bottom_line_text or current_belief is None:
+        return None
+    prior = db.execute(
+        select(AEHQResult)
+        .where(AEHQResult.user_id == user_id,
+               AEHQResult.bottom_line_text == bottom_line_text,
+               AEHQResult.bottom_line_belief.is_not(None),
+               AEHQResult.session_id != exclude_session_id)
+        .order_by(AEHQResult.created_at.desc())
+        .limit(1)
+    ).scalar_one_or_none()
+    if not prior:
+        return None
+    return {
+        "belief": bottom_line_text,
+        "prior_belief": prior.bottom_line_belief,
+        "prior_at": prior.created_at.isoformat() if prior.created_at else None,
+        "current_belief": current_belief,
+        "delta": current_belief - prior.bottom_line_belief,  # negative = belief loosened
     }
 
 
@@ -1682,6 +2914,11 @@ def list_results(user_id: int, db: DBSession) -> list[dict]:
             "track":         r.track,
             "suds_start":    r.suds_start,
             "suds_end":      r.suds_end,
+            # longitudinal fields (S11/S12) — belief %, soothing, goal-attainment
+            "bottom_line_text":   r.bottom_line_text,
+            "bottom_line_belief": r.bottom_line_belief,
+            "soothe_rating":      r.soothe_rating,
+            "goal_attainment":    r.goal_attainment,
             "exit_type":     r.exit_type,
             "created_at":    r.created_at.isoformat() if r.created_at else None,
         }
