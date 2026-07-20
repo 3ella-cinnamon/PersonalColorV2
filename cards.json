@@ -1915,7 +1915,7 @@
     {
       "id": "neuro_01",
       "deck": "neuro",
-      "image": "neuro/N-01.png",
+      "image": "neuro/N-01.webp",
       "name_en": "The Storm",
       "name_th": "พายุ",
       "archetype": "Emotional activation",
@@ -1930,7 +1930,7 @@
     {
       "id": "neuro_02",
       "deck": "neuro",
-      "image": "neuro/N-02.png",
+      "image": "neuro/N-02.webp",
       "name_en": "The Bridge",
       "name_th": "สะพาน",
       "archetype": "Transition / connection",
@@ -1945,7 +1945,7 @@
     {
       "id": "neuro_03",
       "deck": "neuro",
-      "image": "neuro/N-03.png",
+      "image": "neuro/N-03.webp",
       "name_en": "The Locked Door",
       "name_th": "ประตูที่ล็อก",
       "archetype": "Protection / blocked access",
@@ -1960,7 +1960,7 @@
     {
       "id": "neuro_04",
       "deck": "neuro",
-      "image": "neuro/N-04.png",
+      "image": "neuro/N-04.webp",
       "name_en": "The Cage with an Open Door",
       "name_th": "กรงที่ประตูเปิด",
       "archetype": "Learned limitation",
@@ -1975,7 +1975,7 @@
     {
       "id": "neuro_05",
       "deck": "neuro",
-      "image": "neuro/N-05.png",
+      "image": "neuro/N-05.webp",
       "name_en": "The Mended Bowl",
       "name_th": "ชามที่ซ่อมแล้ว",
       "archetype": "Repair / integration",
@@ -1990,7 +1990,7 @@
     {
       "id": "neuro_06",
       "deck": "neuro",
-      "image": "neuro/N-06.png",
+      "image": "neuro/N-06.webp",
       "name_en": "The Empty Chair",
       "name_th": "เก้าอี้ว่าง",
       "archetype": "Absence / unfinished dialogue",
@@ -2005,7 +2005,7 @@
     {
       "id": "neuro_07",
       "deck": "neuro",
-      "image": "neuro/N-07.png",
+      "image": "neuro/N-07.webp",
       "name_en": "The Mirror",
       "name_th": "กระจก",
       "archetype": "Self-perception",
@@ -2020,7 +2020,7 @@
     {
       "id": "neuro_08",
       "deck": "neuro",
-      "image": "neuro/N-08.png",
+      "image": "neuro/N-08.webp",
       "name_en": "The Fog",
       "name_th": "หมอก",
       "archetype": "Uncertainty",
@@ -2035,7 +2035,7 @@
     {
       "id": "neuro_09",
       "deck": "neuro",
-      "image": "neuro/N-09.png",
+      "image": "neuro/N-09.webp",
       "name_en": "The Knot",
       "name_th": "ปม",
       "archetype": "Complexity / entanglement",
@@ -2050,7 +2050,7 @@
     {
       "id": "neuro_10",
       "deck": "neuro",
-      "image": "neuro/N-10.png",
+      "image": "neuro/N-10.webp",
       "name_en": "The Mask",
       "name_th": "หน้ากาก",
       "archetype": "Role / protection",
@@ -2065,7 +2065,7 @@
     {
       "id": "neuro_11",
       "deck": "neuro",
-      "image": "neuro/N-11.png",
+      "image": "neuro/N-11.webp",
       "name_en": "The Small Flame",
       "name_th": "เปลวไฟเล็ก",
       "archetype": "Motivation",
@@ -2080,7 +2080,7 @@
     {
       "id": "neuro_12",
       "deck": "neuro",
-      "image": "neuro/N-12.png",
+      "image": "neuro/N-12.webp",
       "name_en": "The Heavy Backpack",
       "name_th": "กระเป๋าหนัก",
       "archetype": "Burden / accumulated load",
@@ -2095,7 +2095,7 @@
     {
       "id": "neuro_13",
       "deck": "neuro",
-      "image": "neuro/N-13.png",
+      "image": "neuro/N-13.webp",
       "name_en": "The Tangle of Threads",
       "name_th": "ด้ายพันกัน",
       "archetype": "Multiple narratives",
@@ -2110,7 +2110,7 @@
     {
       "id": "neuro_14",
       "deck": "neuro",
-      "image": "neuro/N-14.png",
+      "image": "neuro/N-14.webp",
       "name_en": "The Window",
       "name_th": "หน้าต่าง",
       "archetype": "Perspective / possibility",
@@ -2125,7 +2125,7 @@
     {
       "id": "neuro_15",
       "deck": "neuro",
-      "image": "neuro/N-15.png",
+      "image": "neuro/N-15.webp",
       "name_en": "The Protective Wall",
       "name_th": "กำแพงปกป้อง",
       "archetype": "Defence / boundary",
@@ -2140,7 +2140,7 @@
     {
       "id": "neuro_16",
       "deck": "neuro",
-      "image": "neuro/N-16.png",
+      "image": "neuro/N-16.webp",
       "name_en": "The Echo",
       "name_th": "เสียงสะท้อน",
       "archetype": "Repetition / memory",
@@ -2155,7 +2155,7 @@
     {
       "id": "neuro_17",
       "deck": "neuro",
-      "image": "neuro/N-17.png",
+      "image": "neuro/N-17.webp",
       "name_en": "The Unsent Letter",
       "name_th": "จดหมายที่ยังไม่ส่ง",
       "archetype": "Expression / inhibition",
@@ -2170,7 +2170,7 @@
     {
       "id": "neuro_18",
       "deck": "neuro",
-      "image": "neuro/N-18.png",
+      "image": "neuro/N-18.webp",
       "name_en": "The Compass",
       "name_th": "เข็มทิศ",
       "archetype": "Values / orientation",
@@ -2185,7 +2185,7 @@
     {
       "id": "neuro_19",
       "deck": "neuro",
-      "image": "neuro/N-19.png",
+      "image": "neuro/N-19.webp",
       "name_en": "The Crossroads",
       "name_th": "ทางแยก",
       "archetype": "Decision / ambivalence",
@@ -2200,7 +2200,7 @@
     {
       "id": "neuro_20",
       "deck": "neuro",
-      "image": "neuro/N-20.png",
+      "image": "neuro/N-20.webp",
       "name_en": "The Spiral Staircase",
       "name_th": "บันไดวน",
       "archetype": "Revisiting / growth",
@@ -2215,7 +2215,7 @@
     {
       "id": "neuro_21",
       "deck": "neuro",
-      "image": "neuro/N-21.png",
+      "image": "neuro/N-21.webp",
       "name_en": "The Cracked Ice",
       "name_th": "น้ำแข็งร้าว",
       "archetype": "Fragility / caution",
@@ -2230,7 +2230,7 @@
     {
       "id": "neuro_22",
       "deck": "neuro",
-      "image": "neuro/N-22.png",
+      "image": "neuro/N-22.webp",
       "name_en": "The Anchor",
       "name_th": "สมอ",
       "archetype": "Stability / stuckness",
@@ -2245,7 +2245,7 @@
     {
       "id": "neuro_23",
       "deck": "neuro",
-      "image": "neuro/N-23.png",
+      "image": "neuro/N-23.webp",
       "name_en": "The Lantern",
       "name_th": "โคมไฟ",
       "archetype": "Awareness",
@@ -2260,7 +2260,7 @@
     {
       "id": "neuro_24",
       "deck": "neuro",
-      "image": "neuro/N-24.png",
+      "image": "neuro/N-24.webp",
       "name_en": "The Closed Fist",
       "name_th": "กำปั้นที่กำแน่น",
       "archetype": "Control / readiness",
@@ -2275,7 +2275,7 @@
     {
       "id": "neuro_25",
       "deck": "neuro",
-      "image": "neuro/N-25.png",
+      "image": "neuro/N-25.webp",
       "name_en": "The Open Palm",
       "name_th": "ฝ่ามือเปิด",
       "archetype": "Receiving / release",
@@ -2290,7 +2290,7 @@
     {
       "id": "neuro_26",
       "deck": "neuro",
-      "image": "neuro/N-26.png",
+      "image": "neuro/N-26.webp",
       "name_en": "The Two Wolves",
       "name_th": "หมาป่าสองตัว",
       "archetype": "Competing impulses",
@@ -2305,7 +2305,7 @@
     {
       "id": "neuro_27",
       "deck": "neuro",
-      "image": "neuro/N-27.png",
+      "image": "neuro/N-27.webp",
       "name_en": "The Frozen River",
       "name_th": "แม่น้ำที่กลายเป็นน้ำแข็ง",
       "archetype": "Shutdown / conservation",
@@ -2320,7 +2320,7 @@
     {
       "id": "neuro_28",
       "deck": "neuro",
-      "image": "neuro/N-28.png",
+      "image": "neuro/N-28.webp",
       "name_en": "The Unfinished Puzzle",
       "name_th": "จิ๊กซอว์ที่ยังไม่ครบ",
       "archetype": "Incomplete meaning",
@@ -2335,7 +2335,7 @@
     {
       "id": "neuro_29",
       "deck": "neuro",
-      "image": "neuro/N-29.png",
+      "image": "neuro/N-29.webp",
       "name_en": "The Tightrope",
       "name_th": "เชือกเส้นเดียว",
       "archetype": "Balance / performance pressure",
@@ -2350,7 +2350,7 @@
     {
       "id": "neuro_30",
       "deck": "neuro",
-      "image": "neuro/N-30.png",
+      "image": "neuro/N-30.webp",
       "name_en": "The Safe Harbour",
       "name_th": "ท่าเรือปลอดภัย",
       "archetype": "Co-regulation / refuge",
@@ -2365,7 +2365,7 @@
     {
       "id": "neuro_31",
       "deck": "neuro",
-      "image": "neuro/N-31.png",
+      "image": "neuro/N-31.webp",
       "name_en": "The Red Thread",
       "name_th": "ด้ายแดง",
       "archetype": "Continuity / connection",
@@ -2380,7 +2380,7 @@
     {
       "id": "neuro_32",
       "deck": "neuro",
-      "image": "neuro/N-32.png",
+      "image": "neuro/N-32.webp",
       "name_en": "The Broken Clock",
       "name_th": "นาฬิกาเสีย",
       "archetype": "Time / stuck moment",
@@ -2395,7 +2395,7 @@
     {
       "id": "neuro_33",
       "deck": "neuro",
-      "image": "neuro/N-33.png",
+      "image": "neuro/N-33.webp",
       "name_en": "The Seed in Darkness",
       "name_th": "เมล็ดในความมืด",
       "archetype": "Incubation",
@@ -2410,7 +2410,7 @@
     {
       "id": "neuro_34",
       "deck": "neuro",
-      "image": "neuro/N-34.png",
+      "image": "neuro/N-34.webp",
       "name_en": "The Missing Step",
       "name_th": "ขั้นบันไดที่หายไป",
       "archetype": "Gap / support need",
@@ -2425,7 +2425,7 @@
     {
       "id": "neuro_35",
       "deck": "neuro",
-      "image": "neuro/N-35.png",
+      "image": "neuro/N-35.webp",
       "name_en": "The River Stone",
       "name_th": "หินในลำธาร",
       "archetype": "Shaping / persistence",
@@ -2440,7 +2440,7 @@
     {
       "id": "neuro_36",
       "deck": "neuro",
-      "image": "neuro/N-36.png",
+      "image": "neuro/N-36.webp",
       "name_en": "The Nest",
       "name_th": "รัง",
       "archetype": "Belonging / preparation",
@@ -2455,7 +2455,7 @@
     {
       "id": "neuro_37",
       "deck": "neuro",
-      "image": "neuro/N-37.png",
+      "image": "neuro/N-37.webp",
       "name_en": "The Shadow on the Wall",
       "name_th": "เงาบนกำแพง",
       "archetype": "Projection / uncertainty",
@@ -2470,7 +2470,7 @@
     {
       "id": "neuro_38",
       "deck": "neuro",
-      "image": "neuro/N-38.png",
+      "image": "neuro/N-38.webp",
       "name_en": "The Paper Boat",
       "name_th": "เรือกระดาษ",
       "archetype": "Vulnerability / play",
@@ -2485,7 +2485,7 @@
     {
       "id": "neuro_39",
       "deck": "neuro",
-      "image": "neuro/N-39.png",
+      "image": "neuro/N-39.webp",
       "name_en": "The Turning Key",
       "name_th": "กุญแจที่กำลังหมุน",
       "archetype": "Readiness / access",
@@ -2500,7 +2500,7 @@
     {
       "id": "neuro_40",
       "deck": "neuro",
-      "image": "neuro/N-40.png",
+      "image": "neuro/N-40.webp",
       "name_en": "The Breathing Space",
       "name_th": "ช่องว่างให้หายใจ",
       "archetype": "Pause / regulation",
