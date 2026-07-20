@@ -3,6 +3,7 @@ import { ArrowRight, Zap } from 'lucide-react'
 import DailyDecisionDashboard from './daily_decision_dashboard'
 import HomeMenu from './HomeMenu'
 import ConsultDashboard from './ConsultDashboard'
+import CardDeck from './CardDeck'
 
 /* ------------------------------------------------------------------ */
 /*  API helpers                                                         */
@@ -345,6 +346,14 @@ export default function App() {
     return (
       <ConsultDashboard
         token={token}
+        onBack={() => setSection(null)}
+      />
+    )
+  }
+
+  if (section === 'cards') {
+    return (
+      <CardDeck
         onBack={() => setSection(null)}
       />
     )
