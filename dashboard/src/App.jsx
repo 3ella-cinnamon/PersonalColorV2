@@ -354,6 +354,7 @@ export default function App() {
   if (section === 'cards') {
     return (
       <CardDeck
+        token={token}
         onBack={() => setSection(null)}
       />
     )

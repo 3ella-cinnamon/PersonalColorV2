@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { ArrowLeft, ArrowRight, Shuffle, RotateCcw, Languages } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Shuffle, RotateCcw, Languages, BookMarked, Trash2, Check } from 'lucide-react'
 
 /* ------------------------------------------------------------------ */
 /*  Fonts + design tokens (shared with the rest of the app)             */
@@ -201,7 +201,7 @@ function CardArt({ card }) {
   }
 
   // nature — layered horizon / hills / water with a small stone or plant
-  const wave = (y, amp, color) =>
+  const wave = (y, amp) =>
     `M 12 ${y} q 18 ${-amp} 36 0 t 36 0 t 36 0`
   return (
     <svg viewBox="0 0 120 130" width="100%" height="100%">
@@ -335,12 +335,12 @@ function DeckCard({ card, name, accent, faceUp, onClick, selected, disabled, lab
 /*  Main component                                                      */
 /* ------------------------------------------------------------------ */
 
-export default function CardDeck({ onBack }) {
+export default function CardDeck({ onBack, token }) {
   const [lang, setLang]       = useState('en')          // 'en' | 'th'
   const [data, setData]       = useState(null)
   const [loadErr, setLoadErr] = useState('')
 
-  // flow: 'deck' → 'spread' → 'draw' → 'reveal'
+  // flow: 'deck' → 'spread' → 'draw' → 'reveal'; plus 'history' / 'historyDetail'
   const [step, setStep]       = useState('deck')
   const [deckId, setDeckId]   = useState(null)
   const [spread, setSpread]   = useState(null)
@@ -351,9 +351,28 @@ export default function CardDeck({ onBack }) {
   const [revealed, setRevealed] = useState(false)
 
   const [reflection, setReflection] = useState('')
+  const [intention, setIntention]   = useState('')
   const [showTheme, setShowTheme]   = useState(false)
 
+  // saving readings + history (Stage 3)
+  const [saveState, setSaveState]   = useState('idle')  // idle | saving | saved | error
+  const [saveErr, setSaveErr]       = useState('')
+  const [history, setHistory]       = useState(null)    // null = not loaded yet
+  const [historyErr, setHistoryErr] = useState('')
+  const [viewing, setViewing]       = useState(null)    // a reading object for detail view
+
   const t = useCallback((en, th) => (lang === 'th' ? th : en), [lang])
+
+  /* ---- readings API (uses the bearer token from App) ---- */
+  const api = useCallback(async (path, opts = {}) => {
+    const headers = { 'Content-Type': 'application/json' }
+    if (token) headers['Authorization'] = `Bearer ${token}`
+    const res = await fetch('/api/cards' + path, { ...opts, headers })
+    if (res.status === 204) return null
+    const body = await res.json().catch(() => null)
+    if (!res.ok) throw new Error(body?.detail || `Request failed (${res.status})`)
+    return body
+  }, [token])
 
   /* Load fonts (idempotent) + card data */
   useEffect(() => {
@@ -396,7 +415,10 @@ export default function CardDeck({ onBack }) {
     setPicked([])
     setRevealed(false)
     setReflection('')
+    setIntention('')
     setShowTheme(false)
+    setSaveState('idle')
+    setSaveErr('')
     // build a fresh shuffled fan
     const drawn = shuffle(deckCards).slice(0, Math.min(FAN_SIZE, deckCards.length))
     setFan(drawn)
@@ -438,10 +460,68 @@ export default function CardDeck({ onBack }) {
     setPicked([])
     setRevealed(false)
     setReflection('')
+    setIntention('')
     setShowTheme(false)
+    setSaveState('idle')
+    setSaveErr('')
   }
 
   const pickedCards = picked.map(i => fan[i])
+
+  /* ---- saving readings + history ---- */
+  const saveReading = async () => {
+    setSaveState('saving')
+    setSaveErr('')
+    try {
+      await api('/readings', {
+        method: 'POST',
+        body: JSON.stringify({
+          deck: deckId,
+          spread_id: spread.id,
+          spread_name: spread.name_en,
+          cards: pickedCards.map((c, i) => ({
+            card_id: c.id,
+            position: spread.positions[i]?.en || null,
+          })),
+          reflection: reflection.trim() || null,
+          intention: intention.trim() || null,
+          lang,
+        }),
+      })
+      setSaveState('saved')
+      setHistory(null)   // force a refresh next time History opens
+    } catch (e) {
+      setSaveState('error')
+      setSaveErr(e.message)
+    }
+  }
+
+  const openHistory = async () => {
+    setStep('history')
+    setViewing(null)
+    setHistoryErr('')
+    try {
+      const rows = await api('/readings')
+      setHistory(rows)
+    } catch (e) {
+      setHistoryErr(e.message)
+      setHistory([])
+    }
+  }
+
+  const deleteReading = async (id) => {
+    try {
+      await api(`/readings/${id}`, { method: 'DELETE' })
+      setHistory(prev => (prev || []).filter(r => r.id !== id))
+      setViewing(v => (v && v.id === id ? null : v))
+      if (viewing && viewing.id === id) setStep('history')
+    } catch (e) {
+      setHistoryErr(e.message)
+    }
+  }
+
+  // resolve a saved card_id back to its display card (name + art)
+  const cardById = useCallback((id) => data?.cards.find(c => c.id === id) || null, [data])
 
   /* ---- shared header ---- */
   const Header = (
@@ -455,6 +535,8 @@ export default function CardDeck({ onBack }) {
           if (step === 'deck') onBack()
           else if (step === 'spread') setStep('deck')
           else if (step === 'draw') setStep('spread')
+          else if (step === 'history') setStep('deck')
+          else if (step === 'historyDetail') setStep('history')
           else setStep('draw')
         }}
         style={{
@@ -468,9 +550,21 @@ export default function CardDeck({ onBack }) {
       </button>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.16em', color: PAL.muted }}>
-          {t('Card Deck', 'สำรับไพ่')}
-        </span>
+        {token && step !== 'history' && step !== 'historyDetail' && (
+          <button
+            onClick={openHistory}
+            title={t('Saved readings', 'บันทึกที่บันทึกไว้')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '5px',
+              fontSize: '12px', fontWeight: 500, color: '#1B1B19',
+              background: '#F0EFE8', border: 'none', cursor: 'pointer',
+              fontFamily: fontSans, padding: '6px 10px', borderRadius: '999px',
+            }}
+          >
+            <BookMarked size={13} strokeWidth={1.8} />
+            {t('Saved', 'บันทึก')}
+          </button>
+        )}
         <button
           onClick={() => setLang(lang === 'en' ? 'th' : 'en')}
           style={{
@@ -486,6 +580,14 @@ export default function CardDeck({ onBack }) {
       </div>
     </div>
   )
+
+  const fmtDate = (iso) => {
+    if (!iso) return ''
+    try {
+      return new Date(iso).toLocaleString(lang === 'th' ? 'th-TH' : 'en-US',
+        { dateStyle: 'medium', timeStyle: 'short' })
+    } catch { return iso }
+  }
 
   const disclaimer = (
     <p style={{ fontSize: '11px', color: PAL.muted, textAlign: 'center', margin: '0 auto', maxWidth: '520px', lineHeight: 1.5 }}>
@@ -735,8 +837,170 @@ export default function CardDeck({ onBack }) {
   }
 
   /* ============================================================= */
+  /*  HISTORY — list of saved readings                              */
+  /* ============================================================= */
+  if (step === 'history') {
+    return shell(
+      <div className="cd-fade" style={{ maxWidth: '640px', margin: '0 auto', padding: '40px 24px 56px', width: '100%' }}>
+        <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: PAL.muted, marginBottom: '8px' }}>
+          {t('Your saved readings', 'บันทึกการอ่านของคุณ')}
+        </p>
+        <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(26px,5vw,34px)', color: '#1B1B19', margin: '0 0 28px', lineHeight: 1.2 }}>
+          {t('Readings you kept', 'การอ่านที่คุณเก็บไว้')}
+        </h1>
+
+        {historyErr && (
+          <p style={{ fontSize: '13px', color: '#C84B31', marginBottom: '16px' }}>{historyErr}</p>
+        )}
+
+        {history === null ? (
+          <div style={{ padding: '40px', textAlign: 'center' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6B5B95', opacity: 0.6, margin: '0 auto' }} />
+          </div>
+        ) : history.length === 0 ? (
+          <div style={{ background: '#fff', border: '1px dashed rgba(0,0,0,0.14)', borderRadius: '16px', padding: '40px 24px', textAlign: 'center' }}>
+            <p style={{ fontSize: '14px', color: '#7A7A72', margin: '0 0 16px' }}>
+              {t('No saved readings yet. When a card speaks to you, save it here.', 'ยังไม่มีการอ่านที่บันทึกไว้ เมื่อไพ่ใบใดสื่อถึงคุณ บันทึกไว้ที่นี่ได้')}
+            </p>
+            <button
+              onClick={() => setStep('deck')}
+              style={{ padding: '10px 20px', borderRadius: '999px', border: 'none', background: '#6B5B95', color: '#fff', fontSize: '13px', fontWeight: 500, fontFamily: fontSans, cursor: 'pointer' }}
+            >
+              {t('Draw a card', 'จั่วไพ่')}
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {history.map(r => {
+              const d = DECKS[r.deck] || DECKS.tarot
+              return (
+                <div key={r.id} style={{ display: 'flex', alignItems: 'stretch', gap: '0', background: '#fff', border: `1px solid ${d.border}`, borderRadius: '14px', overflow: 'hidden' }}>
+                  <button
+                    onClick={() => { setViewing(r); setStep('historyDetail') }}
+                    style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 18px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: fontSans }}
+                  >
+                    <div style={{ width: '40px', height: '40px', borderRadius: '11px', background: d.tint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
+                      {d.emoji}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '14px', fontWeight: 500, color: '#1B1B19', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {r.cards.map(c => {
+                          const card = cardById(c.card_id)
+                          return card ? (lang === 'th' ? card.name_th : card.name_en) : c.card_id
+                        }).join(' · ')}
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#9A9A95' }}>
+                        {t(d.name_en, d.name_th)} · {fmtDate(r.created_at)}
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => deleteReading(r.id)}
+                    title={t('Delete', 'ลบ')}
+                    style={{ flexShrink: 0, padding: '0 16px', background: 'none', border: 'none', borderLeft: '0.5px solid rgba(0,0,0,0.06)', cursor: 'pointer', color: '#C0BEB5' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#C84B31'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#C0BEB5'}
+                  >
+                    <Trash2 size={16} strokeWidth={1.8} />
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        <div style={{ marginTop: '28px' }}>{disclaimer}</div>
+      </div>
+    )
+  }
+
+  /* ============================================================= */
+  /*  HISTORY DETAIL — one saved reading                            */
+  /* ============================================================= */
+  if (step === 'historyDetail' && viewing) {
+    const d = DECKS[viewing.deck] || DECKS.tarot
+    return shell(
+      <div className="cd-fade" style={{ maxWidth: '640px', margin: '0 auto', padding: '32px 24px 56px', width: '100%' }}>
+        <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: d.accent, marginBottom: '6px', textAlign: 'center' }}>
+          {t(d.name_en, d.name_th)} · {viewing.spread_name} · {fmtDate(viewing.created_at)}
+        </p>
+
+        {viewing.intention && (
+          <p style={{ fontFamily: fontSerif, fontStyle: 'italic', fontSize: '18px', color: '#1B1B19', textAlign: 'center', margin: '4px 0 22px', lineHeight: 1.3 }}>
+            “{viewing.intention}”
+          </p>
+        )}
+
+        <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', margin: '18px 0 24px' }}>
+          {viewing.cards.map((c, i) => {
+            const card = cardById(c.card_id)
+            return (
+              <div key={c.card_id + i} style={{ width: viewing.cards.length === 1 ? '170px' : '130px', maxWidth: '40vw' }}>
+                {card && (
+                  <DeckCard
+                    card={card}
+                    name={lang === 'th' ? card.name_th : card.name_en}
+                    accent={d.accent}
+                    faceUp
+                    disabled
+                    label={c.position}
+                  />
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {viewing.reflection && (
+          <div style={{ maxWidth: '520px', margin: '0 auto', background: '#fff', border: `1px solid ${d.border}`, borderRadius: '14px', padding: '16px 18px' }}>
+            <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', color: d.accent, marginBottom: '6px' }}>
+              {t('What you saw', 'สิ่งที่คุณเห็น')}
+            </div>
+            <p style={{ fontSize: '14px', color: '#3A3A3A', margin: 0, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+              {viewing.reflection}
+            </p>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', margin: '28px 0 20px' }}>
+          <button
+            onClick={() => setStep('history')}
+            style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '11px 18px', borderRadius: '999px', border: '1px solid rgba(0,0,0,0.12)', background: '#fff', color: '#1B1B19', fontSize: '13px', fontWeight: 500, fontFamily: fontSans, cursor: 'pointer' }}
+          >
+            <ArrowLeft size={14} strokeWidth={1.8} />
+            {t('All readings', 'การอ่านทั้งหมด')}
+          </button>
+          <button
+            onClick={() => deleteReading(viewing.id)}
+            style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '11px 18px', borderRadius: '999px', border: '1px solid #E8C4BC', background: '#fff', color: '#C84B31', fontSize: '13px', fontWeight: 500, fontFamily: fontSans, cursor: 'pointer' }}
+          >
+            <Trash2 size={14} strokeWidth={1.8} />
+            {t('Delete', 'ลบ')}
+          </button>
+        </div>
+
+        {disclaimer}
+      </div>
+    )
+  }
+
+  /* ============================================================= */
   /*  STEP 4 — reveal + projective reflection                       */
   /* ============================================================= */
+  // Safety net: only the reveal render remains below; anything else routes home.
+  if (step !== 'reveal' || !spread) {
+    return shell(
+      <div className="cd-fade" style={{ padding: '60px 24px', textAlign: 'center' }}>
+        <button
+          onClick={restart}
+          style={{ padding: '11px 22px', borderRadius: '999px', border: 'none', background: '#6B5B95', color: '#fff', fontSize: '13px', fontWeight: 500, fontFamily: fontSans, cursor: 'pointer' }}
+        >
+          {t('Start a reading', 'เริ่มการอ่าน')}
+        </button>
+      </div>
+    )
+  }
+
   return shell(
     <div className="cd-fade" style={{ maxWidth: '720px', margin: '0 auto', padding: '32px 20px 64px', width: '100%' }}>
       <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: meta.accent, marginBottom: '6px', textAlign: 'center' }}>
@@ -875,8 +1139,63 @@ export default function CardDeck({ onBack }) {
           </div>
         )}
 
+        {/* Save this reading (Stage 3) — only when signed in */}
+        {token && (
+          <div style={{ marginTop: '24px', borderTop: '0.5px solid rgba(0,0,0,0.08)', paddingTop: '20px' }}>
+            {saveState === 'saved' ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: meta.accent, fontSize: '13px', fontWeight: 500 }}>
+                <Check size={16} strokeWidth={2} />
+                {t('Saved to your readings.', 'บันทึกไว้ในบันทึกของคุณแล้ว')}
+                <button
+                  onClick={openHistory}
+                  style={{ background: 'none', border: 'none', color: meta.accent, textDecoration: 'underline', textUnderlineOffset: '2px', cursor: 'pointer', fontFamily: fontSans, fontSize: '13px', padding: 0 }}
+                >
+                  {t('View', 'ดู')}
+                </button>
+              </div>
+            ) : (
+              <>
+                <label style={{ display: 'block', fontSize: '12.5px', color: '#7A7A72', marginBottom: '6px' }}>
+                  {t('Add a focus for this reading (optional)', 'เพิ่มประเด็นที่โฟกัสสำหรับการอ่านนี้ (ถ้าต้องการ)')}
+                </label>
+                <input
+                  value={intention}
+                  onChange={e => setIntention(e.target.value)}
+                  placeholder={t('e.g. a decision I am sitting with…', 'เช่น เรื่องที่กำลังตัดสินใจอยู่…')}
+                  style={{
+                    width: '100%', padding: '10px 14px', fontSize: '14px',
+                    background: '#fff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '10px',
+                    outline: 'none', fontFamily: fontSans, color: '#1B1B19', boxSizing: 'border-box', marginBottom: '12px',
+                  }}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={saveReading}
+                    disabled={saveState === 'saving'}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '7px', padding: '11px 22px',
+                      borderRadius: '999px', border: 'none', background: meta.accent, color: '#fff',
+                      fontSize: '13px', fontWeight: 500, fontFamily: fontSans,
+                      cursor: saveState === 'saving' ? 'default' : 'pointer', opacity: saveState === 'saving' ? 0.6 : 1,
+                      boxShadow: '0 6px 16px -8px rgba(0,0,0,0.3)',
+                    }}
+                  >
+                    <BookMarked size={14} strokeWidth={1.8} />
+                    {saveState === 'saving' ? t('Saving…', 'กำลังบันทึก…') : t('Save this reading', 'บันทึกการอ่านนี้')}
+                  </button>
+                </div>
+                {saveState === 'error' && (
+                  <p style={{ fontSize: '12px', color: '#C84B31', textAlign: 'center', margin: '10px 0 0' }}>
+                    {t('Could not save.', 'บันทึกไม่สำเร็จ')} {saveErr}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
         {/* Footer actions */}
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', margin: '32px 0 20px' }}>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', margin: '28px 0 20px' }}>
           <button
             onClick={() => chooseSpread(spread)}
             style={{

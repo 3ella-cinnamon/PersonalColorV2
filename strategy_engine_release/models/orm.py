@@ -605,3 +605,39 @@ class AEHQTranslation(Base):
     lang: Mapped[str] = mapped_column(String(8), nullable=False, index=True)  # e.g. "th"
     src:  Mapped[str] = mapped_column(Text, nullable=False)
     dst:  Mapped[str] = mapped_column(Text, nullable=False)
+
+
+# ── Card Deck — projective reflection readings (Stage 3: saving readings) ─────
+
+class CardReading(Base):
+    """One saved Card Deck reading.
+
+    A reading is a completed draw the user chose to keep: the deck + spread,
+    the drawn cards (with their spread positions), and the user's own words.
+    Aligned with the Session_Logic / App_Data_Schema catalogue so it can grow
+    into the fuller guided flow (activation before/after, intention, etc.).
+
+    cards_json is a list of {card_id, position} in draw order, e.g.
+    [{"card_id": "neuro_33", "position": "Open image"}].
+    """
+    __tablename__ = "card_readings"
+
+    id:      Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+
+    deck:        Mapped[str] = mapped_column(String(20), nullable=False)   # tarot | neuro | nature
+    spread_id:   Mapped[str] = mapped_column(String(20), nullable=False)   # one | three
+    spread_name: Mapped[str] = mapped_column(String(80), nullable=False)   # display name at save time
+    cards_json:  Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+
+    # The user's own words — the heart of a projective reading.
+    reflection: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Optional session focus (Session_Logic stage 2) captured at save time.
+    intention:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Optional self-reported activation 0–10 (stage 1) — reserved for the fuller flow.
+    activation_before: Mapped[Optional[int]] = mapped_column(nullable=True)
+
+    lang:       Mapped[Optional[str]] = mapped_column(String(8), nullable=True)  # th / en at save time
+    created_at: Mapped[datetime]      = mapped_column(DateTime, server_default=func.now())
+
+    user: Mapped["User"] = relationship("User")

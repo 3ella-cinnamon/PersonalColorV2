@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import auth, aehq, bazi, color_types, consult, daily, goals, hd_types, logs, mbti_types, profile, recommendations
+from api import auth, aehq, bazi, cards, color_types, consult, daily, goals, hd_types, logs, mbti_types, profile, recommendations
 from core.database import Base, engine
 from core.middleware import APILoggingMiddleware
 
@@ -64,6 +64,7 @@ app.include_router(logs.router,            prefix="/api/logs",            tags=[
 app.include_router(bazi.router,            prefix="/api/bazi",            tags=["bazi"])
 app.include_router(consult.router,         prefix="/api/consult",         tags=["consult"])
 app.include_router(aehq.router,           prefix="/api/aehq",            tags=["aehq"])
+app.include_router(cards.router,          prefix="/api/cards",           tags=["cards"])
 
 
 @app.get("/health", tags=["meta"])
