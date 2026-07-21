@@ -6,7 +6,7 @@
 // those: sharp downscales each to a small WebP (max 520px wide) written into
 // public/neuro/, which is what the app actually loads. The public/ copies are
 // gitignored and regenerated on every dev run / build.
-import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve, parse } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -48,21 +48,26 @@ for (const deck of ['Neuro']) {
   mkdirSync(destDir, { recursive: true })
 
   let made = 0, skipped = 0
+  const manifest = []   // basenames actually present, e.g. "N-32"
   for (const f of readdirSync(srcDir)) {
     const src = join(srcDir, f)
     if (!/\.(png|jpe?g|webp)$/i.test(f) || !statSync(src).isFile()) continue
 
+    const base = parse(f).name
     if (sharp) {
-      const out = join(destDir, parse(f).name + '.webp')
-      if (upToDate(src, out)) { skipped++; continue }
+      const out = join(destDir, base + '.webp')
+      if (upToDate(src, out)) { skipped++; manifest.push(base); continue }
       await sharp(src).resize({ width: MAX_WIDTH, withoutEnlargement: true })
         .webp({ quality: WEBP_QUALITY }).toFile(out)
-      made++
+      made++; manifest.push(base)
     } else {
       const out = join(destDir, f)
-      if (upToDate(src, out)) { skipped++; continue }
-      copyFileSync(src, out); made++
+      if (upToDate(src, out)) { skipped++; manifest.push(base); continue }
+      copyFileSync(src, out); made++; manifest.push(base)
     }
   }
-  console.log(`[sync-cards] ${deck}/ → public/${deck.toLowerCase()}/ (${made} written, ${skipped} up-to-date)`)
+  // Manifest of delivered art so the app can show only cards that exist in the folder.
+  manifest.sort()
+  writeFileSync(join(destDir, 'manifest.json'), JSON.stringify(manifest, null, 0))
+  console.log(`[sync-cards] ${deck}/ → public/${deck.toLowerCase()}/ (${made} written, ${skipped} up-to-date, ${manifest.length} in manifest)`)
 }

@@ -362,6 +362,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
   const [history, setHistory]       = useState(null)    // null = not loaded yet
   const [historyErr, setHistoryErr] = useState('')
   const [viewing, setViewing]       = useState(null)    // a reading object for detail view
+  const [neuroManifest, setNeuroManifest] = useState(null)  // Set of delivered N-XX basenames
 
   const t = useCallback((en, th) => (lang === 'th' ? th : en), [lang])
 
@@ -393,14 +394,33 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
       .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json() })
       .then(setData)
       .catch(e => setLoadErr(e.message))
+    // Neuro shows only cards whose art is actually in the folder (manifest).
+    fetch('/neuro/manifest.json')
+      .then(r => (r.ok ? r.json() : []))
+      .then(list => setNeuroManifest(new Set(list)))
+      .catch(() => setNeuroManifest(new Set()))
   }, [])
 
+  // A card's art is "in the folder" when its image basename is in the manifest.
+  const inFolder = useCallback((c) => {
+    if (c.deck !== 'neuro') return true          // scope: folder-gating is Neuro-only for now
+    if (!neuroManifest) return false
+    const base = (c.image || '').split('/').pop().replace(/\.\w+$/, '')
+    return neuroManifest.has(base)
+  }, [neuroManifest])
+
+  // Only cards we can actually show (Neuro filtered to delivered art).
+  const visibleCards = useMemo(
+    () => (data ? data.cards.filter(inFolder) : []),
+    [data, inFolder],
+  )
+
   const deckCards = useMemo(() => {
-    if (!data || !deckId) return []
-    return data.cards
+    if (!deckId) return []
+    return visibleCards
       .filter(c => c.deck === deckId)
       .map(c => ({ ...c, name: lang === 'th' ? c.name_th : c.name_en }))
-  }, [data, deckId, lang])
+  }, [visibleCards, deckId, lang])
 
   const meta = deckId ? DECKS[deckId] : null
 
@@ -621,7 +641,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
       </div>
     )
   }
-  if (!data) {
+  if (!data || !neuroManifest) {
     return shell(
       <div style={{ padding: '80px 24px', textAlign: 'center' }}>
         <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6B5B95', opacity: 0.6, margin: '0 auto' }} />
@@ -644,7 +664,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '32px' }}>
           {Object.entries(DECKS).map(([id, d]) => {
-            const count = data.cards.filter(c => c.deck === id).length
+            const count = visibleCards.filter(c => c.deck === id).length
             return (
               <button
                 key={id}

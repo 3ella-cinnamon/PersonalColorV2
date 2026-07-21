@@ -173,6 +173,7 @@ export default function GuidedSession({ onBack, token }) {
 
   const [data, setData]     = useState(null)
   const [loadErr, setLoadErr] = useState('')
+  const [manifest, setManifest] = useState(null)   // Set of delivered N-XX basenames
   const [stage, setStage]   = useState(0)          // index into STAGE_META
   const [crisis, setCrisis] = useState(false)      // safety override screen
 
@@ -225,9 +226,21 @@ export default function GuidedSession({ onBack, token }) {
     fetch('/cards.json')
       .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json() })
       .then(setData).catch(e => setLoadErr(e.message))
+    fetch('/neuro/manifest.json')
+      .then(r => (r.ok ? r.json() : []))
+      .then(list => setManifest(new Set(list)))
+      .catch(() => setManifest(new Set()))
   }, [])
 
-  const neuroCards = useMemo(() => (data?.cards || []).filter(c => c.deck === 'neuro'), [data])
+  // Only Neuro cards whose art is actually in the folder (manifest).
+  const neuroCards = useMemo(() => {
+    if (!data || !manifest) return []
+    return data.cards.filter(c => {
+      if (c.deck !== 'neuro') return false
+      const base = (c.image || '').split('/').pop().replace(/\.\w+$/, '')
+      return manifest.has(base)
+    })
+  }, [data, manifest])
 
   /* tentative hypotheses for the meaning stage — built from the drawn card,
      never asserted as fact (Session_Logic stage 5). */
@@ -366,7 +379,7 @@ export default function GuidedSession({ onBack, token }) {
 
   /* ---------- states: loading / error / crisis ---------- */
   if (loadErr) return shell(<div style={{ padding: '60px 24px', textAlign: 'center', color: '#C84B31' }}>{loadErr}</div>)
-  if (!data)   return shell(<div style={{ padding: '80px', textAlign: 'center' }}><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: PAL.accent, opacity: 0.6, margin: '0 auto' }} /></div>)
+  if (!data || !manifest) return shell(<div style={{ padding: '80px', textAlign: 'center' }}><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: PAL.accent, opacity: 0.6, margin: '0 auto' }} /></div>)
 
   if (crisis) {
     return shell(

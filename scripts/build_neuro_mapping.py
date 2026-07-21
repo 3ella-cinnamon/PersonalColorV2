@@ -1,0 +1,127 @@
+"""Build the Neuro card -> framework/tools mapping (rule-based, no AI).
+
+What is SOLID (predefined in the card catalogue / Mapping_Rules sheet):
+  - archetype          : the card's theme (author-defined)
+  - ns_routing         : derived from `activation` via Mapping_Rules "Activation routing"
+  - tool               : the card's `micro_intervention` (author-defined)
+  - projective_question: the card's `reflect_prompt` (author-defined)
+
+What is INFERRED here and therefore NOT authoritative:
+  - proposed_framework : a keyword rule maps the archetype to a therapeutic
+                         framework. This is a *proposal* to be validated against
+                         the literature.
+
+Anything that cannot be mapped confidently is written to Improve/<date>_...md
+so a human can research it and update the rules later, instead of inventing a
+mapping. Run:  python scripts/build_neuro_mapping.py
+Outputs:  neuro_framework_mapping.json  +  Improve/<YYYY-MM-DD>_neuro_framework_gaps.md
+"""
+
+import json
+import os
+from datetime import date
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# archetype keyword -> therapeutic framework (proposal, pending research validation)
+FRAMEWORK_RULES = [
+    ("Affect regulation (window of tolerance)",
+     ["emotional", "activation", "regulation", "pause", "shutdown", "conservation", "arousal"]),
+    ("Perception & cognitive defusion (perception vs interpretation)",
+     ["perception", "projection", "uncertainty", "awareness", "narrative", "memory", "interpretation"]),
+    ("Behavioural activation & agency",
+     ["readiness", "access", "decision", "motivation", "control", "transition"]),
+    ("Values clarification",
+     ["values", "orientation", "ambivalence"]),
+    ("Protective parts & boundaries",
+     ["protection", "defence", "boundary", "role", "limitation", "blocked"]),
+    ("Resourcing & co-regulation",
+     ["belonging", "refuge", "co-regulation", "support", "connection", "continuity", "receiving"]),
+    ("Self-compassion & acceptance",
+     ["incubation", "fragility", "caution", "vulnerability", "repair", "integration", "burden"]),
+]
+
+
+def ns_routing(activation: str) -> str:
+    """Mapping_Rules 'Activation routing' — solid, research-informed."""
+    a = (activation or "").lower()
+    if a in ("low",):
+        return "0-3: any deck; reflection led by the user"
+    if a in ("low-medium", "medium"):
+        return "4-6: reflection + optional nervous-system regulation cue"
+    if a in ("high",):
+        return "7-8: grounding first (breath/orient); one card only if the user chooses"
+    return "unknown activation — route conservatively; offer regulation"
+
+
+def propose_framework(archetype: str):
+    words = archetype.lower().replace("/", " ").split()
+    for name, keys in FRAMEWORK_RULES:
+        if any(k in words or any(k in w for w in words) for k in keys):
+            return name
+    return None
+
+
+def main() -> None:
+    cards = json.load(open(os.path.join(ROOT, "cards.json"), encoding="utf-8"))["cards"]
+    neuro = [c for c in cards if c["deck"] == "neuro"]
+
+    mapping = []
+    gaps = []
+    for c in neuro:
+        arche = c.get("archetype") or ""
+        fw = propose_framework(arche)
+        row = {
+            "card_id": c["id"],
+            "image": c.get("image"),
+            "name_en": c.get("name_en"),
+            "archetype": arche or None,
+            "ns_routing": ns_routing(c.get("activation")),        # SOLID
+            "tool": c.get("micro_intervention"),                  # SOLID
+            "projective_question": c.get("reflect_prompt_en"),    # SOLID
+            "proposed_framework": fw,                             # INFERRED
+            "framework_status": "proposed" if fw else "unmapped",
+        }
+        mapping.append(row)
+        # Flag anything a human should validate/research.
+        if not arche:
+            gaps.append((c.get("name_en"), "no archetype in catalogue"))
+        elif not fw:
+            gaps.append((c.get("name_en"), f"archetype '{arche}' matches no framework rule"))
+        if not c.get("micro_intervention"):
+            gaps.append((c.get("name_en"), "no micro-intervention (tool) defined"))
+
+    out_path = os.path.join(ROOT, "neuro_framework_mapping.json")
+    json.dump(mapping, open(out_path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+    print(f"wrote {out_path} ({len(mapping)} cards, "
+          f"{sum(1 for m in mapping if m['framework_status']=='proposed')} proposed, "
+          f"{sum(1 for m in mapping if m['framework_status']=='unmapped')} unmapped)")
+
+    improve_dir = os.path.join(ROOT, "Improve")
+    os.makedirs(improve_dir, exist_ok=True)
+    gap_path = os.path.join(improve_dir, f"{date.today().isoformat()}_neuro_framework_gaps.md")
+    with open(gap_path, "w", encoding="utf-8") as f:
+        f.write(f"# Neuro mapping — items needing research ({date.today().isoformat()})\n\n")
+        f.write("Generated by `scripts/build_neuro_mapping.py`. These are the parts of the\n")
+        f.write("Neuro card -> framework/tools mapping that could NOT be resolved from the\n")
+        f.write("predefined catalogue + Mapping_Rules and should be validated by a human.\n\n")
+        f.write("## Cross-cutting: framework classification needs validation\n\n")
+        f.write("`proposed_framework` in neuro_framework_mapping.json is INFERRED by keyword\n")
+        f.write("rule, not taken from research. Validate each proposed framework against a\n")
+        f.write("named model (e.g. ACT, IFS, polyvagal-informed regulation, behavioural\n")
+        f.write("activation, self-compassion) and correct the rules in the script.\n\n")
+        f.write("## Card-specific gaps\n\n")
+        if gaps:
+            for name, why in gaps:
+                f.write(f"- **{name}** — {why}\n")
+        else:
+            f.write("- (none — every card matched a framework rule and has a tool)\n")
+        f.write("\n## How to update\n\n")
+        f.write("1. Decide the correct framework for each item above (with a source).\n")
+        f.write("2. Add its archetype keyword(s) to `FRAMEWORK_RULES` in the script.\n")
+        f.write("3. Re-run `python scripts/build_neuro_mapping.py` and re-check this file.\n")
+    print(f"wrote {gap_path} ({len(gaps)} card-specific gap note(s))")
+
+
+if __name__ == "__main__":
+    main()
