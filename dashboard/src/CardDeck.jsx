@@ -335,7 +335,7 @@ function DeckCard({ card, name, accent, faceUp, onClick, selected, disabled, lab
 /*  Main component                                                      */
 /* ------------------------------------------------------------------ */
 
-export default function CardDeck({ onBack, token }) {
+export default function CardDeck({ onBack, token, onStartGuided }) {
   const [lang, setLang]       = useState('en')          // 'en' | 'th'
   const [data, setData]       = useState(null)
   const [loadErr, setLoadErr] = useState('')
@@ -673,6 +673,38 @@ export default function CardDeck({ onBack, token }) {
             )
           })}
         </div>
+
+        {/* Guided-session entry (Neuro POC) */}
+        {onStartGuided && (
+          <button
+            onClick={onStartGuided}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '14px', width: '100%',
+              background: DECKS.neuro.tint, border: `1px solid ${DECKS.neuro.border}`, borderRadius: '16px',
+              padding: '18px 22px', cursor: 'pointer', textAlign: 'left', fontFamily: fontSans, marginBottom: '32px',
+            }}
+            onMouseEnter={e => e.currentTarget.style.boxShadow = '0 8px 26px -12px rgba(0,0,0,0.16)'}
+            onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+          >
+            <div style={{ width: '46px', height: '46px', borderRadius: '13px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>
+              🧭
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                <span style={{ fontSize: '15px', fontWeight: 500, color: '#1B1B19' }}>{t('Guided session', 'เซสชันแบบมีไกด์')}</span>
+                <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: DECKS.neuro.accent, background: '#fff', padding: '2px 7px', borderRadius: '6px', fontWeight: 500 }}>
+                  {t('Neuro', 'นิวโร')}
+                </span>
+              </div>
+              <p style={{ fontSize: '12.5px', color: '#7A7A72', margin: 0, lineHeight: 1.5 }}>
+                {t('A step-by-step reflection: arrive, draw one image, make meaning, and leave with a small step.',
+                   'การทบทวนใจแบบทีละขั้น: ตั้งหลัก จั่วภาพหนึ่งใบ สร้างความหมาย และจบด้วยก้าวเล็ก ๆ')}
+              </p>
+            </div>
+            <ArrowRight size={16} strokeWidth={1.8} color={DECKS.neuro.accent} style={{ flexShrink: 0 }} />
+          </button>
+        )}
+
         {disclaimer}
       </div>
     )

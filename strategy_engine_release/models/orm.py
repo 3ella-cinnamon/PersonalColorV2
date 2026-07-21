@@ -626,9 +626,17 @@ class CardReading(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
 
     deck:        Mapped[str] = mapped_column(String(20), nullable=False)   # tarot | neuro | nature
-    spread_id:   Mapped[str] = mapped_column(String(20), nullable=False)   # one | three
+    spread_id:   Mapped[str] = mapped_column(String(20), nullable=False)   # one | three | guided
     spread_name: Mapped[str] = mapped_column(String(80), nullable=False)   # display name at save time
     cards_json:  Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+
+    # 'quick' = a saved draw; 'guided' = a full 11-stage session (Session_Logic).
+    # Named session_mode (not "mode") to avoid Postgres's mode() ordered-set aggregate.
+    session_mode: Mapped[str] = mapped_column(String(12), default="quick", nullable=False)
+    # For guided sessions: the full structured stage-by-stage record
+    # (activation before/mid/after, observations, meaning, choice, micro-action,
+    # anchor, feedback, consent, safety events). Null for quick draws.
+    session_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     # The user's own words — the heart of a projective reading.
     reflection: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

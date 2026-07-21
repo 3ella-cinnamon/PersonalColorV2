@@ -43,6 +43,8 @@ class ReadingCreate(BaseModel):
     intention:   Optional[str] = None
     activation_before: Optional[int] = Field(default=None, ge=0, le=10)
     lang:        Optional[str] = None
+    mode:        str = "quick"                       # quick | guided
+    session:     Optional[dict[str, Any]] = None     # full guided-session record
 
 
 class ReadingOut(BaseModel):
@@ -55,6 +57,8 @@ class ReadingOut(BaseModel):
     intention:   Optional[str]
     activation_before: Optional[int]
     lang:        Optional[str]
+    mode:        str
+    session:     Optional[dict[str, Any]]
     created_at:  str
 
 
@@ -69,6 +73,8 @@ def _serialize(r: CardReading) -> ReadingOut:
         intention=r.intention,
         activation_before=r.activation_before,
         lang=r.lang,
+        mode=r.session_mode or "quick",
+        session=json.loads(r.session_json) if r.session_json else None,
         created_at=r.created_at.isoformat() if r.created_at else "",
     )
 
@@ -92,6 +98,8 @@ def create_reading(
         intention=payload.intention,
         activation_before=payload.activation_before,
         lang=payload.lang,
+        session_mode=payload.mode or "quick",
+        session_json=json.dumps(payload.session, ensure_ascii=False) if payload.session else None,
     )
     db.add(reading)
     db.commit()

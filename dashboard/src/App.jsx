@@ -4,6 +4,7 @@ import DailyDecisionDashboard from './daily_decision_dashboard'
 import HomeMenu from './HomeMenu'
 import ConsultDashboard from './ConsultDashboard'
 import CardDeck from './CardDeck'
+import GuidedSession from './GuidedSession'
 
 /* ------------------------------------------------------------------ */
 /*  API helpers                                                         */
@@ -356,6 +357,16 @@ export default function App() {
       <CardDeck
         token={token}
         onBack={() => setSection(null)}
+        onStartGuided={() => setSection('cards-guided')}
+      />
+    )
+  }
+
+  if (section === 'cards-guided') {
+    return (
+      <GuidedSession
+        token={token}
+        onBack={() => setSection('cards')}
       />
     )
   }
