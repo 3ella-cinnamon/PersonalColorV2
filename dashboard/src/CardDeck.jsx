@@ -266,6 +266,8 @@ function DeckCard({ card, name, accent, faceUp, onClick, selected, disabled, lab
       onClick={onClick}
       disabled={disabled}
       style={{
+        display: 'block',
+        width: '100%',
         perspective: '900px',
         background: 'none',
         border: 'none',
