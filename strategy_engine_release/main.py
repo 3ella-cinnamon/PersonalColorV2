@@ -17,6 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api import auth, aehq, bazi, cards, color_types, consult, daily, goals, hd_types, logs, mbti_types, profile, recommendations
 from core.database import Base, engine
 from core.middleware import APILoggingMiddleware
+from core.schema_patch import apply_additive_columns
 
 # Importing models here ensures they're registered with Base.metadata
 # before create_all runs.
@@ -27,6 +28,8 @@ import models.orm  # noqa: F401
 async def lifespan(app: FastAPI):
     # Auto-create tables on startup. For production with migrations, swap this for Alembic.
     Base.metadata.create_all(bind=engine)
+    # Add any columns added to existing tables after they first shipped (additive only).
+    apply_additive_columns(engine)
     yield
 
 
