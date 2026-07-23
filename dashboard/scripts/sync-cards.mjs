@@ -1,11 +1,15 @@
 // Syncs card data + deck art from the repo root into the app's public/ folder
-// so Vite serves them at /cards.json and /neuro/*. Runs automatically before
-// `npm run dev` and `npm run build` (see predev/prebuild in package.json).
+// so Vite serves them at /cards.json and /neuro/*, /tarot_1/*, /tarot_2/*,
+// /nature/*. Runs automatically before `npm run dev` and `npm run build`
+// (see predev/prebuild in package.json).
 //
-// Full-resolution masters live in <repoRoot>/Neuro (~2 MB each). We never ship
-// those: sharp downscales each to a small WebP (max 520px wide) written into
-// public/neuro/, which is what the app actually loads. The public/ copies are
-// gitignored and regenerated on every dev run / build.
+// Full-resolution masters live in <repoRoot>/<Deck> (~2 MB each). We never
+// ship those: sharp downscales each to a small WebP (max 520px wide) written
+// into public/<deck>/, which is what the app actually loads. The public/
+// copies are gitignored and regenerated on every dev run / build.
+//
+// Tarot has two parallel art sets (Tarot_1, Tarot_2) — the app randomly
+// picks one as the session's art source, so both get synced + manifested.
 import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve, parse } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -40,8 +44,8 @@ function upToDate(src, out) {
 if (copyIfPresent(join(repoRoot, 'cards.json'), join(publicDir, 'cards.json')))
   console.log('[sync-cards] cards.json → public/cards.json')
 
-// 2) deck art folders (Neuro now; add more as they arrive)
-for (const deck of ['Neuro']) {
+// 2) deck art folders
+for (const deck of ['Neuro', 'Tarot_1', 'Tarot_2', 'Nature']) {
   const srcDir = join(repoRoot, deck)
   if (!existsSync(srcDir)) { console.warn(`[sync-cards] skip art (missing): ${srcDir}`); continue }
   const destDir = join(publicDir, deck.toLowerCase())

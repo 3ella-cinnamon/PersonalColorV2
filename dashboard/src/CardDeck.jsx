@@ -118,6 +118,26 @@ const SPREADS = {
 
 const FAN_SIZE = 13  // face-down cards presented for picking
 
+/* Two parallel Tarot art sets exist (Tarot_1, Tarot_2) — one is chosen at
+   random per session (see chooseDeck) so a whole reading stays visually
+   consistent, like reaching for one physical deck off the shelf.
+   Filenames follow T-M00..21 (majors) / T-<suit letter><rank code> (minors),
+   independent of which of the two folders is actually used. */
+const TAROT_SUIT_LETTER = { wands: 'W', cups: 'C', swords: 'S', pentacles: 'P' }
+const TAROT_RANK_CODE   = { ace: '01', page: '11', knight: '12', queen: '13', king: '14' }
+
+function pickRandomTarotVariant() {
+  return Math.random() < 0.5 ? 'tarot_1' : 'tarot_2'
+}
+
+function tarotFilenameCode(card) {
+  if (card.arcana === 'major') return `T-M${String(card.number).padStart(2, '0')}`
+  const suitLetter = TAROT_SUIT_LETTER[card.suit]
+  const rankPart = card.id.split('_').pop()          // 'ace' | '02'..'10' | 'page' | 'knight' | 'queen' | 'king'
+  const rankCode = TAROT_RANK_CODE[rankPart] || rankPart
+  return suitLetter ? `T-${suitLetter}${rankCode}` : null
+}
+
 /* Interactive "small workshop" per framework. English only (source data is EN).
    Every workshop carries >= 3 sample hint answers to guide the user. */
 const TOOL_WORKSHOPS = {
@@ -434,6 +454,8 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
   const [historyErr, setHistoryErr] = useState('')
   const [viewing, setViewing]       = useState(null)    // a reading object for detail view
   const [neuroManifest, setNeuroManifest] = useState(null)  // Set of delivered N-XX basenames
+  const [tarotManifests, setTarotManifests] = useState(null) // { tarot_1: Set, tarot_2: Set }
+  const [tarotVariant, setTarotVariant] = useState(null)     // 'tarot_1' | 'tarot_2' — chosen per session
   const [frameworks, setFrameworks] = useState({})          // { card_id: proposed_framework }
   const [workshopNotes, setWorkshopNotes] = useState({})    // { card_id: user's workshop text }
   const [thBundle, setThBundle] = useState({ strings: {}, workshops: {} })  // Thai copy from the backend
@@ -473,6 +495,12 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
       .then(r => (r.ok ? r.json() : []))
       .then(list => setNeuroManifest(new Set(list)))
       .catch(() => setNeuroManifest(new Set()))
+    // Tarot: two parallel art sets — load both manifests so we can check
+    // whichever variant the session randomly lands on.
+    Promise.all([
+      fetch('/tarot_1/manifest.json').then(r => (r.ok ? r.json() : [])).catch(() => []),
+      fetch('/tarot_2/manifest.json').then(r => (r.ok ? r.json() : [])).catch(() => []),
+    ]).then(([t1, t2]) => setTarotManifests({ tarot_1: new Set(t1), tarot_2: new Set(t2) }))
     // Proposed framework per card (for the interactive workshop).
     fetch('/neuro/mapping.json')
       .then(r => (r.ok ? r.json() : []))
@@ -507,14 +535,25 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
     if (!deckId) return []
     return visibleCards
       .filter(c => c.deck === deckId)
-      .map(c => ({ ...c, name: lang === 'th' ? c.name_th : c.name_en }))
-  }, [visibleCards, deckId, lang])
+      .map(c => {
+        const name = lang === 'th' ? c.name_th : c.name_en
+        if (deckId !== 'tarot' || !tarotVariant || !tarotManifests) return { ...c, name }
+        // Resolve this card's art from whichever Tarot variant this session chose;
+        // if that variant is missing this specific card, no image -> SVG fallback.
+        const code = tarotFilenameCode(c)
+        const inVariant = code && tarotManifests[tarotVariant]?.has(code)
+        return { ...c, name, image: inVariant ? `${tarotVariant}/${code}.webp` : undefined }
+      })
+  }, [visibleCards, deckId, lang, tarotVariant, tarotManifests])
 
   const meta = deckId ? DECKS[deckId] : null
 
   /* ---- flow actions ---- */
 
   const chooseDeck = (id) => {
+    if (id === 'tarot' && !tarotVariant) {
+      setTarotVariant(pickRandomTarotVariant())
+    }
     setDeckId(id)
     setSpread(null)
     setStep('spread')
@@ -740,7 +779,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
       </div>
     )
   }
-  if (!data || !neuroManifest) {
+  if (!data || !neuroManifest || !tarotManifests) {
     return shell(
       <div style={{ padding: '80px 24px', textAlign: 'center' }}>
         <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6B5B95', opacity: 0.6, margin: '0 auto' }} />

@@ -2533,7 +2533,8 @@
       ],
       "reflect_prompt_en": "A river finds a way around every rock. What flows around obstacles in your week? Breathe slowly as you answer.",
       "reflect_prompt_th": "สายน้ำหาทางอ้อมก้อนหินได้เสมอ อะไรในสัปดาห์ของคุณที่ไหลผ่านอุปสรรคไปได้ ลองหายใจช้า ๆ ขณะตอบ",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: single wavy blue line curving around a small stone"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: single wavy blue line curving around a small stone",
+      "image": "nature/G-01.webp"
     },
     {
       "id": "nature_02",
@@ -2556,7 +2557,8 @@
       ],
       "reflect_prompt_en": "This tree has stood through many storms. What are your roots — the things that keep you standing?",
       "reflect_prompt_th": "ต้นไม้ต้นนี้ผ่านพายุมามากมาย รากของคุณคืออะไร สิ่งที่ทำให้คุณยังยืนอยู่ได้",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: bare tree with wide symmetrical roots below ground line"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: bare tree with wide symmetrical roots below ground line",
+      "image": "nature/G-02.webp"
     },
     {
       "id": "nature_03",
@@ -2579,7 +2581,8 @@
       ],
       "reflect_prompt_en": "In fog, you only need to see one step ahead. What is your one next step?",
       "reflect_prompt_th": "ในหมอก เราเห็นแค่หนึ่งก้าวข้างหน้าก็พอ ก้าวถัดไปหนึ่งก้าวของคุณคืออะไร",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: mountain outline half-covered by a soft fog band"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: mountain outline half-covered by a soft fog band",
+      "image": "nature/G-03.webp"
     },
     {
       "id": "nature_04",
@@ -2602,7 +2605,8 @@
       ],
       "reflect_prompt_en": "Waves rise and fall, but the deep sea stays calm. What is your deep, calm place?",
       "reflect_prompt_th": "คลื่นขึ้นแล้วก็ลง แต่ทะเลลึกยังคงสงบ ที่สงบลึก ๆ ของคุณคือตรงไหน",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: one cresting wave line over a calm flat line"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: one cresting wave line over a calm flat line",
+      "image": "nature/G-04.webp"
     },
     {
       "id": "nature_05",
@@ -2624,7 +2628,8 @@
       ],
       "reflect_prompt_en": "You can't see past the bend — and that's okay. What might be waiting around yours?",
       "reflect_prompt_th": "เรามองไม่เห็นหลังโค้งถนน และนั่นไม่เป็นไร หลังโค้งของคุณอาจมีอะไรรออยู่",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: path curving between two simple tree shapes"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: path curving between two simple tree shapes",
+      "image": "nature/G-05.webp"
     },
     {
       "id": "nature_06",
@@ -2646,7 +2651,8 @@
       ],
       "reflect_prompt_en": "Even deserts hold hidden water. In a dry season, where is your hidden well?",
       "reflect_prompt_th": "แม้ทะเลทรายก็มีน้ำซ่อนอยู่ ในฤดูที่แห้งแล้ง บ่อน้ำลับของคุณอยู่ที่ไหน",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: two sand dune curves with one small cactus"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: two sand dune curves with one small cactus",
+      "image": "nature/G-06.webp"
     },
     {
       "id": "nature_07",
@@ -2668,7 +2674,8 @@
       ],
       "reflect_prompt_en": "Rain washes and waters at the same time. What is this rain in your life watering?",
       "reflect_prompt_th": "ฝนทั้งชะล้างและหล่อเลี้ยงไปพร้อมกัน ฝนในชีวิตคุณกำลังรดน้ำให้อะไรเติบโต",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: three slanted rain lines over a small sprout"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: three slanted rain lines over a small sprout",
+      "image": "nature/G-07.webp"
     },
     {
       "id": "nature_08",
@@ -2691,7 +2698,8 @@
       ],
       "reflect_prompt_en": "Rainbows only come after rain. What small beauty showed up after a hard time recently?",
       "reflect_prompt_th": "รุ้งมาหลังฝนเสมอ หลังช่วงเวลายาก ๆ ที่ผ่านมา มีความงามเล็ก ๆ อะไรปรากฏขึ้นบ้าง",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: single arc rainbow of three bands over a dot of sun"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: single arc rainbow of three bands over a dot of sun",
+      "image": "nature/G-08.webp"
     },
     {
       "id": "nature_09",
@@ -2714,7 +2722,8 @@
       ],
       "reflect_prompt_en": "Some things only grow in the dark and quiet. What is quietly growing in you?",
       "reflect_prompt_th": "บางสิ่งเติบโตได้เฉพาะในความมืดและเงียบ อะไรกำลังค่อย ๆ เติบโตในตัวคุณ",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: crescent moon with three small stars over a dark hill"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: crescent moon with three small stars over a dark hill",
+      "image": "nature/G-09.webp"
     },
     {
       "id": "nature_10",
@@ -2736,7 +2745,8 @@
       ],
       "reflect_prompt_en": "The field is new every morning. If today started completely fresh, what would you do first?",
       "reflect_prompt_th": "ทุ่งหญ้าใหม่ทุกเช้า ถ้าวันนี้เริ่มต้นใหม่หมดจด คุณจะทำอะไรเป็นอย่างแรก",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: flat field line with sun and two dew drops"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: flat field line with sun and two dew drops",
+      "image": "nature/G-10.webp"
     },
     {
       "id": "nature_11",
@@ -2758,7 +2768,8 @@
       ],
       "reflect_prompt_en": "Trees release leaves without grief — it makes room for spring. What is ready to fall away?",
       "reflect_prompt_th": "ต้นไม้ปล่อยใบโดยไม่เศร้า เพราะมันเปิดทางให้ฤดูใบไม้ผลิ อะไรในชีวิตพร้อมจะร่วงหล่นไปบ้าง",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: one branch with two leaves attached and one falling"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: one branch with two leaves attached and one falling",
+      "image": "nature/G-11.webp"
     },
     {
       "id": "nature_12",
@@ -2780,7 +2791,8 @@
       ],
       "reflect_prompt_en": "Snow makes the world slow and quiet. Where could you allow more slowness this week?",
       "reflect_prompt_th": "หิมะทำให้โลกช้าลงและเงียบขึ้น สัปดาห์นี้คุณจะยอมให้ตัวเองช้าลงตรงไหนได้บ้าง",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: soft dots of snow over a small quiet house"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: soft dots of snow over a small quiet house",
+      "image": "nature/G-12.webp"
     },
     {
       "id": "nature_13",
@@ -2803,7 +2815,8 @@
       ],
       "reflect_prompt_en": "Bamboo survives storms by bending. Where in your life could bending be strength, not weakness?",
       "reflect_prompt_th": "ไผ่รอดพายุเพราะรู้จักโอนเอน ตรงไหนในชีวิตที่การยอมโอนอ่อนคือความแข็งแกร่ง ไม่ใช่ความอ่อนแอ",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: three bamboo stalks, one gently bent"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: three bamboo stalks, one gently bent",
+      "image": "nature/G-13.webp"
     },
     {
       "id": "nature_14",
@@ -2825,7 +2838,8 @@
       ],
       "reflect_prompt_en": "The lotus needs mud to bloom. What difficulty in your past feeds something beautiful now?",
       "reflect_prompt_th": "ดอกบัวต้องอาศัยโคลนจึงบานได้ ความยากลำบากในอดีตหล่อเลี้ยงสิ่งงดงามอะไรในตัวคุณวันนี้",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: single lotus flower on a water line, roots below"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: single lotus flower on a water line, roots below",
+      "image": "nature/G-14.webp"
     },
     {
       "id": "nature_15",
@@ -2847,7 +2861,8 @@
       ],
       "reflect_prompt_en": "A waterfall doesn't hold back. What emotion needs permission to simply flow through you?",
       "reflect_prompt_th": "น้ำตกไม่เคยกักตัวเอง อารมณ์ไหนที่ควรได้รับอนุญาตให้ไหลผ่านตัวคุณไปบ้าง",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: vertical falling water lines into a small pool"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: vertical falling water lines into a small pool",
+      "image": "nature/G-15.webp"
     },
     {
       "id": "nature_16",
@@ -2870,7 +2885,8 @@
       ],
       "reflect_prompt_en": "Sometimes we need a cave to rest in. What does your safe retreat look like — and when will you come out?",
       "reflect_prompt_th": "บางครั้งเราต้องการถ้ำไว้พักใจ ที่พักพิงของคุณหน้าตาเป็นแบบไหน และเมื่อไหร่จะพร้อมออกมา",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: dark arch opening in a hill with a warm dot inside"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: dark arch opening in a hill with a warm dot inside",
+      "image": "nature/G-16.webp"
     },
     {
       "id": "nature_17",
@@ -2893,7 +2909,8 @@
       ],
       "reflect_prompt_en": "Stacking stones takes patience and balance. What are you carefully balancing right now?",
       "reflect_prompt_th": "การวางหินซ้อนกันต้องใช้ความอดทนและสมดุล ตอนนี้คุณกำลังประคองสมดุลของอะไรอยู่",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: five stones stacked, largest at the bottom"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: five stones stacked, largest at the bottom",
+      "image": "nature/G-17.webp"
     },
     {
       "id": "nature_18",
@@ -2915,7 +2932,8 @@
       ],
       "reflect_prompt_en": "A meadow asks nothing of you. Take one slow breath. What does 'enough space' feel like in your body?",
       "reflect_prompt_th": "ทุ่งหญ้าไม่เรียกร้องอะไรจากคุณ หายใจช้า ๆ หนึ่งครั้ง 'พื้นที่ที่พอ' รู้สึกอย่างไรในร่างกายคุณ",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: wide flat green line with three tiny flowers"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: wide flat green line with three tiny flowers",
+      "image": "nature/G-18.webp"
     },
     {
       "id": "nature_19",
@@ -2938,7 +2956,8 @@
       ],
       "reflect_prompt_en": "The clouds are parting. What storm in your life is starting to pass — even a little?",
       "reflect_prompt_th": "เมฆกำลังแยกออก พายุเรื่องไหนในชีวิตกำลังเริ่มผ่านไป แม้เพียงเล็กน้อยก็ตาม",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: two clouds parting with sun rays between them"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: two clouds parting with sun rays between them",
+      "image": "nature/G-19.webp"
     },
     {
       "id": "nature_20",
@@ -2961,7 +2980,8 @@
       ],
       "reflect_prompt_en": "Roots work unseen. Who or what supports you in ways others don't see?",
       "reflect_prompt_th": "รากทำงานโดยไม่มีใครเห็น ใครหรืออะไรค้ำจุนคุณอยู่ในแบบที่คนอื่นมองไม่เห็น",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: underground root web below a small trunk"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: underground root web below a small trunk",
+      "image": "nature/G-20.webp"
     },
     {
       "id": "nature_21",
@@ -2984,7 +3004,8 @@
       ],
       "reflect_prompt_en": "A seedling needs daily care, not force. What new thing in your life needs gentle daily watering?",
       "reflect_prompt_th": "ต้นกล้าต้องการการดูแลทุกวัน ไม่ใช่การเร่งรัด สิ่งใหม่อะไรในชีวิตที่ต้องการการรดน้ำอย่างอ่อนโยนทุกวัน",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: tiny sprout with two leaves in a small mound"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: tiny sprout with two leaves in a small mound",
+      "image": "nature/G-21.webp"
     },
     {
       "id": "nature_22",
@@ -3007,7 +3028,8 @@
       ],
       "reflect_prompt_en": "The bird trusts its wings, not the branch. What are your wings — the abilities that go with you anywhere?",
       "reflect_prompt_th": "นกเชื่อปีกของมัน ไม่ใช่กิ่งไม้ ปีกของคุณคืออะไร ความสามารถที่ติดตัวคุณไปได้ทุกที่",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: simple bird silhouette with open wings above a branch"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: simple bird silhouette with open wings above a branch",
+      "image": "nature/G-22.webp"
     },
     {
       "id": "nature_23",
@@ -3030,7 +3052,8 @@
       ],
       "reflect_prompt_en": "Before wings, there was a cocoon. What cocoon stage might you be in right now?",
       "reflect_prompt_th": "ก่อนจะมีปีก ต้องผ่านดักแด้ ตอนนี้คุณอาจกำลังอยู่ในช่วงดักแด้ของเรื่องอะไร",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: butterfly with two simple symmetric wings"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: butterfly with two simple symmetric wings",
+      "image": "nature/G-23.webp"
     },
     {
       "id": "nature_24",
@@ -3052,7 +3075,8 @@
       ],
       "reflect_prompt_en": "Dew makes an invisible web visible. What small, easily-missed thing in your life deserves noticing today?",
       "reflect_prompt_th": "น้ำค้างทำให้ใยที่มองไม่เห็นปรากฏ วันนี้มีสิ่งเล็ก ๆ อะไรที่มักถูกมองข้าม แต่ควรค่าแก่การสังเกต",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: spider web quarter with three dew drops"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: spider web quarter with three dew drops",
+      "image": "nature/G-24.webp"
     },
     {
       "id": "nature_25",
@@ -3075,7 +3099,8 @@
       ],
       "reflect_prompt_en": "After the tide pulls back, life remains in the pools. After a loss or change, what remained with you?",
       "reflect_prompt_th": "เมื่อน้ำลง ชีวิตยังคงอยู่ในแอ่งน้ำ หลังการสูญเสียหรือความเปลี่ยนแปลง อะไรยังคงอยู่กับคุณ",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: rock pool circle with a small starfish"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: rock pool circle with a small starfish",
+      "image": "nature/G-25.webp"
     },
     {
       "id": "nature_26",
@@ -3098,7 +3123,8 @@
       ],
       "reflect_prompt_en": "Under a sky full of stars, worries shrink. Look up (really, if you can tonight): what feels smaller from up here?",
       "reflect_prompt_th": "ใต้ฟ้าเต็มดาว ความกังวลจะเล็กลง ลองแหงนมองจริง ๆ คืนนี้ อะไรที่ดูเล็กลงเมื่อมองจากมุมกว้าง",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: scatter of seven stars over a dark horizon"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: scatter of seven stars over a dark horizon",
+      "image": "nature/G-26.webp"
     },
     {
       "id": "nature_27",
@@ -3121,7 +3147,8 @@
       ],
       "reflect_prompt_en": "You can't hold the wind — only feel it pass. What feeling can you let pass through you today without holding it?",
       "reflect_prompt_th": "เราจับลมไม่ได้ ทำได้แค่รู้สึกถึงมัน วันนี้มีความรู้สึกไหนที่คุณจะปล่อยให้พัดผ่านไปโดยไม่ยึดไว้",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: grass blades all bending one way with two motion lines"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: grass blades all bending one way with two motion lines",
+      "image": "nature/G-27.webp"
     },
     {
       "id": "nature_28",
@@ -3144,7 +3171,8 @@
       ],
       "reflect_prompt_en": "A firefly's light is tiny but visible in the dark. What is your small light that others can see?",
       "reflect_prompt_th": "แสงหิ่งห้อยเล็กนิดเดียวแต่เห็นได้ในความมืด แสงเล็ก ๆ ของคุณที่คนอื่นมองเห็นคืออะไร",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: one glowing dot with a soft halo over dark grass"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: one glowing dot with a soft halo over dark grass",
+      "image": "nature/G-28.webp"
     },
     {
       "id": "nature_29",
@@ -3166,7 +3194,8 @@
       ],
       "reflect_prompt_en": "Standing before something vast can calm the mind. What 'big view' helps your problems find their true size?",
       "reflect_prompt_th": "การยืนอยู่หน้าสิ่งที่กว้างใหญ่ช่วยให้ใจสงบ 'ภาพกว้าง' แบบไหนที่ช่วยให้ปัญหาของคุณกลับสู่ขนาดที่แท้จริง",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: cliff edge line meeting a flat sea horizon"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: cliff edge line meeting a flat sea horizon",
+      "image": "nature/G-29.webp"
     },
     {
       "id": "nature_30",
@@ -3188,7 +3217,8 @@
       ],
       "reflect_prompt_en": "A banyan drops new roots from its own branches. How could your experience become shelter or support for someone else?",
       "reflect_prompt_th": "ต้นไทรหยั่งรากใหม่จากกิ่งของมันเอง ประสบการณ์ของคุณจะกลายเป็นร่มเงาหรือแรงหนุนให้ใครได้บ้าง",
-      "svg_hint": "minimal flat line art, 2 colors, nature scene: wide tree with two aerial roots dropping from branches"
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: wide tree with two aerial roots dropping from branches",
+      "image": "nature/G-30.webp"
     }
   ]
 }
