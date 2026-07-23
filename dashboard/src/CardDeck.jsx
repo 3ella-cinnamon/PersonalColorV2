@@ -185,28 +185,39 @@ const TOOL_WORKSHOPS = {
 
 const workshopFor = (framework) => TOOL_WORKSHOPS[framework] || TOOL_WORKSHOPS._generic
 
+/* Summary templates (placeholders: {name}, {theme}, {lines}). English is the
+   source; the Thai templates are DB-backed (editable without a deploy) and
+   passed in as `dbSummaries` — these code strings are the fallback. */
+const SUMMARY_TEMPLATES = {
+  one: {
+    en: 'The card you chose: “{name}”{theme}. Trust what you see — the answer is already in you.',
+    th: 'การ์ดที่คุณเลือกคือ “{name}”{theme} เชื่อในสิ่งที่คุณมองเห็น เพราะคำตอบอยู่ในตัวคุณเองแล้ว',
+  },
+  multi: {
+    en: 'The cards you chose tell your story: {lines}. See them together, and your own way forward gets clearer.',
+    th: 'การ์ดที่คุณเลือกเล่าเรื่องราวของคุณ: {lines} มองภาพรวมทั้งหมด แล้วคุณจะเห็นทางของตัวเองชัดขึ้น',
+  },
+}
+
 /* Short, plain-language summary of the cards drawn (bilingual). Card-focused —
    it names the images and their themes; the user's own reading still leads. */
-function buildSummary(cards, spread, lang) {
+function buildSummary(cards, spread, lang, dbSummaries) {
   if (!cards.length) return ''
   const nm = (c) => (lang === 'th' ? c.name_th : c.name_en)
   const mn = (c) => ((lang === 'th' ? c.meaning_th : c.meaning_en) || '').trim()
   const kw = (c) => ((lang === 'th' ? c.keywords_th : c.keywords_en) || []).slice(0, 2).join(', ')
-  const theme = (c) => mn(c) || kw(c)
+  const theme = (c) => (mn(c) || kw(c)).replace(/[.。]\s*$/, '')   // drop a trailing period; templates add their own punctuation
+  // Prefer the DB (Thai) template, fall back to the code template for this language.
+  const tpl = (key) => (lang === 'th' && dbSummaries && dbSummaries[key]) || SUMMARY_TEMPLATES[key][lang === 'th' ? 'th' : 'en']
   if (cards.length === 1) {
     const c = cards[0]
     const th = theme(c)
-    return lang === 'th'
-      ? `คุณจั่วได้ “${nm(c)}”${th ? ` — ${th}` : ''} สิ่งที่คุณเห็นในภาพนี้สำคัญที่สุด`
-      : `You drew “${nm(c)}”${th ? ` — ${th}` : ''} What you saw in it matters most.`
+    return tpl('one').replace('{name}', nm(c)).replace('{theme}', th ? ` — ${th}` : '')
   }
-  const lines = cards.map((c, i) => {
-    const pos = lang === 'th' ? spread.positions[i]?.th : spread.positions[i]?.en
-    return `${pos} → ${nm(c)}`
-  })
-  return lang === 'th'
-    ? `ภาพที่คุณเลือกร้อยเรียงเป็นเรื่องสั้น ๆ: ${lines.join('  ·  ')} ลองอ่านรวมกันว่าตอนนี้คุณอยู่ตรงไหน`
-    : `Your cards read as a short story: ${lines.join('  ·  ')}. Read them together as a picture of where you are now.`
+  const lines = cards
+    .map((c, i) => `${lang === 'th' ? spread.positions[i]?.th : spread.positions[i]?.en} → ${nm(c)}`)
+    .join('  ·  ')
+  return tpl('multi').replace('{lines}', lines)
 }
 
 /* ------------------------------------------------------------------ */
@@ -458,7 +469,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
   const [tarotVariant, setTarotVariant] = useState(null)     // 'tarot_1' | 'tarot_2' — chosen per session
   const [frameworks, setFrameworks] = useState({})          // { card_id: proposed_framework }
   const [workshopNotes, setWorkshopNotes] = useState({})    // { card_id: user's workshop text }
-  const [thBundle, setThBundle] = useState({ strings: {}, workshops: {} })  // Thai copy from the backend
+  const [thBundle, setThBundle] = useState({ strings: {}, workshops: {}, summaries: {} })  // Thai copy from the backend
 
   const t = useCallback((en, th) => (lang === 'th' ? th : en), [lang])
 
@@ -509,9 +520,9 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
     // Thai copy for English-only content (micro_intervention, caution, workshop
     // framework text) — DB-backed on the backend; safe to skip if it's offline.
     fetch('/api/cards/i18n/th')
-      .then(r => (r.ok ? r.json() : { strings: {}, workshops: {} }))
+      .then(r => (r.ok ? r.json() : { strings: {}, workshops: {}, summaries: {} }))
       .then(setThBundle)
-      .catch(() => setThBundle({ strings: {}, workshops: {} }))
+      .catch(() => setThBundle({ strings: {}, workshops: {}, summaries: {} }))
   }, [])
 
   // English -> Thai lookup with a graceful fallback to the English source.
@@ -638,7 +649,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
           intention: intention.trim() || null,
           lang,
           session: {
-            summary: buildSummary(pickedCards, spread, lang),
+            summary: buildSummary(pickedCards, spread, lang, thBundle.summaries),
             workshops: pickedCards
               .filter(c => (workshopNotes[c.id] || '').trim())
               .map(c => ({ card_id: c.id, framework: frameworks[c.id] || null, notes: workshopNotes[c.id].trim() })),
@@ -1289,7 +1300,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
                 {t('In short', 'สรุปสั้น ๆ')}
               </div>
               <p style={{ fontSize: '13.5px', color: '#3A3A3A', margin: 0, lineHeight: 1.6 }}>
-                {buildSummary(pickedCards, spread, lang)}
+                {buildSummary(pickedCards, spread, lang, thBundle.summaries)}
               </p>
             </div>
             {pickedCards.map((card, i) => (

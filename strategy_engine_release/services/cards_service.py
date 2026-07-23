@@ -16,7 +16,7 @@ from models.orm import CardTranslation
 from services import cards_i18n_th as _i18n_th
 
 # Bump when cards_i18n_th.py's dicts change so _ensure_cache re-seeds on deploy.
-CARDS_I18N_VERSION = "cards-i18n-1"
+CARDS_I18N_VERSION = "cards-i18n-2"
 
 # Flat English -> Thai map (micro_intervention + clinical_caution). Module
 # defaults double as seed source; DB rows win once seeded (see _load_from_db).
@@ -35,8 +35,8 @@ def _load_from_db(db: DBSession) -> None:
     rows = db.query(CardTranslation).filter(CardTranslation.lang == "th").all()
     merged: dict[str, str] = {**_i18n_th.MICRO_TH, **_i18n_th.CAUTION_TH}
     for row in rows:
-        if row.src.startswith("workshop:"):
-            continue  # handled by get_workshop_th()
+        if row.src.startswith("workshop:") or row.src.startswith("summary:"):
+            continue  # nested/templated — served separately by get_th_bundle()
         merged[row.src] = row.dst
     TH_MAP = merged
 
@@ -51,6 +51,8 @@ def _seed(db: DBSession) -> None:
         rows.append(CardTranslation(lang="th", src=f"workshop:{fw}:prompt", dst=entry["prompt"]))
         for i, hint in enumerate(entry["hints"]):
             rows.append(CardTranslation(lang="th", src=f"workshop:{fw}:hint:{i}", dst=hint))
+    for key, tpl in _i18n_th.SUMMARY_TH.items():
+        rows.append(CardTranslation(lang="th", src=f"summary:{key}", dst=tpl))
     rows.append(CardTranslation(lang="meta", src="content_version", dst=CARDS_I18N_VERSION))
     db.add_all(rows)
     db.commit()
@@ -100,4 +102,11 @@ def get_th_bundle(db: DBSession) -> dict:
             while len(entry["hints"]) <= idx:
                 entry["hints"].append(None)
             entry["hints"][idx] = row.dst
-    return {"strings": dict(TH_MAP), "workshops": workshops}
+
+    summaries: dict[str, str] = {}
+    for row in db.query(CardTranslation).filter(
+        CardTranslation.lang == "th", CardTranslation.src.like("summary:%")
+    ).all():
+        summaries[row.src.split(":", 1)[1]] = row.dst
+
+    return {"strings": dict(TH_MAP), "workshops": workshops, "summaries": summaries}

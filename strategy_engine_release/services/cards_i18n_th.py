@@ -98,6 +98,13 @@ CAUTION_TH: dict[str, str] = {
         "ภาพนี้ไม่ได้มีไว้เพื่อรื้อฟื้นความทรงจำ หรือใช้ยืนยันว่าเหตุการณ์ใดเป็นความจริง",
 }
 
+# ── "In short" summary templates (placeholders: {name} {theme} {lines}) ──
+# Warm, empowering, easy to read. Edit here (or in the DB) without touching code.
+SUMMARY_TH: dict[str, str] = {
+    "one":   "การ์ดที่คุณเลือกคือ “{name}”{theme} เชื่อในสิ่งที่คุณมองเห็น เพราะคำตอบอยู่ในตัวคุณเองแล้ว",
+    "multi": "การ์ดที่คุณเลือกเล่าเรื่องราวของคุณ: {lines} มองภาพรวมทั้งหมด แล้วคุณจะเห็นทางของตัวเองชัดขึ้น",
+}
+
 # ── Interactive workshop content (frontend TOOL_WORKSHOPS keys) ──
 # Each entry: short label, the guiding prompt, and >=3 sample hint answers.
 WORKSHOP_TH: dict[str, dict] = {

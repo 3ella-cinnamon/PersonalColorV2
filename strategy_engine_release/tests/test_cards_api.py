@@ -245,13 +245,19 @@ class TestI18n:
         r = client.get("/api/cards/i18n/th")   # no auth header
         assert r.status_code == 200
         body = r.json()
-        assert "strings" in body and "workshops" in body
+        assert "strings" in body and "workshops" in body and "summaries" in body
         # a known English micro-intervention has a Thai translation
         assert body["strings"]["Unclench hands on the exhale."]
         # workshops carry short label + prompt + >= 3 hints
         ws = body["workshops"]["Resourcing & co-regulation"]
         assert ws["short"] and ws["prompt"]
         assert len([h for h in ws["hints"] if h]) >= 3
+
+    def test_summary_templates_present(self, client):
+        summaries = client.get("/api/cards/i18n/th").json()["summaries"]
+        assert "{name}" in summaries["one"] and "{theme}" in summaries["one"]
+        assert "{lines}" in summaries["multi"]
+        assert summaries["one"].startswith("การ์ดที่คุณเลือก")   # not the old "คุณจั่วได้"
 
     def test_bundle_is_stable_across_calls(self, client):
         a = client.get("/api/cards/i18n/th").json()
