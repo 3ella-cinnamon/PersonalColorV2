@@ -71,3 +71,7 @@ for (const deck of ['Neuro']) {
   writeFileSync(join(destDir, 'manifest.json'), JSON.stringify(manifest, null, 0))
   console.log(`[sync-cards] ${deck}/ → public/${deck.toLowerCase()}/ (${made} written, ${skipped} up-to-date, ${manifest.length} in manifest)`)
 }
+
+// 3) Neuro framework/tools mapping (proposed_framework per card) for the workshop UI.
+if (copyIfPresent(join(repoRoot, 'neuro_framework_mapping.json'), join(publicDir, 'neuro', 'mapping.json')))
+  console.log('[sync-cards] neuro_framework_mapping.json → public/neuro/mapping.json')

@@ -118,6 +118,77 @@ const SPREADS = {
 
 const FAN_SIZE = 13  // face-down cards presented for picking
 
+/* Interactive "small workshop" per framework. English only (source data is EN).
+   Every workshop carries >= 3 sample hint answers to guide the user. */
+const TOOL_WORKSHOPS = {
+  'Affect regulation (window of tolerance)': {
+    short: 'Affect regulation',
+    prompt: 'Do the small thing above, then notice what shifted in your body — even 1%.',
+    hints: ['My breathing slowed a little', 'My shoulders dropped', 'Still tense, but less urgent'],
+  },
+  'Perception & cognitive defusion (perception vs interpretation)': {
+    short: 'Perception check',
+    prompt: 'Separate what you actually SAW from the story you added to it.',
+    hints: ['Fact: a dark shape. Story: “it’s dangerous”', 'I assumed the worst without proof', 'There is another way to read this'],
+  },
+  'Behavioural activation & agency': {
+    short: 'Small action',
+    prompt: 'Name the smallest step you could take in the next 10 minutes.',
+    hints: ['Send one short message', 'Stand up and stretch for 2 minutes', 'Write only the first sentence'],
+  },
+  'Values clarification': {
+    short: 'Values',
+    prompt: 'Which value wants to lead here?',
+    hints: ['Honesty — say the true thing kindly', 'Courage — do the small brave thing', 'Care — be gentle with myself first'],
+  },
+  'Protective parts & boundaries': {
+    short: 'Protective part',
+    prompt: 'This pattern once protected you. What is it trying to keep safe?',
+    hints: ['It guards against rejection', 'It stops me getting hurt again', 'It wants control when things feel uncertain'],
+  },
+  'Resourcing & co-regulation': {
+    short: 'Resourcing',
+    prompt: 'Name one source of steadiness you can lean on right now.',
+    hints: ['A friend I can text', 'A place that feels safe', 'A memory of being supported'],
+  },
+  'Self-compassion & acceptance': {
+    short: 'Self-compassion',
+    prompt: 'What would you say to a good friend in this exact spot?',
+    hints: ['“This is hard, and you’re doing your best”', '“You don’t have to have it all figured out”', '“It makes sense you feel this way”'],
+  },
+  _generic: {
+    short: 'Reflection',
+    prompt: 'What is one gentle, true thing you can take from this card?',
+    hints: ['A word to hold onto today', 'One small thing to try', 'Something to notice, not fix'],
+  },
+}
+
+const workshopFor = (framework) => TOOL_WORKSHOPS[framework] || TOOL_WORKSHOPS._generic
+
+/* Short, plain-language summary of the cards drawn (bilingual). Card-focused —
+   it names the images and their themes; the user's own reading still leads. */
+function buildSummary(cards, spread, lang) {
+  if (!cards.length) return ''
+  const nm = (c) => (lang === 'th' ? c.name_th : c.name_en)
+  const mn = (c) => ((lang === 'th' ? c.meaning_th : c.meaning_en) || '').trim()
+  const kw = (c) => ((lang === 'th' ? c.keywords_th : c.keywords_en) || []).slice(0, 2).join(', ')
+  const theme = (c) => mn(c) || kw(c)
+  if (cards.length === 1) {
+    const c = cards[0]
+    const th = theme(c)
+    return lang === 'th'
+      ? `คุณจั่วได้ “${nm(c)}”${th ? ` — ${th}` : ''} สิ่งที่คุณเห็นในภาพนี้สำคัญที่สุด`
+      : `You drew “${nm(c)}”${th ? ` — ${th}` : ''} What you saw in it matters most.`
+  }
+  const lines = cards.map((c, i) => {
+    const pos = lang === 'th' ? spread.positions[i]?.th : spread.positions[i]?.en
+    return `${pos} → ${nm(c)}`
+  })
+  return lang === 'th'
+    ? `ภาพที่คุณเลือกร้อยเรียงเป็นเรื่องสั้น ๆ: ${lines.join('  ·  ')} ลองอ่านรวมกันว่าตอนนี้คุณอยู่ตรงไหน`
+    : `Your cards read as a short story: ${lines.join('  ·  ')}. Read them together as a picture of where you are now.`
+}
+
 /* ------------------------------------------------------------------ */
 /*  Small utilities                                                     */
 /* ------------------------------------------------------------------ */
@@ -363,6 +434,8 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
   const [historyErr, setHistoryErr] = useState('')
   const [viewing, setViewing]       = useState(null)    // a reading object for detail view
   const [neuroManifest, setNeuroManifest] = useState(null)  // Set of delivered N-XX basenames
+  const [frameworks, setFrameworks] = useState({})          // { card_id: proposed_framework }
+  const [workshopNotes, setWorkshopNotes] = useState({})    // { card_id: user's workshop text }
 
   const t = useCallback((en, th) => (lang === 'th' ? th : en), [lang])
 
@@ -399,6 +472,11 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
       .then(r => (r.ok ? r.json() : []))
       .then(list => setNeuroManifest(new Set(list)))
       .catch(() => setNeuroManifest(new Set()))
+    // Proposed framework per card (for the interactive workshop).
+    fetch('/neuro/mapping.json')
+      .then(r => (r.ok ? r.json() : []))
+      .then(rows => setFrameworks(Object.fromEntries(rows.map(m => [m.card_id, m.proposed_framework]))))
+      .catch(() => setFrameworks({}))
   }, [])
 
   // A card's art is "in the folder" when its image basename is in the manifest.
@@ -439,6 +517,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
     setReflection('')
     setIntention('')
     setShowTheme(false)
+    setWorkshopNotes({})
     setSaveState('idle')
     setSaveErr('')
     // build a fresh shuffled fan
@@ -484,6 +563,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
     setReflection('')
     setIntention('')
     setShowTheme(false)
+    setWorkshopNotes({})
     setSaveState('idle')
     setSaveErr('')
   }
@@ -508,6 +588,12 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
           reflection: reflection.trim() || null,
           intention: intention.trim() || null,
           lang,
+          session: {
+            summary: buildSummary(pickedCards, spread, lang),
+            workshops: pickedCards
+              .filter(c => (workshopNotes[c.id] || '').trim())
+              .map(c => ({ card_id: c.id, framework: frameworks[c.id] || null, notes: workshopNotes[c.id].trim() })),
+          },
         }),
       })
       setSaveState('saved')
@@ -1145,6 +1231,15 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
         {/* Theme panel — always available for non-projective, gated for projective */}
         {(!spread.projective || showTheme) && (
           <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {/* Plain-language summary of the cards drawn */}
+            <div style={{ background: '#fff', border: `1px solid ${meta.border}`, borderRadius: '12px', padding: '13px 15px' }}>
+              <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', color: meta.accent, marginBottom: '5px' }}>
+                {t('In short', 'สรุปสั้น ๆ')}
+              </div>
+              <p style={{ fontSize: '13.5px', color: '#3A3A3A', margin: 0, lineHeight: 1.6 }}>
+                {buildSummary(pickedCards, spread, lang)}
+              </p>
+            </div>
             {pickedCards.map((card, i) => (
               <div key={card.id} style={{ background: meta.tint, border: `1px solid ${meta.border}`, borderRadius: '12px', padding: '13px 15px' }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '5px', flexWrap: 'wrap' }}>
@@ -1170,18 +1265,49 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
                 <p style={{ fontSize: '13px', color: '#5A5A52', margin: 0, lineHeight: 1.55, fontStyle: 'italic' }}>
                   {lang === 'th' ? card.reflect_prompt_th : card.reflect_prompt_en}
                 </p>
-                {card.micro_intervention && (
-                  <p style={{ fontSize: '12px', color: meta.accent, margin: '8px 0 0', lineHeight: 1.5 }}>
-                    <span style={{ fontWeight: 600 }}>{t('A small thing to try', 'สิ่งเล็ก ๆ ที่ลองทำได้')}: </span>
-                    {card.micro_intervention}
-                  </p>
-                )}
                 {card.clinical_caution && (
                   <p style={{ fontSize: '11px', color: '#9A6A55', margin: '6px 0 0', lineHeight: 1.5 }}>
                     <span style={{ fontWeight: 600 }}>{t('Gentle note', 'ข้อควรระวังเบา ๆ')}: </span>
                     {card.clinical_caution}
                   </p>
                 )}
+
+                {/* Interactive framework + tool workshop (English; source data is EN). */}
+                {(() => {
+                  const ws = workshopFor(frameworks[card.id])
+                  return (
+                    <div style={{ marginTop: '11px', borderTop: `0.5px solid ${meta.border}`, paddingTop: '11px' }}>
+                      <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: meta.accent, marginBottom: '7px' }}>
+                        Framework · {ws.short}
+                      </div>
+                      {card.micro_intervention && (
+                        <p style={{ fontSize: '12.5px', color: '#4A4A44', margin: '0 0 8px', lineHeight: 1.5 }}>
+                          <span style={{ fontWeight: 600 }}>A small thing to try: </span>{card.micro_intervention}
+                        </p>
+                      )}
+                      <p style={{ fontSize: '12.5px', color: '#1B1B19', fontWeight: 500, margin: '0 0 7px', lineHeight: 1.5 }}>{ws.prompt}</p>
+                      <div style={{ fontSize: '11px', color: PAL.muted, marginBottom: '5px' }}>Examples to guide you (tap to use):</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '9px' }}>
+                        {ws.hints.map((h, hi) => (
+                          <button
+                            key={hi}
+                            onClick={() => setWorkshopNotes(p => ({ ...p, [card.id]: p[card.id] ? `${p[card.id]}\n${h}` : h }))}
+                            style={{ fontSize: '11.5px', color: '#5A4A3E', background: '#fff', border: `1px solid ${meta.border}`, padding: '4px 10px', borderRadius: '999px', cursor: 'pointer', fontFamily: fontSans, textAlign: 'left' }}
+                          >
+                            {h}
+                          </button>
+                        ))}
+                      </div>
+                      <textarea
+                        value={workshopNotes[card.id] || ''}
+                        onChange={e => setWorkshopNotes(p => ({ ...p, [card.id]: e.target.value }))}
+                        rows={2}
+                        placeholder="Your turn — write your own…"
+                        style={{ width: '100%', padding: '9px 12px', fontSize: '13px', lineHeight: 1.5, background: '#fff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '10px', outline: 'none', resize: 'vertical', fontFamily: fontSans, color: '#1B1B19', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  )
+                })()}
               </div>
             ))}
             {spread.projective && (
