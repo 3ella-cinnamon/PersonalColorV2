@@ -649,3 +649,20 @@ class CardReading(Base):
     created_at: Mapped[datetime]      = mapped_column(DateTime, server_default=func.now())
 
     user: Mapped["User"] = relationship("User")
+
+
+class CardTranslation(Base):
+    """Thai (or other language) copy for Card Deck content whose source data
+    is English-only — e.g. a card's micro_intervention, or the workshop
+    framework copy authored in the frontend.
+
+    Same shape/purpose as AEHQTranslation: services/cards_i18n_th.py holds the
+    seed defaults; this table's rows win once seeded, so operators can edit
+    Thai copy without a deploy. src is the exact English source string.
+    """
+    __tablename__ = "card_translations"
+
+    id:   Mapped[int] = mapped_column(primary_key=True)
+    lang: Mapped[str] = mapped_column(String(8), nullable=False, index=True)  # e.g. "th"
+    src:  Mapped[str] = mapped_column(Text, nullable=False)
+    dst:  Mapped[str] = mapped_column(Text, nullable=False)

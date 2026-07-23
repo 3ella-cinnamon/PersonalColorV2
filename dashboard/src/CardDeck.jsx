@@ -436,6 +436,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
   const [neuroManifest, setNeuroManifest] = useState(null)  // Set of delivered N-XX basenames
   const [frameworks, setFrameworks] = useState({})          // { card_id: proposed_framework }
   const [workshopNotes, setWorkshopNotes] = useState({})    // { card_id: user's workshop text }
+  const [thBundle, setThBundle] = useState({ strings: {}, workshops: {} })  // Thai copy from the backend
 
   const t = useCallback((en, th) => (lang === 'th' ? th : en), [lang])
 
@@ -477,7 +478,16 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
       .then(r => (r.ok ? r.json() : []))
       .then(rows => setFrameworks(Object.fromEntries(rows.map(m => [m.card_id, m.proposed_framework]))))
       .catch(() => setFrameworks({}))
+    // Thai copy for English-only content (micro_intervention, caution, workshop
+    // framework text) — DB-backed on the backend; safe to skip if it's offline.
+    fetch('/api/cards/i18n/th')
+      .then(r => (r.ok ? r.json() : { strings: {}, workshops: {} }))
+      .then(setThBundle)
+      .catch(() => setThBundle({ strings: {}, workshops: {} }))
   }, [])
+
+  // English -> Thai lookup with a graceful fallback to the English source.
+  const th = useCallback((en) => (en ? (thBundle.strings[en] || en) : en), [thBundle])
 
   // A card's art is "in the folder" when its image basename is in the manifest.
   const inFolder = useCallback((c) => {
@@ -1268,25 +1278,39 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
                 {card.clinical_caution && (
                   <p style={{ fontSize: '11px', color: '#9A6A55', margin: '6px 0 0', lineHeight: 1.5 }}>
                     <span style={{ fontWeight: 600 }}>{t('Gentle note', 'ข้อควรระวังเบา ๆ')}: </span>
-                    {card.clinical_caution}
+                    {lang === 'th' ? th(card.clinical_caution) : card.clinical_caution}
                   </p>
                 )}
 
-                {/* Interactive framework + tool workshop (English; source data is EN). */}
+                {/* Interactive framework + tool workshop. Source content is English-only;
+                    Thai copy comes from the backend (DB-backed, falls back to English). */}
                 {(() => {
-                  const ws = workshopFor(frameworks[card.id])
+                  const enWs = workshopFor(frameworks[card.id])
+                  const dbWs = thBundle.workshops[frameworks[card.id]] || {}
+                  const ws = lang === 'th'
+                    ? {
+                        short:  dbWs.short  || enWs.short,
+                        prompt: dbWs.prompt || enWs.prompt,
+                        hints:  (dbWs.hints && dbWs.hints.every(Boolean)) ? dbWs.hints : enWs.hints,
+                      }
+                    : enWs
+                  const micro = card.micro_intervention
+                    ? (lang === 'th' ? th(card.micro_intervention) : card.micro_intervention)
+                    : null
                   return (
                     <div style={{ marginTop: '11px', borderTop: `0.5px solid ${meta.border}`, paddingTop: '11px' }}>
                       <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: meta.accent, marginBottom: '7px' }}>
-                        Framework · {ws.short}
+                        {t('Framework', 'แนวทาง')} · {ws.short}
                       </div>
-                      {card.micro_intervention && (
+                      {micro && (
                         <p style={{ fontSize: '12.5px', color: '#4A4A44', margin: '0 0 8px', lineHeight: 1.5 }}>
-                          <span style={{ fontWeight: 600 }}>A small thing to try: </span>{card.micro_intervention}
+                          <span style={{ fontWeight: 600 }}>{t('A small thing to try', 'สิ่งเล็ก ๆ ที่ลองทำได้')}: </span>{micro}
                         </p>
                       )}
                       <p style={{ fontSize: '12.5px', color: '#1B1B19', fontWeight: 500, margin: '0 0 7px', lineHeight: 1.5 }}>{ws.prompt}</p>
-                      <div style={{ fontSize: '11px', color: PAL.muted, marginBottom: '5px' }}>Examples to guide you (tap to use):</div>
+                      <div style={{ fontSize: '11px', color: PAL.muted, marginBottom: '5px' }}>
+                        {t('Examples to guide you (tap to use):', 'ตัวอย่างที่ช่วยนำทาง (แตะเพื่อใช้):')}
+                      </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '9px' }}>
                         {ws.hints.map((h, hi) => (
                           <button
@@ -1302,7 +1326,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
                         value={workshopNotes[card.id] || ''}
                         onChange={e => setWorkshopNotes(p => ({ ...p, [card.id]: e.target.value }))}
                         rows={2}
-                        placeholder="Your turn — write your own…"
+                        placeholder={t('Your turn — write your own…', 'ตาคุณแล้ว — เขียนด้วยคำของคุณเอง…')}
                         style={{ width: '100%', padding: '9px 12px', fontSize: '13px', lineHeight: 1.5, background: '#fff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '10px', outline: 'none', resize: 'vertical', fontFamily: fontSans, color: '#1B1B19', boxSizing: 'border-box' }}
                       />
                     </div>

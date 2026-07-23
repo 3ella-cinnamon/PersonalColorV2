@@ -5,6 +5,7 @@ Endpoints:
   GET    /api/cards/readings        → list the current user's readings (newest first)
   GET    /api/cards/readings/{id}   → one reading
   DELETE /api/cards/readings/{id}   → delete one reading (user has full agency)
+  GET    /api/cards/i18n/th         → Thai copy for English-only card content (public)
 
 A reading is a draw the user chose to keep: deck + spread, the drawn cards with
 their spread positions, and the user's own words. No interpretation is stored on
@@ -23,6 +24,7 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from core.deps import get_current_user
 from models.orm import CardReading, User
+from services import cards_service
 
 router = APIRouter()
 
@@ -146,3 +148,11 @@ def delete_reading(
 ) -> None:
     db.delete(_owned_reading(reading_id, user, db))
     db.commit()
+
+
+@router.get("/i18n/th")
+def get_th_i18n(db: Session = Depends(get_db)) -> Any:
+    """Thai copy for card content whose source is English-only (micro-
+    interventions, clinical cautions, workshop framework copy). Public —
+    static localized reference text, not user data."""
+    return cards_service.get_th_bundle(db)

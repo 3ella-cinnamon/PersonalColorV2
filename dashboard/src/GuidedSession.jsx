@@ -174,6 +174,7 @@ export default function GuidedSession({ onBack, token }) {
   const [data, setData]     = useState(null)
   const [loadErr, setLoadErr] = useState('')
   const [manifest, setManifest] = useState(null)   // Set of delivered N-XX basenames
+  const [thStrings, setThStrings] = useState({})   // Thai copy for English-only card content
   const [stage, setStage]   = useState(0)          // index into STAGE_META
   const [crisis, setCrisis] = useState(false)      // safety override screen
 
@@ -230,7 +231,14 @@ export default function GuidedSession({ onBack, token }) {
       .then(r => (r.ok ? r.json() : []))
       .then(list => setManifest(new Set(list)))
       .catch(() => setManifest(new Set()))
+    fetch('/api/cards/i18n/th')
+      .then(r => (r.ok ? r.json() : { strings: {} }))
+      .then(b => setThStrings(b.strings || {}))
+      .catch(() => setThStrings({}))
   }, [])
+
+  // English -> Thai lookup (micro_intervention etc.) with fallback to English.
+  const th = useCallback((en) => (en ? (thStrings[en] || en) : en), [thStrings])
 
   // Only Neuro cards whose art is actually in the folder (manifest).
   const neuroCards = useMemo(() => {
@@ -710,12 +718,15 @@ export default function GuidedSession({ onBack, token }) {
         subtitle={t('Something you could do in 10 minutes or less. Smaller is better.', 'สิ่งที่ทำได้ใน 10 นาทีหรือน้อยกว่า ยิ่งเล็กยิ่งดี')}
         onNext={next}
       >
-        {drawn?.micro_intervention && !microAction && (
-          <button onClick={() => setMicroAction(drawn.micro_intervention)}
-            style={{ display: 'block', width: '100%', textAlign: 'left', background: PAL.tint, border: `1px dashed ${PAL.border}`, borderRadius: '10px', padding: '10px 13px', marginBottom: '12px', cursor: 'pointer', fontFamily: fontSans, fontSize: '12.5px', color: '#7A5A48' }}>
-            💡 {t('Try this from the card', 'ลองใช้ข้อเสนอจากไพ่')}: {drawn.micro_intervention}
-          </button>
-        )}
+        {drawn?.micro_intervention && !microAction && (() => {
+          const suggestion = lang === 'th' ? th(drawn.micro_intervention) : drawn.micro_intervention
+          return (
+            <button onClick={() => setMicroAction(suggestion)}
+              style={{ display: 'block', width: '100%', textAlign: 'left', background: PAL.tint, border: `1px dashed ${PAL.border}`, borderRadius: '10px', padding: '10px 13px', marginBottom: '12px', cursor: 'pointer', fontFamily: fontSans, fontSize: '12.5px', color: '#7A5A48' }}>
+              💡 {t('Try this from the card', 'ลองใช้ข้อเสนอจากไพ่')}: {suggestion}
+            </button>
+          )
+        })()}
         <Field label={t('My small step', 'ก้าวเล็ก ๆ ของฉัน')}
           value={microAction} onChange={setMicroAction} placeholder={t('I will…', 'ฉันจะ…')} rows={2} />
         <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#1B1B19', margin: '4px 0 12px' }}>
