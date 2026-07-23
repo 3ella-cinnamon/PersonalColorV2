@@ -5,8 +5,8 @@ import { ArrowLeft, ArrowRight, Shuffle, RotateCcw, Languages, BookMarked, Trash
 /*  Fonts + design tokens (shared with the rest of the app)             */
 /* ------------------------------------------------------------------ */
 
-const fontSans  = "'Geist', ui-sans-serif, system-ui, sans-serif"
-const fontSerif = "'Instrument Serif', ui-serif, Georgia, serif"
+const fontSans  = "'Geist', 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif"
+const fontSerif = "'Instrument Serif', 'Noto Serif Thai', ui-serif, Georgia, serif"
 
 // From cards.json style_guide.palette
 const PAL = {
@@ -394,7 +394,7 @@ function DeckCard({ card, name, accent, faceUp, onClick, selected, disabled, lab
                 {label}
               </div>
             )}
-            <div style={{ fontFamily: fontSerif, fontStyle: 'italic', fontSize: '12px', color: PAL.ink, lineHeight: 1.15 }}>
+            <div style={{ fontFamily: fontSerif, fontStyle: 'italic', fontSize: '12px', color: PAL.ink, lineHeight: 1.4 }}>
               {name ?? card?.name}
             </div>
           </div>
@@ -458,7 +458,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
       const link = document.createElement('link')
       link.id = id
       link.rel = 'stylesheet'
-      link.href = 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap'
+      link.href = 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@400;500;600&display=swap'
       document.head.appendChild(link)
     }
   }, [])
@@ -716,11 +716,14 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
   )
 
   const shell = (children) => (
-    <div style={{ minHeight: '100vh', background: PAL.bg, fontFamily: fontSans, display: 'flex', flexDirection: 'column' }}>
+    <div lang={lang} style={{ minHeight: '100vh', background: PAL.bg, fontFamily: fontSans, display: 'flex', flexDirection: 'column' }}>
       <style>{`
         @keyframes cd-fade { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
         @keyframes cd-shuffle { 0%{transform:translateX(0) rotate(0)} 25%{transform:translateX(-8px) rotate(-4deg)} 50%{transform:translateX(6px) rotate(3deg)} 75%{transform:translateX(-4px) rotate(-2deg)} 100%{transform:translateX(0) rotate(0)} }
         .cd-fade { animation: cd-fade 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+        /* Thai tone marks/vowels stack on the base consonant — extra letter-spacing
+           (used for uppercase EN eyebrow labels) visually separates them. */
+        [lang="th"], [lang="th"] * { letter-spacing: normal !important; }
       `}</style>
       {Header}
       <div style={{ flex: 1 }}>{children}</div>
@@ -754,7 +757,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
         <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: PAL.muted, marginBottom: '8px' }}>
           {t('Step 1 · Choose a deck', 'ขั้นที่ 1 · เลือกสำรับ')}
         </p>
-        <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(26px,5vw,36px)', color: '#1B1B19', margin: '0 0 28px', lineHeight: 1.2 }}>
+        <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(26px,5vw,36px)', color: '#1B1B19', margin: '0 0 28px', lineHeight: 1.3 }}>
           {t('Which cards feel right today?', 'วันนี้ไพ่แบบไหนที่ใช่สำหรับคุณ')}
         </h1>
 
@@ -837,7 +840,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
         <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: meta.accent, marginBottom: '8px' }}>
           {t('Step 2 · Choose a spread', 'ขั้นที่ 2 · เลือกรูปแบบการวางไพ่')} · {t(meta.name_en, meta.name_th)}
         </p>
-        <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(26px,5vw,36px)', color: '#1B1B19', margin: '0 0 8px', lineHeight: 1.2 }}>
+        <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(26px,5vw,36px)', color: '#1B1B19', margin: '0 0 8px', lineHeight: 1.3 }}>
           {t('How would you like to read?', 'คุณอยากอ่านไพ่แบบไหน')}
         </h1>
 
@@ -899,7 +902,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
         <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: meta.accent, marginBottom: '6px', textAlign: 'center' }}>
           {t(meta.name_en, meta.name_th)} · {t(spread.name_en, spread.name_th)}
         </p>
-        <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(22px,4.5vw,30px)', color: '#1B1B19', margin: '0 0 4px', lineHeight: 1.2, textAlign: 'center' }}>
+        <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(22px,4.5vw,30px)', color: '#1B1B19', margin: '0 0 4px', lineHeight: 1.3, textAlign: 'center' }}>
           {shuffling
             ? t('Shuffling…', 'กำลังสับไพ่…')
             : done
@@ -995,7 +998,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
         <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: PAL.muted, marginBottom: '8px' }}>
           {t('Your saved readings', 'บันทึกการอ่านของคุณ')}
         </p>
-        <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(26px,5vw,34px)', color: '#1B1B19', margin: '0 0 28px', lineHeight: 1.2 }}>
+        <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(26px,5vw,34px)', color: '#1B1B19', margin: '0 0 28px', lineHeight: 1.3 }}>
           {t('Readings you kept', 'การอ่านที่คุณเก็บไว้')}
         </h1>
 
@@ -1156,7 +1159,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
       <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: meta.accent, marginBottom: '6px', textAlign: 'center' }}>
         {t(meta.name_en, meta.name_th)} · {t(spread.name_en, spread.name_th)}
       </p>
-      <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(24px,4.5vw,32px)', color: '#1B1B19', margin: '0 0 24px', lineHeight: 1.2, textAlign: 'center' }}>
+      <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(24px,4.5vw,32px)', color: '#1B1B19', margin: '0 0 24px', lineHeight: 1.3, textAlign: 'center' }}>
         {spread.projective
           ? t('What do you see?', 'คุณเห็นอะไร')
           : t('Your cards', 'ไพ่ของคุณ')}
@@ -1213,8 +1216,8 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
               }}
             >
               {showTheme
-                ? t('Hide possible themes', 'ซ่อนแนวคิดที่เป็นไปได้')
-                : t('Show a possible theme (optional)', 'ดูแนวคิดที่เป็นไปได้ (ถ้าต้องการ)')}
+                ? t('Hide the guide', 'ซ่อนคำแนะนำ')
+                : t('Want us to be your guide?', 'อยากให้เราช่วยแนะนำไหม')}
             </button>
           </>
         ) : (

@@ -6,8 +6,8 @@ import { ArrowLeft, ArrowRight, Shuffle, Check, LifeBuoy, Wind } from 'lucide-re
 /*  (stages 0-10). Rule-based, no AI. Neuro deck only for this POC.      */
 /* ------------------------------------------------------------------ */
 
-const fontSans  = "'Geist', ui-sans-serif, system-ui, sans-serif"
-const fontSerif = "'Instrument Serif', ui-serif, Georgia, serif"
+const fontSans  = "'Geist', 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif"
+const fontSerif = "'Instrument Serif', 'Noto Serif Thai', ui-serif, Georgia, serif"
 
 const PAL = {
   ink: '#3A3A3A', paper: '#FAF7F2', bg: '#FAFAF6', muted: '#9A9A95',
@@ -153,7 +153,7 @@ function PrimaryBtn({ onClick, disabled, children }) {
 function StageBody({ t, title, subtitle, children, onNext, nextLabel, nextDisabled }) {
   return (
     <div className="gs-fade" style={{ maxWidth: '560px', margin: '0 auto', padding: '28px 24px 56px', width: '100%' }}>
-      <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(23px,4.6vw,30px)', color: '#1B1B19', margin: '0 0 8px', lineHeight: 1.25 }}>{title}</h1>
+      <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(23px,4.6vw,30px)', color: '#1B1B19', margin: '0 0 8px', lineHeight: 1.35 }}>{title}</h1>
       {subtitle && <p style={{ fontSize: '13.5px', color: '#7A7A72', margin: '0 0 22px', lineHeight: 1.55 }}>{subtitle}</p>}
       {children}
       {onNext && (
@@ -219,7 +219,7 @@ export default function GuidedSession({ onBack, token }) {
     if (!document.getElementById(id)) {
       const link = document.createElement('link')
       link.id = id; link.rel = 'stylesheet'
-      link.href = 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap'
+      link.href = 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@400;500;600&display=swap'
       document.head.appendChild(link)
     }
   }, [])
@@ -368,10 +368,13 @@ export default function GuidedSession({ onBack, token }) {
   )
 
   const shell = (children) => (
-    <div style={{ minHeight: '100vh', background: PAL.bg, fontFamily: fontSans, display: 'flex', flexDirection: 'column' }}>
+    <div lang={lang} style={{ minHeight: '100vh', background: PAL.bg, fontFamily: fontSans, display: 'flex', flexDirection: 'column' }}>
       <style>{`
         @keyframes gs-fade { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
         .gs-fade { animation: gs-fade 0.35s cubic-bezier(0.22,1,0.36,1) both; }
+        /* Thai tone marks/vowels stack on the base consonant — extra letter-spacing
+           (used for uppercase EN eyebrow labels) visually separates them. */
+        [lang="th"], [lang="th"] * { letter-spacing: normal !important; }
       `}</style>
       {header}{progress}
       <div style={{ flex: 1 }}>{children}</div>
@@ -396,7 +399,7 @@ export default function GuidedSession({ onBack, token }) {
           <LifeBuoy size={22} strokeWidth={1.8} />
           <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.14em' }}>{t('You are not alone', 'คุณไม่ได้อยู่คนเดียว')}</span>
         </div>
-        <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: '28px', color: '#1B1B19', margin: '0 0 14px', lineHeight: 1.25 }}>
+        <h1 style={{ fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400, fontSize: '28px', color: '#1B1B19', margin: '0 0 14px', lineHeight: 1.35 }}>
           {t('It sounds like this is really heavy right now.', 'ดูเหมือนตอนนี้มันหนักมากจริง ๆ')}
         </h1>
         <p style={{ fontSize: '14px', color: '#5A5A52', lineHeight: 1.65, margin: '0 0 18px' }}>
