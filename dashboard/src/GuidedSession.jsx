@@ -45,7 +45,7 @@ const NS_CUES = [
     body_en: 'Name five things you can see, four you can hear, three you can touch.',
     body_th: 'บอกชื่อห้าสิ่งที่เห็น สี่เสียงที่ได้ยิน สามสิ่งที่สัมผัสได้' },
   { id: 'space', en: 'Just take a little space', th: 'ขอพื้นที่ให้ตัวเองสักหน่อย',
-    body_en: 'Rest your eyes for a moment. There is no rush.', th_body: '',
+    body_en: 'Rest your eyes for a moment. There is no rush.',
     body_th: 'พักสายตาสักครู่ ไม่ต้องรีบ' },
 ]
 
@@ -274,7 +274,14 @@ export default function GuidedSession({ onBack, token }) {
     setFan(shuffle(neuroCards).slice(0, Math.min(9, neuroCards.length)))
   }, [neuroCards])
 
-  const next = () => setStage(s => Math.min(STAGE_META.length - 1, s + 1))
+  const next = () => {
+    const target = Math.min(STAGE_META.length - 1, stage + 1)
+    // Build the pick-fan as we advance into the draw stage — in the event
+    // handler, never during render or in an effect. (Back-navigation into the
+    // draw stage always has a card already drawn, so it needs no fan.)
+    if (STAGE_META[target].key === 'draw' && !drawn && fan.length === 0) buildFan()
+    setStage(target)
+  }
   const prev = () => {
     if (stage === 0) onBack()
     else setStage(s => s - 1)
@@ -284,7 +291,8 @@ export default function GuidedSession({ onBack, token }) {
   const effectiveIntention = () =>
     intention.trim() || (intentionTag != null ? t(INTENTION_TAGS[intentionTag].en, INTENTION_TAGS[intentionTag].th) : null)
 
-  const sessionPayload = () => ({
+  // Full stage-by-stage record — only stored when the user opts in (Stage 10).
+  const fullSessionPayload = () => ({
     consent_version: CONSENT_VERSION,
     consent, training_opt_in: trainingOptIn,
     activation_before: activationBefore, body_state: bodyState || null,
@@ -303,8 +311,21 @@ export default function GuidedSession({ onBack, token }) {
     lang,
   })
 
+  // When the user does NOT opt in, we keep only the short summary they chose
+  // to carry forward — never their raw reflection, body state, or stage notes.
+  const minimalSessionPayload = () => ({
+    consent_to_store: false,
+    session_summary: summary || null,
+    anchor: anchor || null,
+    activation_before: activationBefore,
+    activation_after: activationAfter,
+    safety_event: safetyEventRef.current,   // safety events are always kept
+    lang,
+  })
+
   const finish = async () => {
     setSaveState('saving'); setSaveErr('')
+    const store = consentToStore
     try {
       const headers = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
@@ -313,10 +334,12 @@ export default function GuidedSession({ onBack, token }) {
         body: JSON.stringify({
           deck: 'neuro', spread_id: 'guided', spread_name: t('Guided session', 'เซสชันแบบมีไกด์'),
           cards: drawn ? [{ card_id: drawn.id, position: t('Guided', 'มีไกด์') }] : [],
-          reflection: userMeaning || notice || null,
-          intention: effectiveIntention(),
+          // Raw words are only stored with consent; otherwise just the anchor/summary.
+          reflection: store ? (userMeaning || notice || null) : (summary || null),
+          intention: store ? effectiveIntention() : null,
           activation_before: activationBefore,
-          lang, mode: 'guided', session: sessionPayload(),
+          lang, mode: 'guided',
+          session: store ? fullSessionPayload() : minimalSessionPayload(),
         }),
       })
       if (!res.ok) {
@@ -549,7 +572,6 @@ export default function GuidedSession({ onBack, token }) {
   /* ================= STAGE 3 — Card Selection ================= */
   if (key === 'draw') {
     if (!drawn) {
-      if (fan.length === 0) buildFan()
       return shell(
         <StageBody t={t}
           title={t('Choose the image with energy for you', 'เลือกภาพที่มีพลังดึงดูดคุณ')}
