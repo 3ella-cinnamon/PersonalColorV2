@@ -16,7 +16,7 @@ from models.orm import CardTranslation
 from services import cards_i18n_th as _i18n_th
 
 # Bump when cards_i18n_th.py's dicts change so _ensure_cache re-seeds on deploy.
-CARDS_I18N_VERSION = "cards-i18n-2"
+CARDS_I18N_VERSION = "cards-i18n-3"
 
 # Flat English -> Thai map (micro_intervention + clinical_caution). Module
 # defaults double as seed source; DB rows win once seeded (see _load_from_db).
@@ -35,7 +35,7 @@ def _load_from_db(db: DBSession) -> None:
     rows = db.query(CardTranslation).filter(CardTranslation.lang == "th").all()
     merged: dict[str, str] = {**_i18n_th.MICRO_TH, **_i18n_th.CAUTION_TH}
     for row in rows:
-        if row.src.startswith("workshop:") or row.src.startswith("summary:"):
+        if row.src.startswith(("workshop:", "summary:", "guide:")):
             continue  # nested/templated — served separately by get_th_bundle()
         merged[row.src] = row.dst
     TH_MAP = merged
@@ -53,6 +53,10 @@ def _seed(db: DBSession) -> None:
             rows.append(CardTranslation(lang="th", src=f"workshop:{fw}:hint:{i}", dst=hint))
     for key, tpl in _i18n_th.SUMMARY_TH.items():
         rows.append(CardTranslation(lang="th", src=f"summary:{key}", dst=tpl))
+    rows.append(CardTranslation(lang="th", src="guide:label", dst=_i18n_th.GUIDE_TH["label"]))
+    for i, sec in enumerate(_i18n_th.GUIDE_TH["sections"]):
+        rows.append(CardTranslation(lang="th", src=f"guide:{i}:title", dst=sec["title"]))
+        rows.append(CardTranslation(lang="th", src=f"guide:{i}:body", dst=sec["body"]))
     rows.append(CardTranslation(lang="meta", src="content_version", dst=CARDS_I18N_VERSION))
     db.add_all(rows)
     db.commit()
@@ -109,4 +113,24 @@ def get_th_bundle(db: DBSession) -> dict:
     ).all():
         summaries[row.src.split(":", 1)[1]] = row.dst
 
-    return {"strings": dict(TH_MAP), "workshops": workshops, "summaries": summaries}
+    # Reading guide: guide:label + guide:{i}:title / guide:{i}:body
+    guide: dict = {"label": None, "sections": []}
+    for row in db.query(CardTranslation).filter(
+        CardTranslation.lang == "th", CardTranslation.src.like("guide:%")
+    ).all():
+        rest = row.src.split(":", 1)[1]
+        if rest == "label":
+            guide["label"] = row.dst
+            continue
+        idx_str, field = rest.split(":", 1)
+        idx = int(idx_str)
+        while len(guide["sections"]) <= idx:
+            guide["sections"].append({"title": None, "body": None})
+        guide["sections"][idx][field] = row.dst
+
+    return {
+        "strings": dict(TH_MAP),
+        "workshops": workshops,
+        "summaries": summaries,
+        "guide": guide,
+    }

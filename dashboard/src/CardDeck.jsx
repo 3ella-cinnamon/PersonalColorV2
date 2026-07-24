@@ -139,6 +139,38 @@ const SPREADS = {
 // The pick-fan now shows the whole shuffled deck (not a small subset), so the
 // user genuinely draws from all the cards.
 
+/* Reading guide — "Intuition First, Knowledge Second". English is the source;
+   the Thai here is only a fallback — the live Thai copy is DB-backed and
+   arrives via the i18n bundle (thBundle.guide), editable without a deploy. */
+const READING_GUIDE = {
+  en: {
+    label: 'How to read: feel first, look up meaning after',
+    sections: [
+      { title: 'First feeling',
+        body: 'Before opening any meaning, look at the image — the figures’ faces, the mood, the colours. How do they make you feel?' },
+      { title: 'Symbols',
+        body: 'Notice the small details — an animal, an object, a number — and connect them to your situation right now.' },
+      { title: 'Reflect deeper',
+        body: 'Ask what this image reflects back about you — not what it predicts.' },
+      { title: 'Journal it',
+        body: 'Write your thoughts and feelings down. Over time the notes reveal your own patterns.' },
+    ],
+  },
+  th: {
+    label: 'วิธีอ่านไพ่: ใช้ใจรู้สึกก่อน แล้วค่อยดูความหมาย',
+    sections: [
+      { title: 'ความรู้สึกแรกที่เห็น',
+        body: 'ก่อนเปิดดูความหมาย ลองมองภาพบนการ์ด สีหน้าตัวละคร บรรยากาศ และสีสัน — สิ่งเหล่านี้ทำให้คุณรู้สึกอย่างไร' },
+      { title: 'สัญลักษณ์',
+        body: 'สังเกตรายละเอียดเล็ก ๆ เช่น สัตว์ สิ่งของ หรือตัวเลข แล้วเชื่อมโยงกับสถานการณ์ปัจจุบันของคุณ' },
+      { title: 'ตั้งคำถามสะท้อนตัวตน',
+        body: 'ลองถามลึกลงไปว่าภาพนี้กำลังสะท้อนอะไรในตัวคุณ ไม่ใช่การทำนายอนาคต' },
+      { title: 'จดบันทึก',
+        body: 'เขียนความคิดและความรู้สึกของคุณไว้ เมื่อเวลาผ่านไป บันทึกจะช่วยให้เห็นรูปแบบของตัวเอง' },
+    ],
+  },
+}
+
 /* Two parallel Tarot art sets exist (Tarot_1, Tarot_2) — one is chosen at
    random per session (see chooseDeck) so a whole reading stays visually
    consistent, like reaching for one physical deck off the shelf.
@@ -491,7 +523,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
   const [tarotVariant, setTarotVariant] = useState(null)     // 'tarot_1' | 'tarot_2' — chosen per session
   const [frameworks, setFrameworks] = useState({})          // { card_id: proposed_framework }
   const [workshopNotes, setWorkshopNotes] = useState({})    // { card_id: user's workshop text }
-  const [thBundle, setThBundle] = useState({ strings: {}, workshops: {}, summaries: {} })  // Thai copy from the backend
+  const [thBundle, setThBundle] = useState({ strings: {}, workshops: {}, summaries: {}, guide: null })  // Thai copy from the backend
 
   const t = useCallback((en, th) => (lang === 'th' ? th : en), [lang])
 
@@ -542,9 +574,9 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
     // Thai copy for English-only content (micro_intervention, caution, workshop
     // framework text) — DB-backed on the backend; safe to skip if it's offline.
     fetch('/api/cards/i18n/th')
-      .then(r => (r.ok ? r.json() : { strings: {}, workshops: {}, summaries: {} }))
+      .then(r => (r.ok ? r.json() : { strings: {}, workshops: {}, summaries: {}, guide: null }))
       .then(setThBundle)
-      .catch(() => setThBundle({ strings: {}, workshops: {}, summaries: {} }))
+      .catch(() => setThBundle({ strings: {}, workshops: {}, summaries: {}, guide: null }))
   }, [])
 
   // English -> Thai lookup with a graceful fallback to the English source.
@@ -1257,52 +1289,39 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
         ))}
       </div>
 
-      {/* Reading guide — "Intuition First, Knowledge Second" */}
-      <div style={{ maxWidth: '560px', margin: '0 auto 20px' }}>
-        <button
-          onClick={() => setShowGuide(v => !v)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: '7px', width: '100%', justifyContent: 'center',
-            background: meta.tint, border: `1px solid ${meta.border}`, borderRadius: '12px',
-            padding: '10px 14px', cursor: 'pointer', fontFamily: fontSans, fontSize: '12.5px',
-            color: meta.accent, fontWeight: 500,
-          }}
-        >
-          💡 {t('How to read: feel first, look up meaning after', 'วิธีอ่านไพ่: ใช้ใจรู้สึกก่อน แล้วค่อยดูความหมาย')}
-          <span style={{ color: PAL.muted }}>{showGuide ? '▲' : '▼'}</span>
-        </button>
-        {showGuide && (
-          <div style={{ background: '#fff', border: `1px solid ${meta.border}`, borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '4px 16px 14px', marginTop: '-6px' }}>
-            {[
-              {
-                t: t('First feeling', 'ความรู้สึกแรกที่เห็น'),
-                b: t('Before opening any meaning, look at the image — the figures’ faces, the mood, the colours. How do they make you feel?',
-                     'ก่อนเปิดดูความหมาย ลองมองภาพบนการ์ด สีหน้าตัวละคร บรรยากาศ และสีสัน — สิ่งเหล่านี้ทำให้คุณรู้สึกอย่างไร'),
-              },
-              {
-                t: t('Symbols', 'สัญลักษณ์'),
-                b: t('Notice the small details — an animal, an object, a number — and connect them to your situation right now.',
-                     'สังเกตรายละเอียดเล็ก ๆ เช่น สัตว์ สิ่งของ หรือตัวเลข แล้วเชื่อมโยงกับสถานการณ์ปัจจุบันของคุณ'),
-              },
-              {
-                t: t('Reflect deeper', 'ตั้งคำถามสะท้อนตัวตน'),
-                b: t('Ask what this image reflects back about you — not what it predicts.',
-                     'ลองถามลึกลงไปว่าภาพนี้กำลังสะท้อนอะไรในตัวคุณ ไม่ใช่การทำนายอนาคต'),
-              },
-              {
-                t: t('Journal it', 'จดบันทึก'),
-                b: t('Write your thoughts and feelings down. Over time the notes reveal your own patterns.',
-                     'เขียนความคิดและความรู้สึกของคุณไว้ เมื่อเวลาผ่านไป บันทึกจะช่วยให้เห็นรูปแบบของตัวเอง'),
-              },
-            ].map((row, i) => (
-              <div key={i} style={{ marginTop: '10px' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: meta.accent, marginBottom: '2px' }}>{row.t}</div>
-                <p style={{ fontSize: '12.5px', color: '#5A5A52', margin: 0, lineHeight: 1.55 }}>{row.b}</p>
+      {/* Reading guide — "Intuition First, Knowledge Second".
+          Thai comes from the DB when available; English is the code source. */}
+      {(() => {
+        const guide = (lang === 'th' && thBundle.guide?.sections?.length)
+          ? thBundle.guide
+          : READING_GUIDE[lang === 'th' ? 'th' : 'en']
+        return (
+          <div style={{ maxWidth: '560px', margin: '0 auto 20px' }}>
+            <button
+              onClick={() => setShowGuide(v => !v)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '7px', width: '100%', justifyContent: 'center',
+                background: meta.tint, border: `1px solid ${meta.border}`, borderRadius: '12px',
+                padding: '10px 14px', cursor: 'pointer', fontFamily: fontSans, fontSize: '12.5px',
+                color: meta.accent, fontWeight: 500,
+              }}
+            >
+              💡 {guide.label}
+              <span style={{ color: PAL.muted }}>{showGuide ? '▲' : '▼'}</span>
+            </button>
+            {showGuide && (
+              <div style={{ background: '#fff', border: `1px solid ${meta.border}`, borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '4px 16px 14px', marginTop: '-6px' }}>
+                {guide.sections.map((row, i) => (
+                  <div key={i} style={{ marginTop: '10px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: meta.accent, marginBottom: '2px' }}>{row.title}</div>
+                    <p style={{ fontSize: '12.5px', color: '#5A5A52', margin: 0, lineHeight: 1.55 }}>{row.body}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        )}
-      </div>
+        )
+      })()}
 
       {/* Projective step — for projective spreads we ask FIRST, before any theme.
           The card's own keywords/theme stay hidden until the user opens them. */}

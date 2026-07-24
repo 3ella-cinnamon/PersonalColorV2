@@ -253,6 +253,14 @@ class TestI18n:
         assert ws["short"] and ws["prompt"]
         assert len([h for h in ws["hints"] if h]) >= 3
 
+    def test_reading_guide_present(self, client):
+        guide = client.get("/api/cards/i18n/th").json()["guide"]
+        assert guide["label"]
+        assert len(guide["sections"]) == 4
+        # every section is fully populated (no None left from index padding)
+        assert all(s["title"] and s["body"] for s in guide["sections"])
+        assert guide["sections"][0]["title"] == "ความรู้สึกแรกที่เห็น"
+
     def test_summary_templates_present(self, client):
         summaries = client.get("/api/cards/i18n/th").json()["summaries"]
         assert "{name}" in summaries["one"] and "{theme}" in summaries["one"]

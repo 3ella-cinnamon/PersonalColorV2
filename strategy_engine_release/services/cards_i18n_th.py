@@ -98,6 +98,22 @@ CAUTION_TH: dict[str, str] = {
         "ภาพนี้ไม่ได้มีไว้เพื่อรื้อฟื้นความทรงจำ หรือใช้ยืนยันว่าเหตุการณ์ใดเป็นความจริง",
 }
 
+# ── Reading guide: "Intuition First, Knowledge Second" ──
+# Shown as a collapsible note on the reveal step. Edit here (or in the DB).
+GUIDE_TH: dict = {
+    "label": "วิธีอ่านไพ่: ใช้ใจรู้สึกก่อน แล้วค่อยดูความหมาย",
+    "sections": [
+        {"title": "ความรู้สึกแรกที่เห็น",
+         "body": "ก่อนเปิดดูความหมาย ลองมองภาพบนการ์ด สีหน้าตัวละคร บรรยากาศ และสีสัน — สิ่งเหล่านี้ทำให้คุณรู้สึกอย่างไร"},
+        {"title": "สัญลักษณ์",
+         "body": "สังเกตรายละเอียดเล็ก ๆ เช่น สัตว์ สิ่งของ หรือตัวเลข แล้วเชื่อมโยงกับสถานการณ์ปัจจุบันของคุณ"},
+        {"title": "ตั้งคำถามสะท้อนตัวตน",
+         "body": "ลองถามลึกลงไปว่าภาพนี้กำลังสะท้อนอะไรในตัวคุณ ไม่ใช่การทำนายอนาคต"},
+        {"title": "จดบันทึก",
+         "body": "เขียนความคิดและความรู้สึกของคุณไว้ เมื่อเวลาผ่านไป บันทึกจะช่วยให้เห็นรูปแบบของตัวเอง"},
+    ],
+}
+
 # ── "In short" summary templates (placeholders: {name} {theme} {lines}) ──
 # Warm, empowering, easy to read. Edit here (or in the DB) without touching code.
 SUMMARY_TH: dict[str, str] = {
