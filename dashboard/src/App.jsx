@@ -3,6 +3,8 @@ import { ArrowRight, Zap } from 'lucide-react'
 import DailyDecisionDashboard from './daily_decision_dashboard'
 import HomeMenu from './HomeMenu'
 import ConsultDashboard from './ConsultDashboard'
+import CardDeck from './CardDeck'
+import GuidedSession from './GuidedSession'
 
 /* ------------------------------------------------------------------ */
 /*  API helpers                                                         */
@@ -74,7 +76,7 @@ function AuthModal({ onAuth }) {
     const link = document.createElement('link')
     link.id   = id
     link.rel  = 'stylesheet'
-    link.href = 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap'
+    link.href = 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@400;500;600&display=swap'
     document.head.appendChild(link)
   }, [])
 
@@ -346,6 +348,25 @@ export default function App() {
       <ConsultDashboard
         token={token}
         onBack={() => setSection(null)}
+      />
+    )
+  }
+
+  if (section === 'cards') {
+    return (
+      <CardDeck
+        token={token}
+        onBack={() => setSection(null)}
+        onStartGuided={() => setSection('cards-guided')}
+      />
+    )
+  }
+
+  if (section === 'cards-guided') {
+    return (
+      <GuidedSession
+        token={token}
+        onBack={() => setSection('cards')}
       />
     )
   }

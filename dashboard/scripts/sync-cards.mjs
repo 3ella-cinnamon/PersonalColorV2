@@ -1,0 +1,81 @@
+// Syncs card data + deck art from the repo root into the app's public/ folder
+// so Vite serves them at /cards.json and /neuro/*, /tarot_1/*, /tarot_2/*,
+// /nature/*. Runs automatically before `npm run dev` and `npm run build`
+// (see predev/prebuild in package.json).
+//
+// Full-resolution masters live in <repoRoot>/<Deck> (~2 MB each). We never
+// ship those: sharp downscales each to a small WebP (max 520px wide) written
+// into public/<deck>/, which is what the app actually loads. The public/
+// copies are gitignored and regenerated on every dev run / build.
+//
+// Tarot has two parallel art sets (Tarot_1, Tarot_2) — the app randomly
+// picks one as the session's art source, so both get synced + manifested.
+import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
+import { dirname, join, resolve, parse } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const here = dirname(fileURLToPath(import.meta.url))
+const dashboard = resolve(here, '..')
+const repoRoot = resolve(dashboard, '..')
+const publicDir = join(dashboard, 'public')
+
+const MAX_WIDTH = 520      // display size is ~200-400px; 520 covers retina
+const WEBP_QUALITY = 80
+
+// sharp is optional: if it can't load, fall back to copying masters as-is so a
+// build never hard-fails on the image step.
+let sharp = null
+try { sharp = (await import('sharp')).default }
+catch { console.warn('[sync-cards] sharp unavailable — copying images without downscaling') }
+
+function copyIfPresent(from, to) {
+  if (!existsSync(from)) { console.warn(`[sync-cards] skip (missing): ${from}`); return false }
+  mkdirSync(dirname(to), { recursive: true })
+  copyFileSync(from, to)
+  return true
+}
+
+// true when `out` already exists and is at least as new as `src` (skip rework)
+function upToDate(src, out) {
+  return existsSync(out) && statSync(out).mtimeMs >= statSync(src).mtimeMs
+}
+
+// 1) card data
+if (copyIfPresent(join(repoRoot, 'cards.json'), join(publicDir, 'cards.json')))
+  console.log('[sync-cards] cards.json → public/cards.json')
+
+// 2) deck art folders
+for (const deck of ['Neuro', 'Tarot_1', 'Tarot_2', 'Nature']) {
+  const srcDir = join(repoRoot, deck)
+  if (!existsSync(srcDir)) { console.warn(`[sync-cards] skip art (missing): ${srcDir}`); continue }
+  const destDir = join(publicDir, deck.toLowerCase())
+  mkdirSync(destDir, { recursive: true })
+
+  let made = 0, skipped = 0
+  const manifest = []   // basenames actually present, e.g. "N-32"
+  for (const f of readdirSync(srcDir)) {
+    const src = join(srcDir, f)
+    if (!/\.(png|jpe?g|webp)$/i.test(f) || !statSync(src).isFile()) continue
+
+    const base = parse(f).name
+    if (sharp) {
+      const out = join(destDir, base + '.webp')
+      if (upToDate(src, out)) { skipped++; manifest.push(base); continue }
+      await sharp(src).resize({ width: MAX_WIDTH, withoutEnlargement: true })
+        .webp({ quality: WEBP_QUALITY }).toFile(out)
+      made++; manifest.push(base)
+    } else {
+      const out = join(destDir, f)
+      if (upToDate(src, out)) { skipped++; manifest.push(base); continue }
+      copyFileSync(src, out); made++; manifest.push(base)
+    }
+  }
+  // Manifest of delivered art so the app can show only cards that exist in the folder.
+  manifest.sort()
+  writeFileSync(join(destDir, 'manifest.json'), JSON.stringify(manifest, null, 0))
+  console.log(`[sync-cards] ${deck}/ → public/${deck.toLowerCase()}/ (${made} written, ${skipped} up-to-date, ${manifest.length} in manifest)`)
+}
+
+// 3) Neuro framework/tools mapping (proposed_framework per card) for the workshop UI.
+if (copyIfPresent(join(repoRoot, 'neuro_framework_mapping.json'), join(publicDir, 'neuro', 'mapping.json')))
+  console.log('[sync-cards] neuro_framework_mapping.json → public/neuro/mapping.json')

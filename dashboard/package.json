@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "sync-cards": "node scripts/sync-cards.mjs",
+    "predev": "node scripts/sync-cards.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/sync-cards.mjs",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -14,6 +17,7 @@
     "lucide-react": "^1.14.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
