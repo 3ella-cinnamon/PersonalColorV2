@@ -36,6 +36,16 @@ def apply_additive_columns(engine: Engine) -> None:
         missing = {name: ddl for name, ddl in columns.items() if name not in have}
         if not missing:
             continue
-        with engine.begin() as conn:
-            for name, ddl in missing.items():
-                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {ddl}"))
+        # The check above is check-then-act: if two instances boot at once
+        # (a deploy overlap, or multiple workers) both can see the column as
+        # missing and both issue the ALTER. Run each in its own transaction and
+        # treat "already exists" as success, so the loser of the race still
+        # starts cleanly instead of crashing the app on startup.
+        for name, ddl in missing.items():
+            try:
+                with engine.begin() as conn:
+                    conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {ddl}"))
+            except Exception as exc:  # noqa: BLE001 — narrow check below
+                if "already exists" in str(exc).lower() or "duplicate column" in str(exc).lower():
+                    continue
+                raise
