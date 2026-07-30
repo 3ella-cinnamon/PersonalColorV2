@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { ArrowLeft, ArrowRight, Shuffle, RotateCcw, Languages, BookMarked, Trash2, Check } from 'lucide-react'
 
 /* ------------------------------------------------------------------ */
@@ -236,8 +236,6 @@ const TOOL_WORKSHOPS = {
   },
 }
 
-const workshopFor = (framework) => TOOL_WORKSHOPS[framework] || TOOL_WORKSHOPS._generic
-
 /* Summary templates (placeholders: {name}, {theme}, {lines}). English is the
    source; the Thai templates are DB-backed (editable without a deploy) and
    passed in as `dbSummaries` — these code strings are the fallback. */
@@ -247,7 +245,7 @@ const SUMMARY_TEMPLATES = {
     th: 'การ์ดที่คุณเลือกคือ “{name}”{theme} เชื่อในสิ่งที่คุณมองเห็น เพราะคำตอบอยู่ในตัวคุณเองแล้ว',
   },
   multi: {
-    en: 'The cards you chose tell your story: {lines}. See them together, and your own way forward gets clearer.',
+    en: 'The cards you chose tell your story: {lines} See them together, and your own way forward gets clearer.',
     th: 'การ์ดที่คุณเลือกเล่าเรื่องราวของคุณ: {lines} มองภาพรวมทั้งหมด แล้วคุณจะเห็นทางของตัวเองชัดขึ้น',
   },
 }
@@ -267,10 +265,14 @@ function buildSummary(cards, spread, lang, dbSummaries) {
     const th = theme(c)
     return tpl('one').replace('{name}', nm(c)).replace('{theme}', th ? ` — ${th}` : '')
   }
+  // One card per line — each position → name on its own row, so a multi-card
+  // summary reads as a scannable list, not one run-on sentence. We force the
+  // {lines} block onto its own lines regardless of where the (DB or code)
+  // template placed the placeholder.
   const lines = cards
-    .map((c, i) => `${lang === 'th' ? spread.positions[i]?.th : spread.positions[i]?.en} → ${nm(c)}`)
-    .join('  ·  ')
-  return tpl('multi').replace('{lines}', lines)
+    .map((c, i) => `·  ${lang === 'th' ? spread.positions[i]?.th : spread.positions[i]?.en} → ${nm(c)}`)
+    .join('\n')
+  return tpl('multi').replace(/\s*\{lines\}\s*/, '\n{lines}\n').replace('{lines}', lines)
 }
 
 /* ------------------------------------------------------------------ */
@@ -401,12 +403,21 @@ function CardImage({ card }) {
 function CardBack({ accent }) {
   return (
     <svg viewBox="0 0 120 180" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-      <rect x="8" y="8" width="104" height="164" rx="10" fill="none" stroke={accent} strokeWidth="2" opacity="0.55" />
-      <rect x="16" y="16" width="88" height="148" rx="7" fill="none" stroke={accent} strokeWidth="1" opacity="0.35" />
-      {Array.from({ length: 6 }, (_, i) => (
-        <circle key={i} cx="60" cy="90" r={12 + i * 11} fill="none" stroke={accent} strokeWidth="1" opacity={0.28 - i * 0.03} />
+      {/* soft accent wash so the back doesn't read as plain white */}
+      <rect x="0" y="0" width="120" height="180" fill={accent} opacity="0.06" />
+      {/* double frame */}
+      <rect x="7" y="7" width="106" height="166" rx="11" fill="none" stroke={accent} strokeWidth="1.5" opacity="0.5" />
+      <rect x="12.5" y="12.5" width="95" height="155" rx="8" fill="none" stroke={accent} strokeWidth="0.75" opacity="0.28" />
+      {/* concentric rings */}
+      {Array.from({ length: 4 }, (_, i) => (
+        <circle key={i} cx="60" cy="90" r={10 + i * 10} fill="none" stroke={accent} strokeWidth="0.8" opacity={0.3 - i * 0.05} />
       ))}
-      <circle cx="60" cy="90" r="5" fill={accent} opacity="0.5" />
+      {/* two crossed petals for a subtle deck emblem */}
+      <g stroke={accent} strokeWidth="0.9" fill="none" opacity="0.42">
+        <path d="M60 72 q 11 18 0 36 q -11 -18 0 -36 Z" />
+        <path d="M42 90 q 18 11 36 0 q -18 -11 -36 0 Z" />
+      </g>
+      <circle cx="60" cy="90" r="3.4" fill={accent} opacity="0.6" />
     </svg>
   )
 }
@@ -415,11 +426,19 @@ function CardBack({ accent }) {
 /*  Presentational card component (flips between back and face)         */
 /* ------------------------------------------------------------------ */
 
-function DeckCard({ card, name, accent, faceUp, onClick, selected, disabled, label, style }) {
+// The card name is intentionally NOT printed on the face by default — a named
+// image ("The Sun", "storm") anchors the reading and shuts down projection.
+// We keep the image bare so the user's imagination leads; the name is still
+// available "knowledge second" in the meanings panel and history. Pass
+// showName only where identifying the card matters more than open reflection.
+function DeckCard({ card, name, accent, faceUp, onClick, selected, disabled, label, style, showName = false, revealDelay = 0 }) {
+  const nameText = name ?? card?.name
+  const interactive = onClick && !disabled
   return (
     <button
       onClick={onClick}
       disabled={disabled}
+      className={interactive ? 'cd-pickable' : undefined}
       style={{
         display: 'block',
         width: '100%',
@@ -427,7 +446,7 @@ function DeckCard({ card, name, accent, faceUp, onClick, selected, disabled, lab
         background: 'none',
         border: 'none',
         padding: 0,
-        cursor: disabled ? 'default' : 'pointer',
+        cursor: disabled ? 'default' : (onClick ? 'pointer' : 'default'),
         outline: 'none',
         ...style,
       }}
@@ -438,11 +457,14 @@ function DeckCard({ card, name, accent, faceUp, onClick, selected, disabled, lab
           width: '100%',
           aspectRatio: '2 / 3',
           transformStyle: 'preserve-3d',
-          transition: 'transform 0.6s cubic-bezier(0.22,1,0.36,1), box-shadow 0.2s',
+          transition: 'transform 0.65s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s',
+          transitionDelay: `${revealDelay}ms`,
           transform: `${faceUp ? 'rotateY(180deg)' : 'rotateY(0deg)'}${selected ? ' translateY(-10px)' : ''}`,
-          boxShadow: selected
-            ? `0 12px 28px -10px ${accent}88`
-            : '0 4px 14px -8px rgba(0,0,0,0.25)',
+          boxShadow: faceUp
+            ? `0 18px 42px -16px ${accent}66, 0 6px 16px -10px rgba(0,0,0,0.3)`
+            : selected
+              ? `0 14px 30px -10px ${accent}99`
+              : '0 4px 14px -8px rgba(0,0,0,0.25)',
           borderRadius: '12px',
         }}
       >
@@ -472,16 +494,20 @@ function DeckCard({ card, name, accent, faceUp, onClick, selected, disabled, lab
           <div style={{ flex: '1 1 0', minHeight: 0, overflow: 'hidden' }}>
             {card && <CardImage card={card} />}
           </div>
-          <div style={{ padding: '4px 6px 8px', textAlign: 'center' }}>
-            {label && (
-              <div style={{ fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.12em', color: accent, marginBottom: '1px' }}>
-                {label}
-              </div>
-            )}
-            <div style={{ fontFamily: fontSerif, fontStyle: 'italic', fontSize: '12px', color: PAL.ink, lineHeight: 1.4 }}>
-              {name ?? card?.name}
+          {(label || (showName && nameText)) && (
+            <div style={{ padding: '4px 6px 8px', textAlign: 'center' }}>
+              {label && (
+                <div style={{ fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.12em', color: accent, marginBottom: '1px' }}>
+                  {label}
+                </div>
+              )}
+              {showName && nameText && (
+                <div style={{ fontFamily: fontSerif, fontStyle: 'italic', fontSize: '12px', color: PAL.ink, lineHeight: 1.4 }}>
+                  {nameText}
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </button>
@@ -508,6 +534,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
   const [revealed, setRevealed] = useState(false)
 
   const [reflection, setReflection] = useState('')
+  const reflectionRef = useRef(null)
   const [intention, setIntention]   = useState('')
   const [showTheme, setShowTheme]   = useState(false)
   const [showGuide, setShowGuide]   = useState(false)
@@ -825,8 +852,15 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
     <div lang={lang} style={{ minHeight: '100vh', background: PAL.bg, fontFamily: fontSans, display: 'flex', flexDirection: 'column' }}>
       <style>{`
         @keyframes cd-fade { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
-        @keyframes cd-shuffle { 0%{transform:translateX(0) rotate(0)} 25%{transform:translateX(-8px) rotate(-4deg)} 50%{transform:translateX(6px) rotate(3deg)} 75%{transform:translateX(-4px) rotate(-2deg)} 100%{transform:translateX(0) rotate(0)} }
+        /* Cards are "dealt" into the spread: rise + settle, staggered per card. */
+        @keyframes cd-dealin { from { opacity:0; transform:translateY(16px) scale(0.88) } to { opacity:1; transform:translateY(0) scale(1) } }
         .cd-fade { animation: cd-fade 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+        /* Face-down cards lift toward you on hover (the outer button carries no
+           3D transform, so this never fights the inner flip/select transform). */
+        .cd-pickable { transition: transform 0.18s ease; }
+        .cd-pickable:hover:not(:disabled) { transform: translateY(-5px); }
+        .cd-pickable:active:not(:disabled) { transform: translateY(-1px); }
+        @media (hover: none) { .cd-pickable:hover { transform: none; } }
         /* Thai tone marks/vowels stack on the base consonant — extra letter-spacing
            (used for uppercase EN eyebrow labels) visually separates them. */
         [lang="th"], [lang="th"] * { letter-spacing: normal !important; }
@@ -1005,6 +1039,9 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
 
     return shell(
       <div className="cd-fade" style={{ maxWidth: '820px', margin: '0 auto', padding: '32px 20px 56px', width: '100%' }}>
+        <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: PAL.muted, marginBottom: '4px', textAlign: 'center' }}>
+          {t('Step 3 · Pick your cards', 'ขั้นที่ 3 · เลือกไพ่')}
+        </p>
         <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: meta.accent, marginBottom: '6px', textAlign: 'center' }}>
           {t(meta.name_en, meta.name_th)} · {t(spread.name_en, spread.name_th)}
         </p>
@@ -1033,7 +1070,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
             const sel = picked.includes(i)
             const order = picked.indexOf(i)
             return (
-              <div key={card.id} style={{ position: 'relative', animation: shuffling ? `cd-shuffle 0.5s ${i * 0.02}s ease` : 'none' }}>
+              <div key={card.id} style={{ position: 'relative', animation: `cd-dealin 0.45s ${Math.min(i, 22) * 0.03}s cubic-bezier(0.22,1,0.36,1) both` }}>
                 <DeckCard
                   card={card}
                   name={lang === 'th' ? card.name_th : card.name_en}
@@ -1260,8 +1297,24 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
     )
   }
 
+  // Sentence-openers to beat the blank page — tapping one drops it into the box
+  // and puts the cursor after it, so the user just keeps writing.
+  const openers = spread.projective
+    ? [['I see…', 'ฉันเห็น…'], ['It makes me feel…', 'มันทำให้ฉันรู้สึก…'], ['It reminds me of…', 'มันทำให้นึกถึง…'], ['What stands out is…', 'สิ่งที่สะดุดตาคือ…']]
+    : [['What stands out is…', 'สิ่งที่สะดุดตาคือ…'], ['This connects to…', 'สิ่งนี้เชื่อมโยงกับ…'], ['I notice…', 'ฉันสังเกตว่า…'], ['It makes me feel…', 'มันทำให้ฉันรู้สึก…']]
+  const addOpener = (op) => {
+    setReflection(prev => (prev.trim() ? prev.trim() + '\n' : '') + op + ' ')
+    requestAnimationFrame(() => {
+      const el = reflectionRef.current
+      if (el) { el.focus(); el.selectionStart = el.selectionEnd = el.value.length }
+    })
+  }
+
   return shell(
     <div className="cd-fade" style={{ maxWidth: '720px', margin: '0 auto', padding: '32px 20px 64px', width: '100%' }}>
+      <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: PAL.muted, marginBottom: '4px', textAlign: 'center' }}>
+        {t('Step 4 · Reflect', 'ขั้นที่ 4 · ทบทวนใจ')}
+      </p>
       <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: meta.accent, marginBottom: '6px', textAlign: 'center' }}>
         {t(meta.name_en, meta.name_th)} · {t(spread.name_en, spread.name_th)}
       </p>
@@ -1282,6 +1335,7 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
               name={lang === 'th' ? card.name_th : card.name_en}
               accent={meta.accent}
               faceUp={revealed}
+              revealDelay={i * 140}
               disabled
               label={t(spread.positions[i]?.en, spread.positions[i]?.th)}
             />
@@ -1289,107 +1343,109 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
         ))}
       </div>
 
-      {/* Reading guide — "Intuition First, Knowledge Second".
-          Thai comes from the DB when available; English is the code source. */}
-      {(() => {
-        const guide = (lang === 'th' && thBundle.guide?.sections?.length)
-          ? thBundle.guide
-          : READING_GUIDE[lang === 'th' ? 'th' : 'en']
-        return (
-          <div style={{ maxWidth: '560px', margin: '0 auto 20px' }}>
-            <button
-              onClick={() => setShowGuide(v => !v)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '7px', width: '100%', justifyContent: 'center',
-                background: meta.tint, border: `1px solid ${meta.border}`, borderRadius: '12px',
-                padding: '10px 14px', cursor: 'pointer', fontFamily: fontSans, fontSize: '12.5px',
-                color: meta.accent, fontWeight: 500,
-              }}
-            >
-              💡 {guide.label}
-              <span style={{ color: PAL.muted }}>{showGuide ? '▲' : '▼'}</span>
-            </button>
-            {showGuide && (
-              <div style={{ background: '#fff', border: `1px solid ${meta.border}`, borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '4px 16px 14px', marginTop: '-6px' }}>
-                {guide.sections.map((row, i) => (
-                  <div key={i} style={{ marginTop: '10px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 600, color: meta.accent, marginBottom: '2px' }}>{row.title}</div>
-                    <p style={{ fontSize: '12.5px', color: '#5A5A52', margin: 0, lineHeight: 1.55 }}>{row.body}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )
-      })()}
-
-      {/* Projective step — for projective spreads we ask FIRST, before any theme.
-          The card's own keywords/theme stay hidden until the user opens them. */}
+      {/* Primary action — write your reflection. Grouped in a soft card so it
+          reads as THE thing to do; the guide + meanings sit quietly below. One
+          box for every spread; meanings stay hidden until asked for. */}
       <div style={{ maxWidth: '560px', margin: '0 auto' }}>
-        {spread.projective ? (
-          <>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#1B1B19', marginBottom: '8px' }}>
-              {spread.count === 1
-                ? t('What do you see in this card? Say whatever comes — there is no wrong answer.',
-                     'คุณเห็นอะไรในไพ่ใบนี้ พูดสิ่งที่ผุดขึ้นมาได้เลย ไม่มีคำตอบที่ผิด')
-                : t('What do you notice across these cards? Your own words lead the reading.',
-                     'คุณสังเกตเห็นอะไรจากไพ่เหล่านี้บ้าง คำพูดของคุณเองคือสิ่งที่นำทาง')}
-            </label>
-            <textarea
-              value={reflection}
-              onChange={e => setReflection(e.target.value)}
-              rows={4}
-              placeholder={t('Type freely…', 'พิมพ์ได้ตามสบาย…')}
-              style={{
-                width: '100%', padding: '12px 14px', fontSize: '14px', lineHeight: 1.6,
-                background: '#fff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '12px',
-                outline: 'none', resize: 'vertical', fontFamily: fontSans, color: '#1B1B19',
-                boxSizing: 'border-box',
-              }}
-            />
-            <button
-              onClick={() => setShowTheme(v => !v)}
-              style={{
-                marginTop: '14px', display: 'flex', alignItems: 'center', gap: '6px',
-                fontSize: '12.5px', color: meta.accent, background: 'none', border: 'none',
-                cursor: 'pointer', fontFamily: fontSans, padding: 0,
-              }}
-            >
-              {showTheme
-                ? t('Hide the guide', 'ซ่อนคำแนะนำ')
-                : t('Want us to be your guide?', 'อยากให้เราช่วยแนะนำไหม')}
-            </button>
-          </>
-        ) : (
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#1B1B19', marginBottom: '8px' }}>
-            {t('What comes up as you look at these cards?', 'เมื่อมองไพ่เหล่านี้ มีอะไรผุดขึ้นในใจบ้าง')}
+        <div style={{ background: '#fff', border: `1px solid ${meta.border}`, borderRadius: '16px', padding: '18px 18px 16px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <label htmlFor="cd-reflect" style={{ display: 'block', fontSize: '13.5px', fontWeight: 500, color: '#1B1B19', marginBottom: '10px', lineHeight: 1.5 }}>
+            {spread.projective
+              ? (spread.count === 1
+                  ? t('Say whatever comes to mind — there is no wrong answer.',
+                       'พูดสิ่งที่ผุดขึ้นมาได้เลย ไม่มีคำตอบที่ผิด')
+                  : t('Your own words lead the reading. What do you notice across these cards?',
+                       'คำพูดของคุณเองคือสิ่งที่นำทาง คุณสังเกตเห็นอะไรจากไพ่เหล่านี้บ้าง'))
+              : t('What comes up as you look at these cards?', 'เมื่อมองไพ่เหล่านี้ มีอะไรผุดขึ้นในใจบ้าง')}
           </label>
-        )}
-
-        {!spread.projective && (
           <textarea
+            id="cd-reflect"
+            ref={reflectionRef}
             value={reflection}
             onChange={e => setReflection(e.target.value)}
             rows={4}
             placeholder={t('Type freely…', 'พิมพ์ได้ตามสบาย…')}
             style={{
               width: '100%', padding: '12px 14px', fontSize: '14px', lineHeight: 1.6,
-              background: '#fff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '12px',
+              background: PAL.bg, border: '1px solid rgba(0,0,0,0.12)', borderRadius: '12px',
               outline: 'none', resize: 'vertical', fontFamily: fontSans, color: '#1B1B19',
               boxSizing: 'border-box',
             }}
           />
-        )}
+          {/* Starter chips — a soft nudge past the blank page */}
+          <div style={{ marginTop: '11px' }}>
+            <div style={{ fontSize: '11px', color: PAL.muted, marginBottom: '6px' }}>
+              {t('Not sure where to start? Tap to begin:', 'ไม่รู้จะเริ่มยังไง แตะเพื่อเริ่มได้:')}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {openers.map(([en, thTxt], i) => (
+                <button
+                  key={i}
+                  onClick={() => addOpener(t(en, thTxt))}
+                  style={{ fontSize: '12px', color: meta.accent, background: meta.tint, border: `1px solid ${meta.border}`, padding: '5px 11px', borderRadius: '999px', cursor: 'pointer', fontFamily: fontSans }}
+                >
+                  {t(en, thTxt)}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
-        {/* Theme panel — always available for non-projective, gated for projective */}
-        {(!spread.projective || showTheme) && (
+        {/* Gentle "how to read" helper — available, but below the writing so it
+            never competes with the primary action. */}
+        {(() => {
+          const guide = (lang === 'th' && thBundle.guide?.sections?.length)
+            ? thBundle.guide
+            : READING_GUIDE[lang === 'th' ? 'th' : 'en']
+          return (
+            <div style={{ margin: '14px 0 0' }}>
+              <button
+                onClick={() => setShowGuide(v => !v)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '7px', width: '100%', justifyContent: 'center',
+                  background: 'none', border: 'none', cursor: 'pointer', fontFamily: fontSans, fontSize: '12.5px',
+                  color: meta.accent, fontWeight: 500, padding: '4px',
+                }}
+              >
+                💡 {guide.label}
+                <span style={{ color: PAL.muted }}>{showGuide ? '▲' : '▼'}</span>
+              </button>
+              {showGuide && (
+                <div style={{ background: '#fff', border: `1px solid ${meta.border}`, borderRadius: '12px', padding: '4px 16px 14px', marginTop: '4px' }}>
+                  {guide.sections.map((row, i) => (
+                    <div key={i} style={{ marginTop: '10px' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 600, color: meta.accent, marginBottom: '2px' }}>{row.title}</div>
+                      <p style={{ fontSize: '12.5px', color: '#5A5A52', margin: 0, lineHeight: 1.55 }}>{row.body}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })()}
+
+        <button
+          onClick={() => setShowTheme(v => !v)}
+          style={{
+            marginTop: '16px', display: 'flex', alignItems: 'center', gap: '6px',
+            fontSize: '12.5px', color: meta.accent, background: 'none', border: 'none',
+            cursor: 'pointer', fontFamily: fontSans, padding: 0,
+          }}
+        >
+          {showTheme
+            ? t('Hide possible meanings', 'ซ่อนความหมาย')
+            : t('Show possible meanings', 'มาลองตีความหมายไปพร้อมกัน')}
+          <span style={{ color: PAL.muted }}>{showTheme ? '▲' : '▼'}</span>
+        </button>
+
+        {/* Card meanings + exercise — opt-in, so only one text box shows by default */}
+        {showTheme && (
           <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {/* Plain-language summary of the cards drawn */}
             <div style={{ background: '#fff', border: `1px solid ${meta.border}`, borderRadius: '12px', padding: '13px 15px' }}>
               <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', color: meta.accent, marginBottom: '5px' }}>
                 {t('In short', 'สรุปสั้น ๆ')}
               </div>
-              <p style={{ fontSize: '13.5px', color: '#3A3A3A', margin: 0, lineHeight: 1.6 }}>
+              <p style={{ fontSize: '13.5px', color: '#3A3A3A', margin: 0, lineHeight: 1.6, whiteSpace: 'pre-line' }}>
                 {buildSummary(pickedCards, spread, lang, thBundle.summaries)}
               </p>
             </div>
@@ -1428,8 +1484,16 @@ export default function CardDeck({ onBack, token, onStartGuided }) {
                 {/* Interactive framework + tool workshop. Source content is English-only;
                     Thai copy comes from the backend (DB-backed, falls back to English). */}
                 {(() => {
-                  const enWs = workshopFor(frameworks[card.id])
-                  const dbWs = thBundle.workshops[frameworks[card.id]] || {}
+                  // Resolve the workshop key ONCE, then use it for both the English
+                  // source and the Thai lookup. Cards without a framework mapping
+                  // (all Tarot + Nature — mapping.json is Neuro-only) fall back to
+                  // '_generic'; the Thai lookup must use that same resolved key, or
+                  // it asks thBundle.workshops[undefined] and leaks English.
+                  const fwKey = (frameworks[card.id] && TOOL_WORKSHOPS[frameworks[card.id]])
+                    ? frameworks[card.id]
+                    : '_generic'
+                  const enWs = TOOL_WORKSHOPS[fwKey]
+                  const dbWs = thBundle.workshops[fwKey] || {}
                   const ws = lang === 'th'
                     ? {
                         short:  dbWs.short  || enWs.short,
