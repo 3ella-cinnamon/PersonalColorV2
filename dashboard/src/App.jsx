@@ -338,7 +338,8 @@ export default function App() {
         profile={profile}
         token={token}
         onSaveProfile={handleSaveProfile}
-        onLogout={() => setSection(null)}
+        onBack={() => setSection(null)}
+        onLogout={handleLogout}
       />
     )
   }
