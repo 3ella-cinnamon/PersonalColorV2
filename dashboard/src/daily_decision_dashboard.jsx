@@ -4,7 +4,7 @@ import {
   Wind, Droplets, Footprints, Coffee, Eye, Sun,
   Briefcase, Wallet, Heart, Calendar as CalendarIcon,
   ChevronRight, Activity, User, Zap, LogOut, Brain, Layers,
-  AlertTriangle, MessageSquare, Star
+  AlertTriangle, MessageSquare, Star, ArrowLeft
 } from 'lucide-react';
 
 /* ---------- Backend helpers ---------- */
@@ -300,7 +300,7 @@ function energyTint(energy) {
 
 /* ---------- Main component ---------- */
 
-export default function DailyDecisionDashboard({ profile, token, onSaveProfile, onLogout }) {
+export default function DailyDecisionDashboard({ profile, token, onSaveProfile, onBack, onLogout }) {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [goal, setGoal]         = useState('work');
   const [subGoal, setSubGoal]   = useState('get_buyin');
@@ -463,6 +463,16 @@ export default function DailyDecisionDashboard({ profile, token, onSaveProfile, 
       >
         <div className="max-w-6xl mx-auto px-5 md:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 transition-colors"
+                title={lang === 'th' ? 'กลับหน้าหลัก' : 'Back to menu'}
+              >
+                <ArrowLeft size={14} strokeWidth={1.8} />
+                <span className="hidden sm:inline">{lang === 'th' ? 'หน้าหลัก' : 'Menu'}</span>
+              </button>
+            )}
             <div className="w-2 h-2 rounded-full transition-colors duration-500" style={{ background: tint }} />
             <span className="text-xs uppercase tracking-[0.18em] text-gray-500">Daily Decision</span>
           </div>

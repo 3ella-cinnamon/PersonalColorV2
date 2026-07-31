@@ -605,3 +605,64 @@ class AEHQTranslation(Base):
     lang: Mapped[str] = mapped_column(String(8), nullable=False, index=True)  # e.g. "th"
     src:  Mapped[str] = mapped_column(Text, nullable=False)
     dst:  Mapped[str] = mapped_column(Text, nullable=False)
+
+
+# ── Card Deck — projective reflection readings (Stage 3: saving readings) ─────
+
+class CardReading(Base):
+    """One saved Card Deck reading.
+
+    A reading is a completed draw the user chose to keep: the deck + spread,
+    the drawn cards (with their spread positions), and the user's own words.
+    Aligned with the Session_Logic / App_Data_Schema catalogue so it can grow
+    into the fuller guided flow (activation before/after, intention, etc.).
+
+    cards_json is a list of {card_id, position} in draw order, e.g.
+    [{"card_id": "neuro_33", "position": "Open image"}].
+    """
+    __tablename__ = "card_readings"
+
+    id:      Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+
+    deck:        Mapped[str] = mapped_column(String(20), nullable=False)   # tarot | neuro | nature
+    spread_id:   Mapped[str] = mapped_column(String(20), nullable=False)   # one | three | guided
+    spread_name: Mapped[str] = mapped_column(String(80), nullable=False)   # display name at save time
+    cards_json:  Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+
+    # 'quick' = a saved draw; 'guided' = a full 11-stage session (Session_Logic).
+    # Named session_mode (not "mode") to avoid Postgres's mode() ordered-set aggregate.
+    session_mode: Mapped[str] = mapped_column(String(12), default="quick", nullable=False)
+    # For guided sessions: the full structured stage-by-stage record
+    # (activation before/mid/after, observations, meaning, choice, micro-action,
+    # anchor, feedback, consent, safety events). Null for quick draws.
+    session_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # The user's own words — the heart of a projective reading.
+    reflection: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Optional session focus (Session_Logic stage 2) captured at save time.
+    intention:  Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Optional self-reported activation 0–10 (stage 1) — reserved for the fuller flow.
+    activation_before: Mapped[Optional[int]] = mapped_column(nullable=True)
+
+    lang:       Mapped[Optional[str]] = mapped_column(String(8), nullable=True)  # th / en at save time
+    created_at: Mapped[datetime]      = mapped_column(DateTime, server_default=func.now())
+
+    user: Mapped["User"] = relationship("User")
+
+
+class CardTranslation(Base):
+    """Thai (or other language) copy for Card Deck content whose source data
+    is English-only — e.g. a card's micro_intervention, or the workshop
+    framework copy authored in the frontend.
+
+    Same shape/purpose as AEHQTranslation: services/cards_i18n_th.py holds the
+    seed defaults; this table's rows win once seeded, so operators can edit
+    Thai copy without a deploy. src is the exact English source string.
+    """
+    __tablename__ = "card_translations"
+
+    id:   Mapped[int] = mapped_column(primary_key=True)
+    lang: Mapped[str] = mapped_column(String(8), nullable=False, index=True)  # e.g. "th"
+    src:  Mapped[str] = mapped_column(Text, nullable=False)
+    dst:  Mapped[str] = mapped_column(Text, nullable=False)

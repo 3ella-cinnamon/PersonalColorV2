@@ -1,0 +1,3224 @@
+{
+  "version": 1,
+  "stage": "1 — card types & data model",
+  "style_guide": {
+    "art_direction": "small minimal images: flat line art, thin rounded strokes, max 2-3 colors per card, lots of whitespace, no gradients, no realistic detail",
+    "palette": {
+      "ink": "#3A3A3A",
+      "accent_warm": "#E8A87C",
+      "accent_cool": "#7FB5B5",
+      "paper": "#FAF7F2"
+    },
+    "card_ratio": "2:3 portrait, artwork centered in upper 2/3, name below"
+  },
+  "basic_ph_legend": {
+    "B": {
+      "en": "Belief / meaning & hope",
+      "th": "ความเชื่อ ความหมาย และความหวัง"
+    },
+    "A": {
+      "en": "Affect / expressing feelings",
+      "th": "อารมณ์และการแสดงความรู้สึก"
+    },
+    "S": {
+      "en": "Social / people & support",
+      "th": "สังคม ผู้คน และแรงสนับสนุน"
+    },
+    "I": {
+      "en": "Imagination / creativity",
+      "th": "จินตนาการและความคิดสร้างสรรค์"
+    },
+    "C": {
+      "en": "Cognition / thinking & planning",
+      "th": "ความคิดและการวางแผน"
+    },
+    "Ph": {
+      "en": "Physical / body & action",
+      "th": "ร่างกายและการลงมือทำ"
+    }
+  },
+  "disclaimer_en": "For self-reflection only — not medical or psychological treatment.",
+  "disclaimer_th": "เพื่อการทบทวนตนเองเท่านั้น ไม่ใช่การวินิจฉัยหรือการรักษาทางการแพทย์หรือจิตวิทยา",
+  "cards": [
+    {
+      "id": "tarot_major_00",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 0,
+      "name_en": "The Fool",
+      "name_th": "ผู้เริ่มต้น (เดอะฟูล)",
+      "keywords_en": [
+        "new beginnings",
+        "openness",
+        "a brave first step"
+      ],
+      "keywords_th": [
+        "การเริ่มต้นใหม่",
+        "ใจที่เปิดกว้าง",
+        "ก้าวแรกที่กล้าหาญ"
+      ],
+      "archetype": "The Innocent / beginner's mind",
+      "basic_ph": [
+        "I"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'new beginnings'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'การเริ่มต้นใหม่' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: tiny figure stepping toward a sun, small bundle on a stick"
+    },
+    {
+      "id": "tarot_major_01",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 1,
+      "name_en": "The Magician",
+      "name_th": "นักมายากล",
+      "keywords_en": [
+        "resourcefulness",
+        "focus",
+        "you already have tools"
+      ],
+      "keywords_th": [
+        "ความสามารถในตัว",
+        "สมาธิ",
+        "คุณมีเครื่องมือครบแล้ว"
+      ],
+      "archetype": "The Creator",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'resourcefulness'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'ความสามารถในตัว' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: open hand with infinity loop above it"
+    },
+    {
+      "id": "tarot_major_02",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 2,
+      "name_en": "The High Priestess",
+      "name_th": "ผู้หยั่งรู้",
+      "keywords_en": [
+        "intuition",
+        "inner voice",
+        "quiet knowing"
+      ],
+      "keywords_th": [
+        "สัญชาตญาณ",
+        "เสียงภายใน",
+        "ความสงบที่รู้เอง"
+      ],
+      "archetype": "Inner wisdom",
+      "basic_ph": [
+        "B",
+        "I"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'intuition'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'สัญชาตญาณ' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: crescent moon behind a thin veil, two dots as pillars"
+    },
+    {
+      "id": "tarot_major_03",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 3,
+      "name_en": "The Empress",
+      "name_th": "ผู้โอบอุ้ม",
+      "keywords_en": [
+        "nurture",
+        "abundance",
+        "self-care"
+      ],
+      "keywords_th": [
+        "การดูแลเอาใจใส่",
+        "ความอุดมสมบูรณ์",
+        "การรักตัวเอง"
+      ],
+      "archetype": "The Caregiver",
+      "basic_ph": [
+        "A"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'nurture'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'การดูแลเอาใจใส่' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: heart inside a blooming flower"
+    },
+    {
+      "id": "tarot_major_04",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 4,
+      "name_en": "The Emperor",
+      "name_th": "ผู้สร้างระเบียบ",
+      "keywords_en": [
+        "structure",
+        "boundaries",
+        "steady ground"
+      ],
+      "keywords_th": [
+        "โครงสร้าง",
+        "ขอบเขตที่ชัดเจน",
+        "ความมั่นคง"
+      ],
+      "archetype": "Order / the protector",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'structure'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'โครงสร้าง' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: simple square throne, straight lines"
+    },
+    {
+      "id": "tarot_major_05",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 5,
+      "name_en": "The Hierophant",
+      "name_th": "ครูผู้ชี้ทาง",
+      "keywords_en": [
+        "learning",
+        "guidance",
+        "trusted tradition"
+      ],
+      "keywords_th": [
+        "การเรียนรู้",
+        "ผู้ชี้แนะ",
+        "แบบแผนที่วางใจได้"
+      ],
+      "archetype": "The Teacher",
+      "basic_ph": [
+        "B",
+        "S"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'learning'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'การเรียนรู้' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: two small pillars with a key between them"
+    },
+    {
+      "id": "tarot_major_06",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 6,
+      "name_en": "The Lovers",
+      "name_th": "คู่สัมพันธ์",
+      "keywords_en": [
+        "connection",
+        "choice",
+        "what you value"
+      ],
+      "keywords_th": [
+        "ความเชื่อมโยง",
+        "ทางเลือก",
+        "สิ่งที่คุณให้คุณค่า"
+      ],
+      "archetype": "Relationship / choice of heart",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'connection'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'ความเชื่อมโยง' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: two circles overlapping under a small sun"
+    },
+    {
+      "id": "tarot_major_07",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 7,
+      "name_en": "The Chariot",
+      "name_th": "ราชรถ",
+      "keywords_en": [
+        "determination",
+        "direction",
+        "willpower"
+      ],
+      "keywords_th": [
+        "ความมุ่งมั่น",
+        "ทิศทาง",
+        "พลังใจ"
+      ],
+      "archetype": "The Hero's drive",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'determination'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'ความมุ่งมั่น' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: forward arrow over two wheels"
+    },
+    {
+      "id": "tarot_major_08",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 8,
+      "name_en": "Strength",
+      "name_th": "พลังใจอ่อนโยน",
+      "keywords_en": [
+        "gentle courage",
+        "patience",
+        "self-compassion"
+      ],
+      "keywords_th": [
+        "ความกล้าอย่างอ่อนโยน",
+        "ความอดทน",
+        "ความเมตตาต่อตนเอง"
+      ],
+      "archetype": "Inner strength",
+      "basic_ph": [
+        "A"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'gentle courage'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'ความกล้าอย่างอ่อนโยน' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: small hand resting on a lion silhouette"
+    },
+    {
+      "id": "tarot_major_09",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 9,
+      "name_en": "The Hermit",
+      "name_th": "ผู้แสวงหา",
+      "keywords_en": [
+        "solitude",
+        "reflection",
+        "your own lantern"
+      ],
+      "keywords_th": [
+        "การอยู่กับตัวเอง",
+        "การใคร่ครวญ",
+        "แสงตะเกียงของตัวเอง"
+      ],
+      "archetype": "The Sage",
+      "basic_ph": [
+        "I",
+        "B"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'solitude'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'การอยู่กับตัวเอง' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: lantern with a single light ray"
+    },
+    {
+      "id": "tarot_major_10",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 10,
+      "name_en": "Wheel of Fortune",
+      "name_th": "กงล้อแห่งการเปลี่ยนแปลง",
+      "keywords_en": [
+        "cycles",
+        "change",
+        "acceptance"
+      ],
+      "keywords_th": [
+        "วัฏจักร",
+        "ความเปลี่ยนแปลง",
+        "การยอมรับ"
+      ],
+      "archetype": "Cycles of life",
+      "basic_ph": [
+        "B"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'cycles'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'วัฏจักร' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: circle with eight spokes, one dot rising"
+    },
+    {
+      "id": "tarot_major_11",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 11,
+      "name_en": "Justice",
+      "name_th": "ความเที่ยงตรง",
+      "keywords_en": [
+        "fairness",
+        "honesty",
+        "cause and effect"
+      ],
+      "keywords_th": [
+        "ความเป็นธรรม",
+        "ความซื่อตรง",
+        "เหตุและผล"
+      ],
+      "archetype": "Truth",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'fairness'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'ความเป็นธรรม' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: balanced scales, two equal pans"
+    },
+    {
+      "id": "tarot_major_12",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 12,
+      "name_en": "The Hanged Man",
+      "name_th": "มุมมองใหม่",
+      "keywords_en": [
+        "pausing",
+        "new perspective",
+        "letting things be"
+      ],
+      "keywords_th": [
+        "การหยุดพัก",
+        "มุมมองใหม่",
+        "การปล่อยให้เป็นไป"
+      ],
+      "archetype": "Surrender / reframe",
+      "basic_ph": [
+        "I"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'pausing'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'การหยุดพัก' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: figure upside down, calm face, one bent leg"
+    },
+    {
+      "id": "tarot_major_13",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 13,
+      "name_en": "Death",
+      "name_th": "การเปลี่ยนผ่าน",
+      "keywords_en": [
+        "endings that free you",
+        "transformation",
+        "a new chapter"
+      ],
+      "keywords_th": [
+        "การสิ้นสุดที่ปลดปล่อย",
+        "การแปรเปลี่ยน",
+        "บทใหม่ของชีวิต"
+      ],
+      "archetype": "Transformation",
+      "basic_ph": [
+        "B"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'endings that free you'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'การสิ้นสุดที่ปลดปล่อย' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: closed door behind, sunrise ahead, single flower"
+    },
+    {
+      "id": "tarot_major_14",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 14,
+      "name_en": "Temperance",
+      "name_th": "ความพอดี",
+      "keywords_en": [
+        "balance",
+        "patience",
+        "blending opposites"
+      ],
+      "keywords_th": [
+        "ความสมดุล",
+        "ความใจเย็น",
+        "การผสานสิ่งต่าง"
+      ],
+      "archetype": "Harmony",
+      "basic_ph": [
+        "B",
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'balance'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'ความสมดุล' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: two cups pouring water in a gentle arc"
+    },
+    {
+      "id": "tarot_major_15",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 15,
+      "name_en": "The Devil",
+      "name_th": "พันธนาการที่คลายได้",
+      "keywords_en": [
+        "noticing what binds you",
+        "habits",
+        "reclaiming choice"
+      ],
+      "keywords_th": [
+        "เห็นสิ่งที่ผูกรั้ง",
+        "นิสัยเคยชิน",
+        "ทวงคืนทางเลือก"
+      ],
+      "archetype": "The Shadow (met kindly)",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'noticing what binds you'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'เห็นสิ่งที่ผูกรั้ง' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: loose chain with an open link"
+    },
+    {
+      "id": "tarot_major_16",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 16,
+      "name_en": "The Tower",
+      "name_th": "จุดพลิกผัน",
+      "keywords_en": [
+        "sudden change",
+        "breakthrough",
+        "rebuilding"
+      ],
+      "keywords_th": [
+        "ความเปลี่ยนแปลงฉับพลัน",
+        "การทะลุกรอบ",
+        "การสร้างใหม่"
+      ],
+      "archetype": "Upheaval that clears space",
+      "basic_ph": [
+        "C",
+        "B"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'sudden change'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'ความเปลี่ยนแปลงฉับพลัน' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: small tower with a lightning line and a sprout at the base"
+    },
+    {
+      "id": "tarot_major_17",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 17,
+      "name_en": "The Star",
+      "name_th": "ดวงดาวแห่งความหวัง",
+      "keywords_en": [
+        "hope",
+        "healing",
+        "gentle renewal"
+      ],
+      "keywords_th": [
+        "ความหวัง",
+        "การเยียวยา",
+        "การฟื้นฟูอย่างอ่อนโยน"
+      ],
+      "archetype": "Hope",
+      "basic_ph": [
+        "B"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'hope'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'ความหวัง' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: one large star, small pool reflecting it"
+    },
+    {
+      "id": "tarot_major_18",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 18,
+      "name_en": "The Moon",
+      "name_th": "ดวงจันทร์",
+      "keywords_en": [
+        "uncertainty",
+        "dreams",
+        "listening to feelings"
+      ],
+      "keywords_th": [
+        "ความไม่แน่นอน",
+        "ความฝัน",
+        "การฟังความรู้สึก"
+      ],
+      "archetype": "The Unconscious",
+      "basic_ph": [
+        "I"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'uncertainty'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'ความไม่แน่นอน' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: crescent moon over a winding path"
+    },
+    {
+      "id": "tarot_major_19",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 19,
+      "name_en": "The Sun",
+      "name_th": "ดวงอาทิตย์",
+      "keywords_en": [
+        "joy",
+        "vitality",
+        "clarity"
+      ],
+      "keywords_th": [
+        "ความเบิกบาน",
+        "พลังชีวิต",
+        "ความกระจ่าง"
+      ],
+      "archetype": "Joy",
+      "basic_ph": [
+        "A"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'joy'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'ความเบิกบาน' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: simple sun with straight rays over a small sunflower"
+    },
+    {
+      "id": "tarot_major_20",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 20,
+      "name_en": "Judgement",
+      "name_th": "การตื่นรู้",
+      "keywords_en": [
+        "awakening",
+        "self-forgiveness",
+        "second chances"
+      ],
+      "keywords_th": [
+        "การตื่นรู้",
+        "การให้อภัยตนเอง",
+        "โอกาสครั้งใหม่"
+      ],
+      "archetype": "Rebirth",
+      "basic_ph": [
+        "B"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'awakening'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'การตื่นรู้' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: figure rising from a box toward a horn's sound lines"
+    },
+    {
+      "id": "tarot_major_21",
+      "deck": "tarot",
+      "arcana": "major",
+      "number": 21,
+      "name_en": "The World",
+      "name_th": "ความสมบูรณ์",
+      "keywords_en": [
+        "completion",
+        "wholeness",
+        "gratitude"
+      ],
+      "keywords_th": [
+        "ความสำเร็จครบถ้วน",
+        "ความเป็นหนึ่งเดียว",
+        "ความขอบคุณ"
+      ],
+      "archetype": "Wholeness",
+      "basic_ph": [
+        "B"
+      ],
+      "reflect_prompt_en": "Where in your life right now do you feel 'completion'?",
+      "reflect_prompt_th": "ช่วงนี้ของชีวิต คุณรู้สึกถึง 'ความสำเร็จครบถ้วน' ตรงไหนบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors: figure inside a laurel circle, arms open"
+    },
+    {
+      "id": "tarot_wands_ace",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Ace of Wands",
+      "name_th": "เอซ ไม้เท้า",
+      "keywords_en": [
+        "a new spark",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "จุดเริ่มต้นใหม่",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "a new spark in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'a new spark' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'จุดเริ่มต้นใหม่' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: one large a wand with a small leaf centered"
+    },
+    {
+      "id": "tarot_wands_02",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Two of Wands",
+      "name_th": "2 ไม้เท้า",
+      "keywords_en": [
+        "choice and balance",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "ทางเลือกและสมดุล",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "choice and balance in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'choice and balance' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'ทางเลือกและสมดุล' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: two a wand with a small leafs side by side"
+    },
+    {
+      "id": "tarot_wands_03",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Three of Wands",
+      "name_th": "3 ไม้เท้า",
+      "keywords_en": [
+        "growth and teamwork",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "การเติบโตและการร่วมมือ",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "growth and teamwork in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'growth and teamwork' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'การเติบโตและการร่วมมือ' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: three a wand with a small leafs in a triangle"
+    },
+    {
+      "id": "tarot_wands_04",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Four of Wands",
+      "name_th": "4 ไม้เท้า",
+      "keywords_en": [
+        "rest and stability",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "การพักและความมั่นคง",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "rest and stability in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'rest and stability' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'การพักและความมั่นคง' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: four a wand with a small leafs in a square"
+    },
+    {
+      "id": "tarot_wands_05",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Five of Wands",
+      "name_th": "5 ไม้เท้า",
+      "keywords_en": [
+        "friction and a lesson",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "แรงเสียดทานและบทเรียน",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "friction and a lesson in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'friction and a lesson' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'แรงเสียดทานและบทเรียน' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: five a wand with a small leafs, one slightly apart"
+    },
+    {
+      "id": "tarot_wands_06",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Six of Wands",
+      "name_th": "6 ไม้เท้า",
+      "keywords_en": [
+        "kindness and harmony",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "ความเกื้อกูลและความกลมกลืน",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "kindness and harmony in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'kindness and harmony' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'ความเกื้อกูลและความกลมกลืน' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: six a wand with a small leafs in two gentle rows"
+    },
+    {
+      "id": "tarot_wands_07",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Seven of Wands",
+      "name_th": "7 ไม้เท้า",
+      "keywords_en": [
+        "patience and rethinking",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "ความอดทนและการทบทวน",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "patience and rethinking in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'patience and rethinking' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'ความอดทนและการทบทวน' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seven a wand with a small leafs, one raised above"
+    },
+    {
+      "id": "tarot_wands_08",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Eight of Wands",
+      "name_th": "8 ไม้เท้า",
+      "keywords_en": [
+        "skill and steady progress",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "ทักษะและการก้าวไปข้างหน้า",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "skill and steady progress in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'skill and steady progress' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'ทักษะและการก้าวไปข้างหน้า' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: eight a wand with a small leafs in a moving diagonal"
+    },
+    {
+      "id": "tarot_wands_09",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Nine of Wands",
+      "name_th": "9 ไม้เท้า",
+      "keywords_en": [
+        "almost there",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "ใกล้ถึงเป้าหมาย",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "almost there in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'almost there' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'ใกล้ถึงเป้าหมาย' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: nine a wand with a small leafs in an arc"
+    },
+    {
+      "id": "tarot_wands_10",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Ten of Wands",
+      "name_th": "10 ไม้เท้า",
+      "keywords_en": [
+        "completion and fullness",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "ความสมบูรณ์เต็มที่",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "completion and fullness in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'completion and fullness' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'ความสมบูรณ์เต็มที่' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: ten a wand with a small leafs in a full circle"
+    },
+    {
+      "id": "tarot_wands_page",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Page of Wands",
+      "name_th": "เพจไม้เท้า",
+      "keywords_en": [
+        "curiosity and learning",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "ความอยากรู้และการเรียนรู้",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "curiosity and learning in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'curiosity and learning' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'ความอยากรู้และการเรียนรู้' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: small figure holding one a wand with a small leaf, looking at it"
+    },
+    {
+      "id": "tarot_wands_knight",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Knight of Wands",
+      "name_th": "อัศวินไม้เท้า",
+      "keywords_en": [
+        "drive and pursuit",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "แรงขับและการมุ่งไป",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "drive and pursuit in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'drive and pursuit' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'แรงขับและการมุ่งไป' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: figure in motion carrying one a wand with a small leaf"
+    },
+    {
+      "id": "tarot_wands_queen",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "Queen of Wands",
+      "name_th": "ราชินีไม้เท้า",
+      "keywords_en": [
+        "deep understanding and care",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "ความเข้าใจลึกซึ้งและการดูแล",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "deep understanding and care in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'deep understanding and care' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'ความเข้าใจลึกซึ้งและการดูแล' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seated figure holding one a wand with a small leaf close"
+    },
+    {
+      "id": "tarot_wands_king",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "wands",
+      "name_en": "King of Wands",
+      "name_th": "ราชาไม้เท้า",
+      "keywords_en": [
+        "steady, mature leadership",
+        "energy & motivation"
+      ],
+      "keywords_th": [
+        "ความหนักแน่นและวุฒิภาวะ",
+        "พลังใจและแรงบันดาลใจ"
+      ],
+      "archetype": "steady, mature leadership in the area of energy & motivation",
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "Where does 'steady, mature leadership' show up in your energy or goals right now?",
+      "reflect_prompt_th": "'ความหนักแน่นและวุฒิภาวะ' ปรากฏในพลังใจหรือเป้าหมายของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seated figure holding one a wand with a small leaf upright"
+    },
+    {
+      "id": "tarot_cups_ace",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Ace of Cups",
+      "name_th": "เอซ ถ้วย",
+      "keywords_en": [
+        "a new spark",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "จุดเริ่มต้นใหม่",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "a new spark in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'a new spark' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'จุดเริ่มต้นใหม่' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: one large a simple chalice centered"
+    },
+    {
+      "id": "tarot_cups_02",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Two of Cups",
+      "name_th": "2 ถ้วย",
+      "keywords_en": [
+        "choice and balance",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "ทางเลือกและสมดุล",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "choice and balance in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'choice and balance' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'ทางเลือกและสมดุล' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: two a simple chalices side by side"
+    },
+    {
+      "id": "tarot_cups_03",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Three of Cups",
+      "name_th": "3 ถ้วย",
+      "keywords_en": [
+        "growth and teamwork",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "การเติบโตและการร่วมมือ",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "growth and teamwork in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'growth and teamwork' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'การเติบโตและการร่วมมือ' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: three a simple chalices in a triangle"
+    },
+    {
+      "id": "tarot_cups_04",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Four of Cups",
+      "name_th": "4 ถ้วย",
+      "keywords_en": [
+        "rest and stability",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "การพักและความมั่นคง",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "rest and stability in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'rest and stability' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'การพักและความมั่นคง' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: four a simple chalices in a square"
+    },
+    {
+      "id": "tarot_cups_05",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Five of Cups",
+      "name_th": "5 ถ้วย",
+      "keywords_en": [
+        "friction and a lesson",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "แรงเสียดทานและบทเรียน",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "friction and a lesson in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'friction and a lesson' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'แรงเสียดทานและบทเรียน' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: five a simple chalices, one slightly apart"
+    },
+    {
+      "id": "tarot_cups_06",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Six of Cups",
+      "name_th": "6 ถ้วย",
+      "keywords_en": [
+        "kindness and harmony",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "ความเกื้อกูลและความกลมกลืน",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "kindness and harmony in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'kindness and harmony' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'ความเกื้อกูลและความกลมกลืน' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: six a simple chalices in two gentle rows"
+    },
+    {
+      "id": "tarot_cups_07",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Seven of Cups",
+      "name_th": "7 ถ้วย",
+      "keywords_en": [
+        "patience and rethinking",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "ความอดทนและการทบทวน",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "patience and rethinking in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'patience and rethinking' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'ความอดทนและการทบทวน' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seven a simple chalices, one raised above"
+    },
+    {
+      "id": "tarot_cups_08",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Eight of Cups",
+      "name_th": "8 ถ้วย",
+      "keywords_en": [
+        "skill and steady progress",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "ทักษะและการก้าวไปข้างหน้า",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "skill and steady progress in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'skill and steady progress' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'ทักษะและการก้าวไปข้างหน้า' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: eight a simple chalices in a moving diagonal"
+    },
+    {
+      "id": "tarot_cups_09",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Nine of Cups",
+      "name_th": "9 ถ้วย",
+      "keywords_en": [
+        "almost there",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "ใกล้ถึงเป้าหมาย",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "almost there in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'almost there' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'ใกล้ถึงเป้าหมาย' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: nine a simple chalices in an arc"
+    },
+    {
+      "id": "tarot_cups_10",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Ten of Cups",
+      "name_th": "10 ถ้วย",
+      "keywords_en": [
+        "completion and fullness",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "ความสมบูรณ์เต็มที่",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "completion and fullness in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'completion and fullness' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'ความสมบูรณ์เต็มที่' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: ten a simple chalices in a full circle"
+    },
+    {
+      "id": "tarot_cups_page",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Page of Cups",
+      "name_th": "เพจถ้วย",
+      "keywords_en": [
+        "curiosity and learning",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "ความอยากรู้และการเรียนรู้",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "curiosity and learning in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'curiosity and learning' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'ความอยากรู้และการเรียนรู้' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: small figure holding one a simple chalice, looking at it"
+    },
+    {
+      "id": "tarot_cups_knight",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Knight of Cups",
+      "name_th": "อัศวินถ้วย",
+      "keywords_en": [
+        "drive and pursuit",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "แรงขับและการมุ่งไป",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "drive and pursuit in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'drive and pursuit' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'แรงขับและการมุ่งไป' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: figure in motion carrying one a simple chalice"
+    },
+    {
+      "id": "tarot_cups_queen",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "Queen of Cups",
+      "name_th": "ราชินีถ้วย",
+      "keywords_en": [
+        "deep understanding and care",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "ความเข้าใจลึกซึ้งและการดูแล",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "deep understanding and care in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'deep understanding and care' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'ความเข้าใจลึกซึ้งและการดูแล' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seated figure holding one a simple chalice close"
+    },
+    {
+      "id": "tarot_cups_king",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "cups",
+      "name_en": "King of Cups",
+      "name_th": "ราชาถ้วย",
+      "keywords_en": [
+        "steady, mature leadership",
+        "feelings & relationships"
+      ],
+      "keywords_th": [
+        "ความหนักแน่นและวุฒิภาวะ",
+        "ความรู้สึกและความสัมพันธ์"
+      ],
+      "archetype": "steady, mature leadership in the area of feelings & relationships",
+      "basic_ph": [
+        "A",
+        "S"
+      ],
+      "reflect_prompt_en": "Where does 'steady, mature leadership' show up in your feelings or relationships right now?",
+      "reflect_prompt_th": "'ความหนักแน่นและวุฒิภาวะ' ปรากฏในความรู้สึกหรือความสัมพันธ์ของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seated figure holding one a simple chalice upright"
+    },
+    {
+      "id": "tarot_swords_ace",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Ace of Swords",
+      "name_th": "เอซ ดาบ",
+      "keywords_en": [
+        "a new spark",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "จุดเริ่มต้นใหม่",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "a new spark in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'a new spark' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'จุดเริ่มต้นใหม่' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: one large a slim upright blade centered"
+    },
+    {
+      "id": "tarot_swords_02",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Two of Swords",
+      "name_th": "2 ดาบ",
+      "keywords_en": [
+        "choice and balance",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "ทางเลือกและสมดุล",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "choice and balance in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'choice and balance' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'ทางเลือกและสมดุล' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: two a slim upright blades side by side"
+    },
+    {
+      "id": "tarot_swords_03",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Three of Swords",
+      "name_th": "3 ดาบ",
+      "keywords_en": [
+        "growth and teamwork",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "การเติบโตและการร่วมมือ",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "growth and teamwork in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'growth and teamwork' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'การเติบโตและการร่วมมือ' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: three a slim upright blades in a triangle"
+    },
+    {
+      "id": "tarot_swords_04",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Four of Swords",
+      "name_th": "4 ดาบ",
+      "keywords_en": [
+        "rest and stability",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "การพักและความมั่นคง",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "rest and stability in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'rest and stability' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'การพักและความมั่นคง' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: four a slim upright blades in a square"
+    },
+    {
+      "id": "tarot_swords_05",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Five of Swords",
+      "name_th": "5 ดาบ",
+      "keywords_en": [
+        "friction and a lesson",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "แรงเสียดทานและบทเรียน",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "friction and a lesson in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'friction and a lesson' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'แรงเสียดทานและบทเรียน' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: five a slim upright blades, one slightly apart"
+    },
+    {
+      "id": "tarot_swords_06",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Six of Swords",
+      "name_th": "6 ดาบ",
+      "keywords_en": [
+        "kindness and harmony",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "ความเกื้อกูลและความกลมกลืน",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "kindness and harmony in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'kindness and harmony' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'ความเกื้อกูลและความกลมกลืน' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: six a slim upright blades in two gentle rows"
+    },
+    {
+      "id": "tarot_swords_07",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Seven of Swords",
+      "name_th": "7 ดาบ",
+      "keywords_en": [
+        "patience and rethinking",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "ความอดทนและการทบทวน",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "patience and rethinking in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'patience and rethinking' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'ความอดทนและการทบทวน' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seven a slim upright blades, one raised above"
+    },
+    {
+      "id": "tarot_swords_08",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Eight of Swords",
+      "name_th": "8 ดาบ",
+      "keywords_en": [
+        "skill and steady progress",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "ทักษะและการก้าวไปข้างหน้า",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "skill and steady progress in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'skill and steady progress' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'ทักษะและการก้าวไปข้างหน้า' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: eight a slim upright blades in a moving diagonal"
+    },
+    {
+      "id": "tarot_swords_09",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Nine of Swords",
+      "name_th": "9 ดาบ",
+      "keywords_en": [
+        "almost there",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "ใกล้ถึงเป้าหมาย",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "almost there in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'almost there' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'ใกล้ถึงเป้าหมาย' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: nine a slim upright blades in an arc"
+    },
+    {
+      "id": "tarot_swords_10",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Ten of Swords",
+      "name_th": "10 ดาบ",
+      "keywords_en": [
+        "completion and fullness",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "ความสมบูรณ์เต็มที่",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "completion and fullness in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'completion and fullness' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'ความสมบูรณ์เต็มที่' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: ten a slim upright blades in a full circle"
+    },
+    {
+      "id": "tarot_swords_page",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Page of Swords",
+      "name_th": "เพจดาบ",
+      "keywords_en": [
+        "curiosity and learning",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "ความอยากรู้และการเรียนรู้",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "curiosity and learning in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'curiosity and learning' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'ความอยากรู้และการเรียนรู้' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: small figure holding one a slim upright blade, looking at it"
+    },
+    {
+      "id": "tarot_swords_knight",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Knight of Swords",
+      "name_th": "อัศวินดาบ",
+      "keywords_en": [
+        "drive and pursuit",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "แรงขับและการมุ่งไป",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "drive and pursuit in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'drive and pursuit' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'แรงขับและการมุ่งไป' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: figure in motion carrying one a slim upright blade"
+    },
+    {
+      "id": "tarot_swords_queen",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "Queen of Swords",
+      "name_th": "ราชินีดาบ",
+      "keywords_en": [
+        "deep understanding and care",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "ความเข้าใจลึกซึ้งและการดูแล",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "deep understanding and care in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'deep understanding and care' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'ความเข้าใจลึกซึ้งและการดูแล' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seated figure holding one a slim upright blade close"
+    },
+    {
+      "id": "tarot_swords_king",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "swords",
+      "name_en": "King of Swords",
+      "name_th": "ราชาดาบ",
+      "keywords_en": [
+        "steady, mature leadership",
+        "thoughts & clarity"
+      ],
+      "keywords_th": [
+        "ความหนักแน่นและวุฒิภาวะ",
+        "ความคิดและความชัดเจน"
+      ],
+      "archetype": "steady, mature leadership in the area of thoughts & clarity",
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Where does 'steady, mature leadership' show up in your thoughts or decisions right now?",
+      "reflect_prompt_th": "'ความหนักแน่นและวุฒิภาวะ' ปรากฏในความคิดหรือการตัดสินใจของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seated figure holding one a slim upright blade upright"
+    },
+    {
+      "id": "tarot_pentacles_ace",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Ace of Pentacles",
+      "name_th": "เอซ เหรียญ",
+      "keywords_en": [
+        "a new spark",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "จุดเริ่มต้นใหม่",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "a new spark in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'a new spark' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'จุดเริ่มต้นใหม่' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: one large a coin with a five-point star centered"
+    },
+    {
+      "id": "tarot_pentacles_02",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Two of Pentacles",
+      "name_th": "2 เหรียญ",
+      "keywords_en": [
+        "choice and balance",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "ทางเลือกและสมดุล",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "choice and balance in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'choice and balance' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'ทางเลือกและสมดุล' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: two a coin with a five-point stars side by side"
+    },
+    {
+      "id": "tarot_pentacles_03",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Three of Pentacles",
+      "name_th": "3 เหรียญ",
+      "keywords_en": [
+        "growth and teamwork",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "การเติบโตและการร่วมมือ",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "growth and teamwork in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'growth and teamwork' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'การเติบโตและการร่วมมือ' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: three a coin with a five-point stars in a triangle"
+    },
+    {
+      "id": "tarot_pentacles_04",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Four of Pentacles",
+      "name_th": "4 เหรียญ",
+      "keywords_en": [
+        "rest and stability",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "การพักและความมั่นคง",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "rest and stability in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'rest and stability' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'การพักและความมั่นคง' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: four a coin with a five-point stars in a square"
+    },
+    {
+      "id": "tarot_pentacles_05",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Five of Pentacles",
+      "name_th": "5 เหรียญ",
+      "keywords_en": [
+        "friction and a lesson",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "แรงเสียดทานและบทเรียน",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "friction and a lesson in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'friction and a lesson' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'แรงเสียดทานและบทเรียน' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: five a coin with a five-point stars, one slightly apart"
+    },
+    {
+      "id": "tarot_pentacles_06",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Six of Pentacles",
+      "name_th": "6 เหรียญ",
+      "keywords_en": [
+        "kindness and harmony",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "ความเกื้อกูลและความกลมกลืน",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "kindness and harmony in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'kindness and harmony' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'ความเกื้อกูลและความกลมกลืน' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: six a coin with a five-point stars in two gentle rows"
+    },
+    {
+      "id": "tarot_pentacles_07",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Seven of Pentacles",
+      "name_th": "7 เหรียญ",
+      "keywords_en": [
+        "patience and rethinking",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "ความอดทนและการทบทวน",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "patience and rethinking in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'patience and rethinking' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'ความอดทนและการทบทวน' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seven a coin with a five-point stars, one raised above"
+    },
+    {
+      "id": "tarot_pentacles_08",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Eight of Pentacles",
+      "name_th": "8 เหรียญ",
+      "keywords_en": [
+        "skill and steady progress",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "ทักษะและการก้าวไปข้างหน้า",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "skill and steady progress in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'skill and steady progress' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'ทักษะและการก้าวไปข้างหน้า' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: eight a coin with a five-point stars in a moving diagonal"
+    },
+    {
+      "id": "tarot_pentacles_09",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Nine of Pentacles",
+      "name_th": "9 เหรียญ",
+      "keywords_en": [
+        "almost there",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "ใกล้ถึงเป้าหมาย",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "almost there in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'almost there' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'ใกล้ถึงเป้าหมาย' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: nine a coin with a five-point stars in an arc"
+    },
+    {
+      "id": "tarot_pentacles_10",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Ten of Pentacles",
+      "name_th": "10 เหรียญ",
+      "keywords_en": [
+        "completion and fullness",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "ความสมบูรณ์เต็มที่",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "completion and fullness in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'completion and fullness' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'ความสมบูรณ์เต็มที่' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: ten a coin with a five-point stars in a full circle"
+    },
+    {
+      "id": "tarot_pentacles_page",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Page of Pentacles",
+      "name_th": "เพจเหรียญ",
+      "keywords_en": [
+        "curiosity and learning",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "ความอยากรู้และการเรียนรู้",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "curiosity and learning in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'curiosity and learning' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'ความอยากรู้และการเรียนรู้' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: small figure holding one a coin with a five-point star, looking at it"
+    },
+    {
+      "id": "tarot_pentacles_knight",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Knight of Pentacles",
+      "name_th": "อัศวินเหรียญ",
+      "keywords_en": [
+        "drive and pursuit",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "แรงขับและการมุ่งไป",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "drive and pursuit in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'drive and pursuit' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'แรงขับและการมุ่งไป' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: figure in motion carrying one a coin with a five-point star"
+    },
+    {
+      "id": "tarot_pentacles_queen",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "Queen of Pentacles",
+      "name_th": "ราชินีเหรียญ",
+      "keywords_en": [
+        "deep understanding and care",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "ความเข้าใจลึกซึ้งและการดูแล",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "deep understanding and care in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'deep understanding and care' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'ความเข้าใจลึกซึ้งและการดูแล' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seated figure holding one a coin with a five-point star close"
+    },
+    {
+      "id": "tarot_pentacles_king",
+      "deck": "tarot",
+      "arcana": "minor",
+      "suit": "pentacles",
+      "name_en": "King of Pentacles",
+      "name_th": "ราชาเหรียญ",
+      "keywords_en": [
+        "steady, mature leadership",
+        "work, body & security"
+      ],
+      "keywords_th": [
+        "ความหนักแน่นและวุฒิภาวะ",
+        "การงาน ร่างกาย และความมั่นคง"
+      ],
+      "archetype": "steady, mature leadership in the area of work, body & security",
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Where does 'steady, mature leadership' show up in your work, body, or daily life right now?",
+      "reflect_prompt_th": "'ความหนักแน่นและวุฒิภาวะ' ปรากฏในการงาน ร่างกาย หรือชีวิตประจำวันของคุณตอนนี้ตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors: seated figure holding one a coin with a five-point star upright"
+    },
+    {
+      "id": "neuro_01",
+      "deck": "neuro",
+      "image": "neuro/N-01.webp",
+      "name_en": "The Storm",
+      "name_th": "พายุ",
+      "archetype": "Emotional activation",
+      "meaning_en": "Strong internal weather that is real but temporary.",
+      "meaning_th": "สภาวะอารมณ์ที่รุนแรงและจริง แต่ไม่คงอยู่ตลอดไป",
+      "reflect_prompt_en": "What is the storm asking you to notice before you act?",
+      "reflect_prompt_th": "พายุกำลังชวนให้คุณสังเกตอะไรก่อนลงมือทำ?",
+      "micro_intervention": "Orient to five things you see; lengthen the exhale.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_02",
+      "deck": "neuro",
+      "image": "neuro/N-02.webp",
+      "name_en": "The Bridge",
+      "name_th": "สะพาน",
+      "archetype": "Transition / connection",
+      "meaning_en": "A path between two states, people, or versions of self.",
+      "meaning_th": "ทางเชื่อมระหว่างสองสภาวะ สองคน หรือสองตัวตน",
+      "reflect_prompt_en": "What would help you cross one step at a time?",
+      "reflect_prompt_th": "อะไรจะช่วยให้คุณข้ามไปทีละก้าว?",
+      "micro_intervention": "Name the near side, far side, and next plank.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_03",
+      "deck": "neuro",
+      "image": "neuro/N-03.webp",
+      "name_en": "The Locked Door",
+      "name_th": "ประตูที่ล็อก",
+      "archetype": "Protection / blocked access",
+      "meaning_en": "A boundary or obstacle whose function deserves curiosity.",
+      "meaning_th": "ขอบเขตหรืออุปสรรคที่ควรถูกเข้าใจหน้าที่ก่อนผลักผ่าน",
+      "reflect_prompt_en": "What might this door be protecting?",
+      "reflect_prompt_th": "ประตูนี้อาจกำลังปกป้องอะไร?",
+      "micro_intervention": "Ask what safety would make opening possible.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_04",
+      "deck": "neuro",
+      "image": "neuro/N-04.webp",
+      "name_en": "The Cage with an Open Door",
+      "name_th": "กรงที่ประตูเปิด",
+      "archetype": "Learned limitation",
+      "meaning_en": "A past limit that may remain active even when an exit exists.",
+      "meaning_th": "ข้อจำกัดจากอดีตที่อาจยังทำงาน แม้ทางออกมีอยู่แล้ว",
+      "reflect_prompt_en": "The door is open. What keeps the bird inside?",
+      "reflect_prompt_th": "ประตูเปิดอยู่ อะไรยังทำให้นกอยู่ข้างใน?",
+      "micro_intervention": "Identify one old prediction and one present-day fact.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_05",
+      "deck": "neuro",
+      "image": "neuro/N-05.webp",
+      "name_en": "The Mended Bowl",
+      "name_th": "ชามที่ซ่อมแล้ว",
+      "archetype": "Repair / integration",
+      "meaning_en": "A history of breaking and repair made visible, not erased.",
+      "meaning_th": "ร่องรอยการแตกและการซ่อมที่มองเห็นได้โดยไม่ต้องลบอดีต",
+      "reflect_prompt_en": "Which repair has become part of your strength?",
+      "reflect_prompt_th": "การซ่อมแซมใดกลายเป็นส่วนหนึ่งของพลังคุณ?",
+      "micro_intervention": "Name what helped the repair hold.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_06",
+      "deck": "neuro",
+      "image": "neuro/N-06.webp",
+      "name_en": "The Empty Chair",
+      "name_th": "เก้าอี้ว่าง",
+      "archetype": "Absence / unfinished dialogue",
+      "meaning_en": "A place for someone, something, or a part of self not presently here.",
+      "meaning_th": "พื้นที่ของใคร บางสิ่ง หรือส่วนหนึ่งของตนที่ยังไม่อยู่ตรงนี้",
+      "reflect_prompt_en": "Who or what belongs in this conversation?",
+      "reflect_prompt_th": "ใครหรืออะไรควรมีที่อยู่ในบทสนทนานี้?",
+      "micro_intervention": "Speak one sentence to the empty chair; then answer gently.",
+      "activation": "medium",
+      "clinical_caution": "Do not use imagery to recover memories or establish factual truth."
+    },
+    {
+      "id": "neuro_07",
+      "deck": "neuro",
+      "image": "neuro/N-07.webp",
+      "name_en": "The Mirror",
+      "name_th": "กระจก",
+      "archetype": "Self-perception",
+      "meaning_en": "The difference between seeing, judging, and recognising.",
+      "meaning_th": "ความต่างระหว่างการมอง การตัดสิน และการรับรู้ตนเอง",
+      "reflect_prompt_en": "What do you see when judgement steps aside?",
+      "reflect_prompt_th": "คุณเห็นอะไรเมื่อการตัดสินถอยออกไป?",
+      "micro_intervention": "Describe without adjectives for thirty seconds.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_08",
+      "deck": "neuro",
+      "image": "neuro/N-08.webp",
+      "name_en": "The Fog",
+      "name_th": "หมอก",
+      "archetype": "Uncertainty",
+      "meaning_en": "Limited visibility that calls for slower movement, not panic.",
+      "meaning_th": "ทัศนวิสัยจำกัดที่ชวนให้ช้าลง ไม่ใช่ตื่นตระหนก",
+      "reflect_prompt_en": "What is the next visible step, not the whole route?",
+      "reflect_prompt_th": "ก้าวถัดไปที่มองเห็นคืออะไร โดยไม่ต้องเห็นทั้งเส้นทาง?",
+      "micro_intervention": "Choose only the next safe step.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_09",
+      "deck": "neuro",
+      "image": "neuro/N-09.webp",
+      "name_en": "The Knot",
+      "name_th": "ปม",
+      "archetype": "Complexity / entanglement",
+      "meaning_en": "Several threads tightened together over time.",
+      "meaning_th": "หลายเส้นเรื่องที่รัดกันแน่นตามกาลเวลา",
+      "reflect_prompt_en": "Which strand can be loosened first?",
+      "reflect_prompt_th": "เส้นใดคลายได้ก่อน?",
+      "micro_intervention": "Separate facts, feelings, needs, and requests.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_10",
+      "deck": "neuro",
+      "image": "neuro/N-10.webp",
+      "name_en": "The Mask",
+      "name_th": "หน้ากาก",
+      "archetype": "Role / protection",
+      "meaning_en": "A social face that may protect and also tire the wearer.",
+      "meaning_th": "บทบาททางสังคมที่ทั้งปกป้องและทำให้เหนื่อย",
+      "reflect_prompt_en": "Where is the mask useful, and where can it rest?",
+      "reflect_prompt_th": "หน้ากากมีประโยชน์ตรงไหน และตรงไหนที่วางพักได้?",
+      "micro_intervention": "Choose one safe context for greater authenticity.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_11",
+      "deck": "neuro",
+      "image": "neuro/N-11.webp",
+      "name_en": "The Small Flame",
+      "name_th": "เปลวไฟเล็ก",
+      "archetype": "Motivation",
+      "meaning_en": "A modest source of energy that needs protection, not pressure.",
+      "meaning_th": "แหล่งพลังเล็ก ๆ ที่ต้องการการปกป้อง ไม่ใช่แรงกดดัน",
+      "reflect_prompt_en": "What keeps this flame alive?",
+      "reflect_prompt_th": "อะไรช่วยให้เปลวไฟนี้ยังติดอยู่?",
+      "micro_intervention": "Reduce the task until motivation can meet it.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_12",
+      "deck": "neuro",
+      "image": "neuro/N-12.webp",
+      "name_en": "The Heavy Backpack",
+      "name_th": "กระเป๋าหนัก",
+      "archetype": "Burden / accumulated load",
+      "meaning_en": "Responsibilities and meanings carried beyond current capacity.",
+      "meaning_th": "ความรับผิดชอบและความหมายที่แบกเกินกำลังปัจจุบัน",
+      "reflect_prompt_en": "Which item is yours, shared, or no longer needed?",
+      "reflect_prompt_th": "สิ่งใดเป็นของคุณ สิ่งใดควรแบ่ง และสิ่งใดไม่จำเป็นแล้ว?",
+      "micro_intervention": "Sort one burden into keep, share, release.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_13",
+      "deck": "neuro",
+      "image": "neuro/N-13.webp",
+      "name_en": "The Tangle of Threads",
+      "name_th": "ด้ายพันกัน",
+      "archetype": "Multiple narratives",
+      "meaning_en": "Stories and assumptions crossing until the pattern is hard to see.",
+      "meaning_th": "เรื่องเล่าและข้อสันนิษฐานที่ไขว้กันจนมองแบบแผนยาก",
+      "reflect_prompt_en": "Which thread is fact, and which is interpretation?",
+      "reflect_prompt_th": "เส้นใดคือข้อเท็จจริง และเส้นใดคือการตีความ?",
+      "micro_intervention": "Use two columns: observed / inferred.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_14",
+      "deck": "neuro",
+      "image": "neuro/N-14.webp",
+      "name_en": "The Window",
+      "name_th": "หน้าต่าง",
+      "archetype": "Perspective / possibility",
+      "meaning_en": "A framed view that reveals possibility without requiring immediate action.",
+      "meaning_th": "มุมมองที่เผยความเป็นไปได้โดยยังไม่ต้องลงมือทันที",
+      "reflect_prompt_en": "What becomes possible from this angle?",
+      "reflect_prompt_th": "มุมนี้ทำให้เห็นความเป็นไปได้อะไร?",
+      "micro_intervention": "Move physically to another viewpoint and notice.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_15",
+      "deck": "neuro",
+      "image": "neuro/N-15.webp",
+      "name_en": "The Protective Wall",
+      "name_th": "กำแพงปกป้อง",
+      "archetype": "Defence / boundary",
+      "meaning_en": "A defence built for a reason, perhaps now needing a gate.",
+      "meaning_th": "กลไกป้องกันที่มีเหตุผล และอาจต้องการประตูทางเข้าออก",
+      "reflect_prompt_en": "What danger was this wall built for? Is it present now?",
+      "reflect_prompt_th": "กำแพงนี้สร้างไว้ป้องกันอันตรายอะไร และอันตรายนั้นยังอยู่ไหม?",
+      "micro_intervention": "Thank the defence; design a small gate.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_16",
+      "deck": "neuro",
+      "image": "neuro/N-16.webp",
+      "name_en": "The Echo",
+      "name_th": "เสียงสะท้อน",
+      "archetype": "Repetition / memory",
+      "meaning_en": "A present moment amplified by earlier experiences.",
+      "meaning_th": "ปัจจุบันที่ถูกขยายด้วยประสบการณ์เดิม",
+      "reflect_prompt_en": "What belongs to now, and what is an echo?",
+      "reflect_prompt_th": "อะไรเป็นเรื่องของตอนนี้ และอะไรเป็นเสียงสะท้อนจากอดีต?",
+      "micro_intervention": "State today's date, place, and present evidence.",
+      "activation": "medium",
+      "clinical_caution": "Do not use imagery to recover memories or establish factual truth."
+    },
+    {
+      "id": "neuro_17",
+      "deck": "neuro",
+      "image": "neuro/N-17.webp",
+      "name_en": "The Unsent Letter",
+      "name_th": "จดหมายที่ยังไม่ส่ง",
+      "archetype": "Expression / inhibition",
+      "meaning_en": "Words that need form before deciding whether they need delivery.",
+      "meaning_th": "ถ้อยคำที่ต้องมีรูปก่อนตัดสินใจว่าจะส่งหรือไม่",
+      "reflect_prompt_en": "What needs to be written without yet being sent?",
+      "reflect_prompt_th": "อะไรต้องถูกเขียนออกมา โดยยังไม่ต้องส่ง?",
+      "micro_intervention": "Write for five minutes; decide later.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_18",
+      "deck": "neuro",
+      "image": "neuro/N-18.webp",
+      "name_en": "The Compass",
+      "name_th": "เข็มทิศ",
+      "archetype": "Values / orientation",
+      "meaning_en": "Direction guided by values rather than certainty.",
+      "meaning_th": "ทิศทางที่นำโดยคุณค่า มากกว่าความแน่นอน",
+      "reflect_prompt_en": "Which value points north for you here?",
+      "reflect_prompt_th": "คุณค่าใดเป็นทิศเหนือของคุณในเรื่องนี้?",
+      "micro_intervention": "Choose one value-consistent micro-action.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_19",
+      "deck": "neuro",
+      "image": "neuro/N-19.webp",
+      "name_en": "The Crossroads",
+      "name_th": "ทางแยก",
+      "archetype": "Decision / ambivalence",
+      "meaning_en": "Several possible paths, each with gains and costs.",
+      "meaning_th": "หลายเส้นทางที่ต่างมีทั้งสิ่งได้และสิ่งที่ต้องแลก",
+      "reflect_prompt_en": "What does each path protect or make possible?",
+      "reflect_prompt_th": "แต่ละทางปกป้องอะไรหรือเปิดโอกาสอะไร?",
+      "micro_intervention": "List gain, cost, fear, and value for each.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_20",
+      "deck": "neuro",
+      "image": "neuro/N-20.webp",
+      "name_en": "The Spiral Staircase",
+      "name_th": "บันไดวน",
+      "archetype": "Revisiting / growth",
+      "meaning_en": "Returning to similar themes from a different level of awareness.",
+      "meaning_th": "กลับมาเจอเรื่องคล้ายเดิม แต่จากระดับการตระหนักรู้ที่เปลี่ยนไป",
+      "reflect_prompt_en": "How are you different this time around?",
+      "reflect_prompt_th": "ครั้งนี้คุณต่างจากเดิมอย่างไร?",
+      "micro_intervention": "Name one skill you did not have before.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_21",
+      "deck": "neuro",
+      "image": "neuro/N-21.webp",
+      "name_en": "The Cracked Ice",
+      "name_th": "น้ำแข็งร้าว",
+      "archetype": "Fragility / caution",
+      "meaning_en": "A surface that asks for care, support, and accurate assessment.",
+      "meaning_th": "พื้นผิวที่ชวนให้ระมัดระวัง ขอแรงพยุง และประเมินตามจริง",
+      "reflect_prompt_en": "What support makes the next step safer?",
+      "reflect_prompt_th": "แรงสนับสนุนอะไรทำให้ก้าวถัดไปปลอดภัยขึ้น?",
+      "micro_intervention": "Slow down and add one human support.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_22",
+      "deck": "neuro",
+      "image": "neuro/N-22.webp",
+      "name_en": "The Anchor",
+      "name_th": "สมอ",
+      "archetype": "Stability / stuckness",
+      "meaning_en": "Something that can ground you or keep you from moving.",
+      "meaning_th": "สิ่งที่อาจยึดให้มั่นคง หรือรั้งไม่ให้เคลื่อน",
+      "reflect_prompt_en": "Is this anchor grounding you or holding you back?",
+      "reflect_prompt_th": "สมอนี้กำลังทำให้มั่นคงหรือฉุดรั้งคุณ?",
+      "micro_intervention": "Keep the stabilising function; loosen the excess weight.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_23",
+      "deck": "neuro",
+      "image": "neuro/N-23.webp",
+      "name_en": "The Lantern",
+      "name_th": "โคมไฟ",
+      "archetype": "Awareness",
+      "meaning_en": "Enough light for the immediate area, not the whole future.",
+      "meaning_th": "แสงที่พอสำหรับพื้นที่ตรงหน้า ไม่จำเป็นต้องส่องทั้งอนาคต",
+      "reflect_prompt_en": "What becomes visible with a little more attention?",
+      "reflect_prompt_th": "อะไรเริ่มมองเห็นเมื่อเพิ่มความใส่ใจอีกเล็กน้อย?",
+      "micro_intervention": "Name one previously missed detail.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_24",
+      "deck": "neuro",
+      "image": "neuro/N-24.webp",
+      "name_en": "The Closed Fist",
+      "name_th": "กำปั้นที่กำแน่น",
+      "archetype": "Control / readiness",
+      "meaning_en": "Holding tightly as protection, effort, or preparation.",
+      "meaning_th": "การกำไว้แน่นเพื่อปกป้อง พยายาม หรือเตรียมพร้อม",
+      "reflect_prompt_en": "What would happen if the grip softened five percent?",
+      "reflect_prompt_th": "จะเกิดอะไรขึ้นหากคลายมือเพียงห้าเปอร์เซ็นต์?",
+      "micro_intervention": "Unclench hands on the exhale.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_25",
+      "deck": "neuro",
+      "image": "neuro/N-25.webp",
+      "name_en": "The Open Palm",
+      "name_th": "ฝ่ามือเปิด",
+      "archetype": "Receiving / release",
+      "meaning_en": "Readiness to receive, offer, or let something move on.",
+      "meaning_th": "ความพร้อมที่จะรับ มอบ หรือปล่อยให้บางสิ่งเคลื่อนไป",
+      "reflect_prompt_en": "What are you ready to receive or release?",
+      "reflect_prompt_th": "คุณพร้อมรับหรือปล่อยอะไร?",
+      "micro_intervention": "Open the hand and name one permission.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_26",
+      "deck": "neuro",
+      "image": "neuro/N-26.webp",
+      "name_en": "The Two Wolves",
+      "name_th": "หมาป่าสองตัว",
+      "archetype": "Competing impulses",
+      "meaning_en": "Two protective tendencies pulling in different directions.",
+      "meaning_th": "แนวโน้มปกป้องสองแบบที่ดึงไปคนละทิศ",
+      "reflect_prompt_en": "What does each part fear and need?",
+      "reflect_prompt_th": "แต่ละส่วนกลัวอะไรและต้องการอะไร?",
+      "micro_intervention": "Let each part speak one sentence without debate.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_27",
+      "deck": "neuro",
+      "image": "neuro/N-27.webp",
+      "name_en": "The Frozen River",
+      "name_th": "แม่น้ำที่กลายเป็นน้ำแข็ง",
+      "archetype": "Shutdown / conservation",
+      "meaning_en": "Movement paused to conserve energy under difficult conditions.",
+      "meaning_th": "การไหลที่หยุดเพื่อประหยัดพลังในสภาพที่ยาก",
+      "reflect_prompt_en": "What warmth and safety would allow movement to return?",
+      "reflect_prompt_th": "ความอบอุ่นและความปลอดภัยแบบใดจะทำให้การไหลกลับมา?",
+      "micro_intervention": "Use warmth, pressure, and slow exhale; do not force insight.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_28",
+      "deck": "neuro",
+      "image": "neuro/N-28.webp",
+      "name_en": "The Unfinished Puzzle",
+      "name_th": "จิ๊กซอว์ที่ยังไม่ครบ",
+      "archetype": "Incomplete meaning",
+      "meaning_en": "A situation whose missing pieces may not yet be available.",
+      "meaning_th": "สถานการณ์ที่ชิ้นส่วนสำคัญอาจยังมาไม่ถึง",
+      "reflect_prompt_en": "What can remain unknown for now?",
+      "reflect_prompt_th": "อะไรยังไม่จำเป็นต้องรู้ตอนนี้?",
+      "micro_intervention": "Mark known, unknown, and unknowable.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_29",
+      "deck": "neuro",
+      "image": "neuro/N-29.webp",
+      "name_en": "The Tightrope",
+      "name_th": "เชือกเส้นเดียว",
+      "archetype": "Balance / performance pressure",
+      "meaning_en": "Careful movement under perceived risk or scrutiny.",
+      "meaning_th": "การเคลื่อนไหวอย่างระวังภายใต้ความเสี่ยงหรือแรงจับตา",
+      "reflect_prompt_en": "Where can you add a net instead of demanding perfect balance?",
+      "reflect_prompt_th": "ตรงไหนเพิ่มตาข่ายรองรับได้ แทนการบังคับให้สมดุลสมบูรณ์?",
+      "micro_intervention": "Add backup, rehearsal, or a smaller consequence.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_30",
+      "deck": "neuro",
+      "image": "neuro/N-30.webp",
+      "name_en": "The Safe Harbour",
+      "name_th": "ท่าเรือปลอดภัย",
+      "archetype": "Co-regulation / refuge",
+      "meaning_en": "A place, person, or practice that helps the nervous system settle.",
+      "meaning_th": "สถานที่ บุคคล หรือกิจกรรมที่ช่วยให้ระบบประสาทสงบลง",
+      "reflect_prompt_en": "What helps your body recognise safety?",
+      "reflect_prompt_th": "อะไรช่วยให้ร่างกายรับรู้ว่าปลอดภัย?",
+      "micro_intervention": "Create a three-item personal safety cue list.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_31",
+      "deck": "neuro",
+      "image": "neuro/N-31.webp",
+      "name_en": "The Red Thread",
+      "name_th": "ด้ายแดง",
+      "archetype": "Continuity / connection",
+      "meaning_en": "A subtle line linking experiences, values, or relationships.",
+      "meaning_th": "เส้นเชื่อมบาง ๆ ระหว่างประสบการณ์ คุณค่า หรือความสัมพันธ์",
+      "reflect_prompt_en": "What meaningful connection runs through this story?",
+      "reflect_prompt_th": "สายสัมพันธ์ที่มีความหมายใดพาดผ่านเรื่องนี้?",
+      "micro_intervention": "Trace three moments linked by one value.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_32",
+      "deck": "neuro",
+      "image": "neuro/N-32.webp",
+      "name_en": "The Broken Clock",
+      "name_th": "นาฬิกาเสีย",
+      "archetype": "Time / stuck moment",
+      "meaning_en": "A moment that feels frozen or governed by outdated timing.",
+      "meaning_th": "ช่วงเวลาที่เหมือนหยุดนิ่งหรือถูกควบคุมด้วยจังหวะเดิม",
+      "reflect_prompt_en": "What time are you still living in emotionally?",
+      "reflect_prompt_th": "ในทางอารมณ์ คุณยังใช้ชีวิตอยู่ในเวลาใด?",
+      "micro_intervention": "Name then and now; note one difference.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_33",
+      "deck": "neuro",
+      "image": "neuro/N-33.webp",
+      "name_en": "The Seed in Darkness",
+      "name_th": "เมล็ดในความมืด",
+      "archetype": "Incubation",
+      "meaning_en": "Growth occurring before it is visible or measurable.",
+      "meaning_th": "การเติบโตที่เกิดขึ้นก่อนจะมองเห็นหรือวัดได้",
+      "reflect_prompt_en": "What may be developing beneath the surface?",
+      "reflect_prompt_th": "อะไรอาจกำลังพัฒนาอยู่ใต้พื้นผิว?",
+      "micro_intervention": "Protect the process from premature evaluation.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_34",
+      "deck": "neuro",
+      "image": "neuro/N-34.webp",
+      "name_en": "The Missing Step",
+      "name_th": "ขั้นบันไดที่หายไป",
+      "archetype": "Gap / support need",
+      "meaning_en": "A transition made difficult by one missing skill, resource, or agreement.",
+      "meaning_th": "การเปลี่ยนผ่านที่ยากเพราะขาดทักษะ ทรัพยากร หรือข้อตกลงหนึ่งอย่าง",
+      "reflect_prompt_en": "What is the missing step—not the personal flaw?",
+      "reflect_prompt_th": "อะไรคือขั้นตอนที่ขาด ไม่ใช่ข้อบกพร่องของตัวคุณ?",
+      "micro_intervention": "Define the missing resource concretely.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_35",
+      "deck": "neuro",
+      "image": "neuro/N-35.webp",
+      "name_en": "The River Stone",
+      "name_th": "หินในลำธาร",
+      "archetype": "Shaping / persistence",
+      "meaning_en": "A self shaped gradually by repeated contact and time.",
+      "meaning_th": "ตัวตนที่ถูกหล่ออย่างค่อยเป็นค่อยไปจากการสัมผัสซ้ำและเวลา",
+      "reflect_prompt_en": "What has shaped you gently but persistently?",
+      "reflect_prompt_th": "อะไรหล่อหลอมคุณอย่างอ่อนโยนแต่ต่อเนื่อง?",
+      "micro_intervention": "Acknowledge one long-term influence.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_36",
+      "deck": "neuro",
+      "image": "neuro/N-36.webp",
+      "name_en": "The Nest",
+      "name_th": "รัง",
+      "archetype": "Belonging / preparation",
+      "meaning_en": "A holding environment for rest, growth, and eventual departure.",
+      "meaning_th": "พื้นที่โอบอุ้มเพื่อพัก เติบโต และพร้อมออกเดินทาง",
+      "reflect_prompt_en": "What makes a place feel safe enough to grow?",
+      "reflect_prompt_th": "อะไรทำให้สถานที่หนึ่งปลอดภัยพอสำหรับการเติบโต?",
+      "micro_intervention": "Add one cue of comfort or predictability.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_37",
+      "deck": "neuro",
+      "image": "neuro/N-37.webp",
+      "name_en": "The Shadow on the Wall",
+      "name_th": "เงาบนกำแพง",
+      "archetype": "Projection / uncertainty",
+      "meaning_en": "A partial image that may be enlarged by distance and imagination.",
+      "meaning_th": "ภาพบางส่วนที่อาจถูกขยายด้วยระยะห่างและจินตนาการ",
+      "reflect_prompt_en": "What do you actually know about the shape behind the shadow?",
+      "reflect_prompt_th": "คุณรู้อะไรจริง ๆ เกี่ยวกับสิ่งที่อยู่หลังเงา?",
+      "micro_intervention": "Seek one clarifying fact before concluding.",
+      "activation": "medium",
+      "clinical_caution": "Do not use imagery to recover memories or establish factual truth."
+    },
+    {
+      "id": "neuro_38",
+      "deck": "neuro",
+      "image": "neuro/N-38.webp",
+      "name_en": "The Paper Boat",
+      "name_th": "เรือกระดาษ",
+      "archetype": "Vulnerability / play",
+      "meaning_en": "A delicate experiment carried by conditions it cannot fully control.",
+      "meaning_th": "การทดลองที่บอบบางและต้องเดินทางในเงื่อนไขที่ควบคุมไม่ได้ทั้งหมด",
+      "reflect_prompt_en": "What experiment can be held lightly?",
+      "reflect_prompt_th": "การทดลองใดที่คุณทำได้โดยไม่ต้องยึดผลลัพธ์แน่นเกินไป?",
+      "micro_intervention": "Set a small trial and a review point.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_39",
+      "deck": "neuro",
+      "image": "neuro/N-39.webp",
+      "name_en": "The Turning Key",
+      "name_th": "กุญแจที่กำลังหมุน",
+      "archetype": "Readiness / access",
+      "meaning_en": "A moment when access becomes possible through timing and fit.",
+      "meaning_th": "จังหวะที่การเข้าถึงเป็นไปได้เพราะเวลาและความพอดี",
+      "reflect_prompt_en": "What are you becoming ready to open?",
+      "reflect_prompt_th": "คุณกำลังพร้อมเปิดอะไร?",
+      "micro_intervention": "Name one condition of readiness already present.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "neuro_40",
+      "deck": "neuro",
+      "image": "neuro/N-40.webp",
+      "name_en": "The Breathing Space",
+      "name_th": "ช่องว่างให้หายใจ",
+      "archetype": "Pause / regulation",
+      "meaning_en": "A small interval between stimulus and response.",
+      "meaning_th": "ช่องว่างเล็ก ๆ ระหว่างสิ่งกระตุ้นและการตอบสนอง",
+      "reflect_prompt_en": "Where can one breath create choice?",
+      "reflect_prompt_th": "ตรงไหนที่ลมหายใจหนึ่งครั้งสร้างทางเลือกได้?",
+      "micro_intervention": "Inhale naturally; exhale slowly; delay response by one breath.",
+      "activation": "medium",
+      "clinical_caution": null
+    },
+    {
+      "id": "nature_01",
+      "deck": "nature",
+      "name_en": "The River",
+      "name_th": "สายน้ำ",
+      "keywords_en": [
+        "flow",
+        "finding a way around",
+        "keep moving gently"
+      ],
+      "keywords_th": [
+        "การไหล",
+        "การหาทางอ้อมผ่าน",
+        "ค่อย ๆ เคลื่อนไปข้างหน้า"
+      ],
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "A river finds a way around every rock. What flows around obstacles in your week? Breathe slowly as you answer.",
+      "reflect_prompt_th": "สายน้ำหาทางอ้อมก้อนหินได้เสมอ อะไรในสัปดาห์ของคุณที่ไหลผ่านอุปสรรคไปได้ ลองหายใจช้า ๆ ขณะตอบ",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: single wavy blue line curving around a small stone",
+      "image": "nature/G-01.webp"
+    },
+    {
+      "id": "nature_02",
+      "deck": "nature",
+      "name_en": "The Old Tree",
+      "name_th": "ต้นไม้ใหญ่",
+      "keywords_en": [
+        "deep roots",
+        "standing through seasons",
+        "quiet strength"
+      ],
+      "keywords_th": [
+        "รากที่หยั่งลึก",
+        "ยืนหยัดผ่านฤดูกาล",
+        "ความแข็งแกร่งเงียบ ๆ"
+      ],
+      "basic_ph": [
+        "B",
+        "S"
+      ],
+      "reflect_prompt_en": "This tree has stood through many storms. What are your roots — the things that keep you standing?",
+      "reflect_prompt_th": "ต้นไม้ต้นนี้ผ่านพายุมามากมาย รากของคุณคืออะไร สิ่งที่ทำให้คุณยังยืนอยู่ได้",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: bare tree with wide symmetrical roots below ground line",
+      "image": "nature/G-02.webp"
+    },
+    {
+      "id": "nature_03",
+      "deck": "nature",
+      "name_en": "The Mountain Fog",
+      "name_th": "หมอกบนภูเขา",
+      "keywords_en": [
+        "not seeing far ahead",
+        "one step is enough",
+        "trust the path"
+      ],
+      "keywords_th": [
+        "มองไม่เห็นไกล",
+        "ก้าวเดียวก็พอ",
+        "เชื่อใจเส้นทาง"
+      ],
+      "basic_ph": [
+        "C",
+        "B"
+      ],
+      "reflect_prompt_en": "In fog, you only need to see one step ahead. What is your one next step?",
+      "reflect_prompt_th": "ในหมอก เราเห็นแค่หนึ่งก้าวข้างหน้าก็พอ ก้าวถัดไปหนึ่งก้าวของคุณคืออะไร",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: mountain outline half-covered by a soft fog band",
+      "image": "nature/G-03.webp"
+    },
+    {
+      "id": "nature_04",
+      "deck": "nature",
+      "name_en": "The Ocean Wave",
+      "name_th": "คลื่นทะเล",
+      "keywords_en": [
+        "emotions come and go",
+        "riding it out",
+        "the sea beneath is calm"
+      ],
+      "keywords_th": [
+        "อารมณ์มาแล้วก็ไป",
+        "การประคองผ่าน",
+        "ใต้ทะเลลึกนั้นสงบ"
+      ],
+      "basic_ph": [
+        "A",
+        "Ph"
+      ],
+      "reflect_prompt_en": "Waves rise and fall, but the deep sea stays calm. What is your deep, calm place?",
+      "reflect_prompt_th": "คลื่นขึ้นแล้วก็ลง แต่ทะเลลึกยังคงสงบ ที่สงบลึก ๆ ของคุณคือตรงไหน",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: one cresting wave line over a calm flat line",
+      "image": "nature/G-04.webp"
+    },
+    {
+      "id": "nature_05",
+      "deck": "nature",
+      "name_en": "The Forest Path",
+      "name_th": "ทางเดินในป่า",
+      "keywords_en": [
+        "the way appears as you walk",
+        "curiosity",
+        "one bend at a time"
+      ],
+      "keywords_th": [
+        "ทางปรากฏเมื่อเราเดิน",
+        "ความอยากรู้",
+        "ทีละโค้ง"
+      ],
+      "basic_ph": [
+        "I"
+      ],
+      "reflect_prompt_en": "You can't see past the bend — and that's okay. What might be waiting around yours?",
+      "reflect_prompt_th": "เรามองไม่เห็นหลังโค้งถนน และนั่นไม่เป็นไร หลังโค้งของคุณอาจมีอะไรรออยู่",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: path curving between two simple tree shapes",
+      "image": "nature/G-05.webp"
+    },
+    {
+      "id": "nature_06",
+      "deck": "nature",
+      "name_en": "The Desert",
+      "name_th": "ทะเลทราย",
+      "keywords_en": [
+        "a dry season",
+        "conserving energy",
+        "hidden life"
+      ],
+      "keywords_th": [
+        "ฤดูแห้งแล้งของใจ",
+        "การถนอมพลังงาน",
+        "ชีวิตที่ซ่อนอยู่"
+      ],
+      "basic_ph": [
+        "B"
+      ],
+      "reflect_prompt_en": "Even deserts hold hidden water. In a dry season, where is your hidden well?",
+      "reflect_prompt_th": "แม้ทะเลทรายก็มีน้ำซ่อนอยู่ ในฤดูที่แห้งแล้ง บ่อน้ำลับของคุณอยู่ที่ไหน",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: two sand dune curves with one small cactus",
+      "image": "nature/G-06.webp"
+    },
+    {
+      "id": "nature_07",
+      "deck": "nature",
+      "name_en": "The Rain",
+      "name_th": "สายฝน",
+      "keywords_en": [
+        "release",
+        "cleansing",
+        "tears that water something"
+      ],
+      "keywords_th": [
+        "การปลดปล่อย",
+        "การชะล้าง",
+        "น้ำตาที่รดบางสิ่งให้งอกงาม"
+      ],
+      "basic_ph": [
+        "A"
+      ],
+      "reflect_prompt_en": "Rain washes and waters at the same time. What is this rain in your life watering?",
+      "reflect_prompt_th": "ฝนทั้งชะล้างและหล่อเลี้ยงไปพร้อมกัน ฝนในชีวิตคุณกำลังรดน้ำให้อะไรเติบโต",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: three slanted rain lines over a small sprout",
+      "image": "nature/G-07.webp"
+    },
+    {
+      "id": "nature_08",
+      "deck": "nature",
+      "name_en": "The Rainbow",
+      "name_th": "รุ้งกินน้ำ",
+      "keywords_en": [
+        "after the rain",
+        "promise",
+        "brief beauty — notice it"
+      ],
+      "keywords_th": [
+        "หลังฝนซา",
+        "ความหวังข้างหน้า",
+        "ความงามชั่วครู่ที่ควรสังเกต"
+      ],
+      "basic_ph": [
+        "B",
+        "A"
+      ],
+      "reflect_prompt_en": "Rainbows only come after rain. What small beauty showed up after a hard time recently?",
+      "reflect_prompt_th": "รุ้งมาหลังฝนเสมอ หลังช่วงเวลายาก ๆ ที่ผ่านมา มีความงามเล็ก ๆ อะไรปรากฏขึ้นบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: single arc rainbow of three bands over a dot of sun",
+      "image": "nature/G-08.webp"
+    },
+    {
+      "id": "nature_09",
+      "deck": "nature",
+      "name_en": "The Moonlit Night",
+      "name_th": "คืนแสงจันทร์",
+      "keywords_en": [
+        "rest",
+        "gentle darkness",
+        "things grow at night too"
+      ],
+      "keywords_th": [
+        "การพักผ่อน",
+        "ความมืดที่อ่อนโยน",
+        "บางสิ่งเติบโตในยามค่ำ"
+      ],
+      "basic_ph": [
+        "I",
+        "B"
+      ],
+      "reflect_prompt_en": "Some things only grow in the dark and quiet. What is quietly growing in you?",
+      "reflect_prompt_th": "บางสิ่งเติบโตได้เฉพาะในความมืดและเงียบ อะไรกำลังค่อย ๆ เติบโตในตัวคุณ",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: crescent moon with three small stars over a dark hill",
+      "image": "nature/G-09.webp"
+    },
+    {
+      "id": "nature_10",
+      "deck": "nature",
+      "name_en": "The Morning Field",
+      "name_th": "ทุ่งยามเช้า",
+      "keywords_en": [
+        "a clean start",
+        "dew and freshness",
+        "today is new"
+      ],
+      "keywords_th": [
+        "การเริ่มต้นที่สดใหม่",
+        "น้ำค้างและความสดชื่น",
+        "วันนี้คือวันใหม่"
+      ],
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "The field is new every morning. If today started completely fresh, what would you do first?",
+      "reflect_prompt_th": "ทุ่งหญ้าใหม่ทุกเช้า ถ้าวันนี้เริ่มต้นใหม่หมดจด คุณจะทำอะไรเป็นอย่างแรก",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: flat field line with sun and two dew drops",
+      "image": "nature/G-10.webp"
+    },
+    {
+      "id": "nature_11",
+      "deck": "nature",
+      "name_en": "The Autumn Leaves",
+      "name_th": "ใบไม้ร่วง",
+      "keywords_en": [
+        "letting go naturally",
+        "seasons of life",
+        "making room"
+      ],
+      "keywords_th": [
+        "การปล่อยวางตามธรรมชาติ",
+        "ฤดูกาลของชีวิต",
+        "การเปิดพื้นที่ใหม่"
+      ],
+      "basic_ph": [
+        "B"
+      ],
+      "reflect_prompt_en": "Trees release leaves without grief — it makes room for spring. What is ready to fall away?",
+      "reflect_prompt_th": "ต้นไม้ปล่อยใบโดยไม่เศร้า เพราะมันเปิดทางให้ฤดูใบไม้ผลิ อะไรในชีวิตพร้อมจะร่วงหล่นไปบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: one branch with two leaves attached and one falling",
+      "image": "nature/G-11.webp"
+    },
+    {
+      "id": "nature_12",
+      "deck": "nature",
+      "name_en": "The Snowfall",
+      "name_th": "หิมะโปรย",
+      "keywords_en": [
+        "stillness",
+        "slowing down",
+        "quiet cover"
+      ],
+      "keywords_th": [
+        "ความนิ่งสงบ",
+        "การช้าลง",
+        "ผ้าห่มแห่งความเงียบ"
+      ],
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "Snow makes the world slow and quiet. Where could you allow more slowness this week?",
+      "reflect_prompt_th": "หิมะทำให้โลกช้าลงและเงียบขึ้น สัปดาห์นี้คุณจะยอมให้ตัวเองช้าลงตรงไหนได้บ้าง",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: soft dots of snow over a small quiet house",
+      "image": "nature/G-12.webp"
+    },
+    {
+      "id": "nature_13",
+      "deck": "nature",
+      "name_en": "The Bamboo",
+      "name_th": "ต้นไผ่",
+      "keywords_en": [
+        "bending not breaking",
+        "flexibility",
+        "strong because it yields"
+      ],
+      "keywords_th": [
+        "โอนเอนแต่ไม่หัก",
+        "ความยืดหยุ่น",
+        "แข็งแรงเพราะรู้จักอ่อน"
+      ],
+      "basic_ph": [
+        "Ph",
+        "C"
+      ],
+      "reflect_prompt_en": "Bamboo survives storms by bending. Where in your life could bending be strength, not weakness?",
+      "reflect_prompt_th": "ไผ่รอดพายุเพราะรู้จักโอนเอน ตรงไหนในชีวิตที่การยอมโอนอ่อนคือความแข็งแกร่ง ไม่ใช่ความอ่อนแอ",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: three bamboo stalks, one gently bent",
+      "image": "nature/G-13.webp"
+    },
+    {
+      "id": "nature_14",
+      "deck": "nature",
+      "name_en": "The Lotus",
+      "name_th": "ดอกบัว",
+      "keywords_en": [
+        "rising from the mud",
+        "purity from difficulty",
+        "blooming anyway"
+      ],
+      "keywords_th": [
+        "ผุดขึ้นจากโคลนตม",
+        "ความงามที่เกิดจากความยาก",
+        "เบ่งบานให้ได้"
+      ],
+      "basic_ph": [
+        "B"
+      ],
+      "reflect_prompt_en": "The lotus needs mud to bloom. What difficulty in your past feeds something beautiful now?",
+      "reflect_prompt_th": "ดอกบัวต้องอาศัยโคลนจึงบานได้ ความยากลำบากในอดีตหล่อเลี้ยงสิ่งงดงามอะไรในตัวคุณวันนี้",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: single lotus flower on a water line, roots below",
+      "image": "nature/G-14.webp"
+    },
+    {
+      "id": "nature_15",
+      "deck": "nature",
+      "name_en": "The Waterfall",
+      "name_th": "น้ำตก",
+      "keywords_en": [
+        "letting emotion move",
+        "power in release",
+        "refreshing"
+      ],
+      "keywords_th": [
+        "ปล่อยให้อารมณ์ไหล",
+        "พลังของการปลดปล่อย",
+        "ความสดชื่น"
+      ],
+      "basic_ph": [
+        "A"
+      ],
+      "reflect_prompt_en": "A waterfall doesn't hold back. What emotion needs permission to simply flow through you?",
+      "reflect_prompt_th": "น้ำตกไม่เคยกักตัวเอง อารมณ์ไหนที่ควรได้รับอนุญาตให้ไหลผ่านตัวคุณไปบ้าง",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: vertical falling water lines into a small pool",
+      "image": "nature/G-15.webp"
+    },
+    {
+      "id": "nature_16",
+      "deck": "nature",
+      "name_en": "The Cave",
+      "name_th": "ถ้ำ",
+      "keywords_en": [
+        "retreat",
+        "inner shelter",
+        "rest before returning"
+      ],
+      "keywords_th": [
+        "การถอยพัก",
+        "ที่หลบภัยภายใน",
+        "พักก่อนแล้วค่อยกลับออกไป"
+      ],
+      "basic_ph": [
+        "Ph",
+        "B"
+      ],
+      "reflect_prompt_en": "Sometimes we need a cave to rest in. What does your safe retreat look like — and when will you come out?",
+      "reflect_prompt_th": "บางครั้งเราต้องการถ้ำไว้พักใจ ที่พักพิงของคุณหน้าตาเป็นแบบไหน และเมื่อไหร่จะพร้อมออกมา",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: dark arch opening in a hill with a warm dot inside",
+      "image": "nature/G-16.webp"
+    },
+    {
+      "id": "nature_17",
+      "deck": "nature",
+      "name_en": "The Stone Stack",
+      "name_th": "กองหินสมดุล",
+      "keywords_en": [
+        "balance takes practice",
+        "one stone at a time",
+        "careful attention"
+      ],
+      "keywords_th": [
+        "สมดุลต้องฝึกฝน",
+        "วางทีละก้อน",
+        "ความใส่ใจ"
+      ],
+      "basic_ph": [
+        "C",
+        "Ph"
+      ],
+      "reflect_prompt_en": "Stacking stones takes patience and balance. What are you carefully balancing right now?",
+      "reflect_prompt_th": "การวางหินซ้อนกันต้องใช้ความอดทนและสมดุล ตอนนี้คุณกำลังประคองสมดุลของอะไรอยู่",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: five stones stacked, largest at the bottom",
+      "image": "nature/G-17.webp"
+    },
+    {
+      "id": "nature_18",
+      "deck": "nature",
+      "name_en": "The Meadow",
+      "name_th": "ทุ่งหญ้ากว้าง",
+      "keywords_en": [
+        "open space",
+        "room to breathe",
+        "nothing to do right now"
+      ],
+      "keywords_th": [
+        "พื้นที่โล่งกว้าง",
+        "ที่ว่างให้หายใจ",
+        "ตอนนี้ไม่ต้องทำอะไรเลย"
+      ],
+      "basic_ph": [
+        "Ph"
+      ],
+      "reflect_prompt_en": "A meadow asks nothing of you. Take one slow breath. What does 'enough space' feel like in your body?",
+      "reflect_prompt_th": "ทุ่งหญ้าไม่เรียกร้องอะไรจากคุณ หายใจช้า ๆ หนึ่งครั้ง 'พื้นที่ที่พอ' รู้สึกอย่างไรในร่างกายคุณ",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: wide flat green line with three tiny flowers",
+      "image": "nature/G-18.webp"
+    },
+    {
+      "id": "nature_19",
+      "deck": "nature",
+      "name_en": "The Clearing Sky",
+      "name_th": "ฟ้าหลังฝน",
+      "keywords_en": [
+        "storm passing",
+        "light through clouds",
+        "relief"
+      ],
+      "keywords_th": [
+        "พายุกำลังผ่านไป",
+        "แสงลอดผ่านเมฆ",
+        "ความโล่งใจ"
+      ],
+      "basic_ph": [
+        "B",
+        "A"
+      ],
+      "reflect_prompt_en": "The clouds are parting. What storm in your life is starting to pass — even a little?",
+      "reflect_prompt_th": "เมฆกำลังแยกออก พายุเรื่องไหนในชีวิตกำลังเริ่มผ่านไป แม้เพียงเล็กน้อยก็ตาม",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: two clouds parting with sun rays between them",
+      "image": "nature/G-19.webp"
+    },
+    {
+      "id": "nature_20",
+      "deck": "nature",
+      "name_en": "The Roots",
+      "name_th": "รากไม้",
+      "keywords_en": [
+        "what feeds you",
+        "unseen support",
+        "heritage"
+      ],
+      "keywords_th": [
+        "สิ่งที่หล่อเลี้ยงคุณ",
+        "แรงหนุนที่มองไม่เห็น",
+        "รากเหง้า"
+      ],
+      "basic_ph": [
+        "S",
+        "B"
+      ],
+      "reflect_prompt_en": "Roots work unseen. Who or what supports you in ways others don't see?",
+      "reflect_prompt_th": "รากทำงานโดยไม่มีใครเห็น ใครหรืออะไรค้ำจุนคุณอยู่ในแบบที่คนอื่นมองไม่เห็น",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: underground root web below a small trunk",
+      "image": "nature/G-20.webp"
+    },
+    {
+      "id": "nature_21",
+      "deck": "nature",
+      "name_en": "The Seedling",
+      "name_th": "ต้นกล้า",
+      "keywords_en": [
+        "fragile new growth",
+        "protect it",
+        "daily watering"
+      ],
+      "keywords_th": [
+        "การเติบโตใหม่ที่บอบบาง",
+        "ต้องทะนุถนอม",
+        "รดน้ำทุกวัน"
+      ],
+      "basic_ph": [
+        "Ph",
+        "I"
+      ],
+      "reflect_prompt_en": "A seedling needs daily care, not force. What new thing in your life needs gentle daily watering?",
+      "reflect_prompt_th": "ต้นกล้าต้องการการดูแลทุกวัน ไม่ใช่การเร่งรัด สิ่งใหม่อะไรในชีวิตที่ต้องการการรดน้ำอย่างอ่อนโยนทุกวัน",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: tiny sprout with two leaves in a small mound",
+      "image": "nature/G-21.webp"
+    },
+    {
+      "id": "nature_22",
+      "deck": "nature",
+      "name_en": "The Bird in Flight",
+      "name_th": "นกโผบิน",
+      "keywords_en": [
+        "freedom",
+        "leaving the branch",
+        "trusting your wings"
+      ],
+      "keywords_th": [
+        "อิสรภาพ",
+        "การละจากกิ่งไม้",
+        "เชื่อมั่นในปีกตนเอง"
+      ],
+      "basic_ph": [
+        "I",
+        "B"
+      ],
+      "reflect_prompt_en": "The bird trusts its wings, not the branch. What are your wings — the abilities that go with you anywhere?",
+      "reflect_prompt_th": "นกเชื่อปีกของมัน ไม่ใช่กิ่งไม้ ปีกของคุณคืออะไร ความสามารถที่ติดตัวคุณไปได้ทุกที่",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: simple bird silhouette with open wings above a branch",
+      "image": "nature/G-22.webp"
+    },
+    {
+      "id": "nature_23",
+      "deck": "nature",
+      "name_en": "The Butterfly",
+      "name_th": "ผีเสื้อ",
+      "keywords_en": [
+        "transformation",
+        "patience in the cocoon",
+        "emerging"
+      ],
+      "keywords_th": [
+        "การเปลี่ยนแปลงรูปร่าง",
+        "ความอดทนในดักแด้",
+        "การออกมาสู่โลก"
+      ],
+      "basic_ph": [
+        "B",
+        "I"
+      ],
+      "reflect_prompt_en": "Before wings, there was a cocoon. What cocoon stage might you be in right now?",
+      "reflect_prompt_th": "ก่อนจะมีปีก ต้องผ่านดักแด้ ตอนนี้คุณอาจกำลังอยู่ในช่วงดักแด้ของเรื่องอะไร",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: butterfly with two simple symmetric wings",
+      "image": "nature/G-23.webp"
+    },
+    {
+      "id": "nature_24",
+      "deck": "nature",
+      "name_en": "The Dew on the Web",
+      "name_th": "หยดน้ำค้างบนใยแมงมุม",
+      "keywords_en": [
+        "small things shine",
+        "fragile and strong",
+        "noticing details"
+      ],
+      "keywords_th": [
+        "สิ่งเล็ก ๆ ก็เปล่งประกาย",
+        "บอบบางแต่แข็งแรง",
+        "การสังเกตรายละเอียด"
+      ],
+      "basic_ph": [
+        "C"
+      ],
+      "reflect_prompt_en": "Dew makes an invisible web visible. What small, easily-missed thing in your life deserves noticing today?",
+      "reflect_prompt_th": "น้ำค้างทำให้ใยที่มองไม่เห็นปรากฏ วันนี้มีสิ่งเล็ก ๆ อะไรที่มักถูกมองข้าม แต่ควรค่าแก่การสังเกต",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: spider web quarter with three dew drops",
+      "image": "nature/G-24.webp"
+    },
+    {
+      "id": "nature_25",
+      "deck": "nature",
+      "name_en": "The Tide Pools",
+      "name_th": "แอ่งน้ำริมทะเล",
+      "keywords_en": [
+        "small worlds",
+        "what remains after waves",
+        "hidden richness"
+      ],
+      "keywords_th": [
+        "โลกใบเล็ก",
+        "สิ่งที่เหลืออยู่หลังคลื่นซัด",
+        "ความอุดมที่ซ่อนอยู่"
+      ],
+      "basic_ph": [
+        "B",
+        "C"
+      ],
+      "reflect_prompt_en": "After the tide pulls back, life remains in the pools. After a loss or change, what remained with you?",
+      "reflect_prompt_th": "เมื่อน้ำลง ชีวิตยังคงอยู่ในแอ่งน้ำ หลังการสูญเสียหรือความเปลี่ยนแปลง อะไรยังคงอยู่กับคุณ",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: rock pool circle with a small starfish",
+      "image": "nature/G-25.webp"
+    },
+    {
+      "id": "nature_26",
+      "deck": "nature",
+      "name_en": "The Star Sky",
+      "name_th": "ฟ้าเต็มดาว",
+      "keywords_en": [
+        "perspective",
+        "you are small and connected",
+        "wonder"
+      ],
+      "keywords_th": [
+        "การมองภาพกว้าง",
+        "เราเล็กแต่เชื่อมโยงกับทุกสิ่ง",
+        "ความอัศจรรย์ใจ"
+      ],
+      "basic_ph": [
+        "B",
+        "I"
+      ],
+      "reflect_prompt_en": "Under a sky full of stars, worries shrink. Look up (really, if you can tonight): what feels smaller from up here?",
+      "reflect_prompt_th": "ใต้ฟ้าเต็มดาว ความกังวลจะเล็กลง ลองแหงนมองจริง ๆ คืนนี้ อะไรที่ดูเล็กลงเมื่อมองจากมุมกว้าง",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: scatter of seven stars over a dark horizon",
+      "image": "nature/G-26.webp"
+    },
+    {
+      "id": "nature_27",
+      "deck": "nature",
+      "name_en": "The Wind in the Grass",
+      "name_th": "สายลมในทุ่งหญ้า",
+      "keywords_en": [
+        "invisible but felt",
+        "gentle movement",
+        "let it pass through"
+      ],
+      "keywords_th": [
+        "มองไม่เห็นแต่รู้สึกได้",
+        "การเคลื่อนไหวแผ่วเบา",
+        "ปล่อยให้พัดผ่านไป"
+      ],
+      "basic_ph": [
+        "A",
+        "Ph"
+      ],
+      "reflect_prompt_en": "You can't hold the wind — only feel it pass. What feeling can you let pass through you today without holding it?",
+      "reflect_prompt_th": "เราจับลมไม่ได้ ทำได้แค่รู้สึกถึงมัน วันนี้มีความรู้สึกไหนที่คุณจะปล่อยให้พัดผ่านไปโดยไม่ยึดไว้",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: grass blades all bending one way with two motion lines",
+      "image": "nature/G-27.webp"
+    },
+    {
+      "id": "nature_28",
+      "deck": "nature",
+      "name_en": "The Firefly",
+      "name_th": "หิ่งห้อย",
+      "keywords_en": [
+        "small light in darkness",
+        "your own glow",
+        "finding each other"
+      ],
+      "keywords_th": [
+        "แสงน้อยในความมืด",
+        "ประกายของตัวเอง",
+        "การค้นพบกันและกัน"
+      ],
+      "basic_ph": [
+        "B",
+        "S"
+      ],
+      "reflect_prompt_en": "A firefly's light is tiny but visible in the dark. What is your small light that others can see?",
+      "reflect_prompt_th": "แสงหิ่งห้อยเล็กนิดเดียวแต่เห็นได้ในความมืด แสงเล็ก ๆ ของคุณที่คนอื่นมองเห็นคืออะไร",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: one glowing dot with a soft halo over dark grass",
+      "image": "nature/G-28.webp"
+    },
+    {
+      "id": "nature_29",
+      "deck": "nature",
+      "name_en": "The Cliff and the Sea",
+      "name_th": "หน้าผากับทะเล",
+      "keywords_en": [
+        "standing at the vast",
+        "edges and horizons",
+        "awe"
+      ],
+      "keywords_th": [
+        "ยืนอยู่หน้าความกว้างใหญ่",
+        "ขอบเขตและเส้นขอบฟ้า",
+        "ความรู้สึกยิ่งใหญ่"
+      ],
+      "basic_ph": [
+        "B"
+      ],
+      "reflect_prompt_en": "Standing before something vast can calm the mind. What 'big view' helps your problems find their true size?",
+      "reflect_prompt_th": "การยืนอยู่หน้าสิ่งที่กว้างใหญ่ช่วยให้ใจสงบ 'ภาพกว้าง' แบบไหนที่ช่วยให้ปัญหาของคุณกลับสู่ขนาดที่แท้จริง",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: cliff edge line meeting a flat sea horizon",
+      "image": "nature/G-29.webp"
+    },
+    {
+      "id": "nature_30",
+      "deck": "nature",
+      "name_en": "The Banyan Tree",
+      "name_th": "ต้นไทรใหญ่",
+      "keywords_en": [
+        "shelter for many",
+        "growing new roots from branches",
+        "community"
+      ],
+      "keywords_th": [
+        "ร่มเงาให้ผู้คน",
+        "แตกรากใหม่จากกิ่งก้าน",
+        "ชุมชนและการพึ่งพา"
+      ],
+      "basic_ph": [
+        "S"
+      ],
+      "reflect_prompt_en": "A banyan drops new roots from its own branches. How could your experience become shelter or support for someone else?",
+      "reflect_prompt_th": "ต้นไทรหยั่งรากใหม่จากกิ่งของมันเอง ประสบการณ์ของคุณจะกลายเป็นร่มเงาหรือแรงหนุนให้ใครได้บ้าง",
+      "svg_hint": "minimal flat line art, 2 colors, nature scene: wide tree with two aerial roots dropping from branches",
+      "image": "nature/G-30.webp"
+    }
+  ]
+}

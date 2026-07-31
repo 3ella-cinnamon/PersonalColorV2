@@ -10,8 +10,10 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react'
 import { ArrowLeft, ArrowRight, Check, Loader, AlertTriangle, Heart, Shield, LifeBuoy, CalendarClock } from 'lucide-react'
 
+// One font family across the whole screen (the label font). Geist has no Thai
+// glyphs, so Thai falls back to the system Thai sans consistently everywhere —
+// no more serif/sans mismatch between labels and body.
 const fontSans  = "'Geist', ui-sans-serif, system-ui, sans-serif"
-const fontSerif = "'Instrument Serif', ui-serif, Georgia, serif"
 const BASE      = '/api/aehq'
 
 /* ── i18n: fixed UI chrome (content comes translated from the API) ──── */
@@ -37,6 +39,15 @@ const UI = {
     blNote: 'Worth noticing — beliefs feel like facts, but this is a snapshot you can revisit.',
     criticTitle: "The critic's job", criticProtects: 'What it says it protects you from',
     hatedTitle: 'Please be gentle with yourself here',
+    expTitle: 'Last plan, reviewed',
+    expLine: (a) => <>You planned <em>“{a}”</em>.</>,
+    expPred: (p) => `You predicted it was ${p}% likely to help.`,
+    expOut: { helped: 'You tried it — and it helped.', did_not: "You tried it — it didn't help much. Still useful data.",
+              didnt_try: "You didn't get to it — no judgment; plans survive being missed.", no_memory: "It faded — smaller plans stick better." },
+    chairTitle: 'From the other chair',
+    chairCritic: 'The critic said', chairYou: 'You answered',
+    newBlTitle: "The sentence you're building",
+    predNote: (p) => `You predict this plan is ${p}% likely to help — next session we'll check.`,
     journeyTitle: 'Your journey so far',
     journeyMoved: (b, from, to) => <>Last time you believed <em>“{b}”</em> <strong>{from}%</strong>. Today: <strong>{to}%</strong>.</>,
     journeyLoosened: (n) => `That's ${n} points looser — visible change, not imagination.`,
@@ -70,6 +81,15 @@ const UI = {
     blNote: 'ลองสังเกตดู — ความเชื่อรู้สึกเหมือนความจริง แต่นี่คือภาพช็อตหนึ่งที่กลับมาดูใหม่ได้',
     criticTitle: 'หน้าที่ของเสียงตำหนิ', criticProtects: 'สิ่งที่มันบอกว่ากำลังปกป้องคุณจาก',
     hatedTitle: 'ขออ่อนโยนกับตัวเองตรงนี้หน่อยนะ',
+    expTitle: 'ทบทวนแผนคราวก่อน',
+    expLine: (a) => <>คุณวางแผนไว้ว่า <em>“{a}”</em></>,
+    expPred: (p) => `ตอนนั้นคุณทำนายว่ามีโอกาสช่วยได้ ${p}%`,
+    expOut: { helped: 'คุณลองแล้ว — และมันช่วยได้', did_not: 'คุณลองแล้ว — ยังไม่ค่อยช่วย แต่ก็เป็นข้อมูลที่มีค่า',
+              didnt_try: 'ยังไม่ได้ลอง — ไม่เป็นไรเลย แผนรอได้เสมอ', no_memory: 'มันเลือนไป — แผนที่เล็กกว่าจะติดแน่นกว่า' },
+    chairTitle: 'จากอีกเก้าอี้หนึ่ง',
+    chairCritic: 'เสียงตำหนิพูดว่า', chairYou: 'คุณตอบกลับว่า',
+    newBlTitle: 'ประโยคที่คุณกำลังสร้าง',
+    predNote: (p) => `คุณทำนายว่าแผนนี้มีโอกาสช่วยได้ ${p}% — เซสชันหน้าเรามาเช็คกัน`,
     journeyTitle: 'เส้นทางของคุณที่ผ่านมา',
     journeyMoved: (b, from, to) => <>ครั้งก่อนคุณเชื่อ <em>“{b}”</em> <strong>{from}%</strong> วันนี้: <strong>{to}%</strong></>,
     journeyLoosened: (n) => `คลายลง ${n} จุด — การเปลี่ยนแปลงที่เห็นได้จริง ไม่ใช่จินตนาการ`,
@@ -663,7 +683,7 @@ function DisplayConfirmScreen({ screen, onSubmit, loading }) {
         <Heart size={18} color={ACCENT} style={{ marginBottom: '12px' }} />
         <div style={{
           fontSize: '15px', color: TEXT, lineHeight: 1.75,
-          fontFamily: isTH ? fontSans : fontSerif, fontStyle: isTH ? 'normal' : 'italic',
+          fontFamily: fontSans, fontStyle: isTH ? 'normal' : 'italic',
           whiteSpace: 'pre-wrap',
         }}>
           {renderMarkdown(screen.question)}
@@ -788,6 +808,8 @@ function ResultScreen({ payload, onBack }) {
     thought_text,
     critic_reframe, critic_protects_text, hated_self_note,
     goal_attainment, belief_trajectory,
+    ifthen_prediction, experiment_review,
+    critic_words_text, chair_reply_text, new_bottom_line,
   } = result
 
   const trackLabel = { D: tr.trackD, S: tr.trackS, R: tr.trackR }[track] || track
@@ -827,11 +849,32 @@ function ResultScreen({ payload, onBack }) {
 
       {/* Closure text */}
       <h2 style={{
-        fontFamily: fontSerif, fontStyle: 'italic', fontWeight: 400,
+        fontFamily: fontSans, fontStyle: 'italic', fontWeight: 400,
         fontSize: '24px', color: TEXT, margin: '0 0 20px', lineHeight: 1.4,
       }}>
         {closure_text}
       </h2>
+
+      {/* Experiment review (S10) — last plan: prediction vs outcome */}
+      {experiment_review && (
+        <div style={{
+          background: '#FFFFFF', border: `1px solid ${BORDER}`,
+          borderRadius: '14px', padding: '16px 18px', marginBottom: '12px',
+        }}>
+          <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.14em', color: FAINT, margin: '0 0 10px' }}>
+            {tr.expTitle}
+          </p>
+          <p style={{ fontSize: '14px', color: TEXT, lineHeight: 1.7, margin: '0 0 6px' }}>
+            {tr.expLine(experiment_review.action)}
+          </p>
+          {typeof experiment_review.prediction === 'number' && (
+            <p style={{ fontSize: '13px', color: MUTED, margin: '0 0 6px' }}>{tr.expPred(experiment_review.prediction)}</p>
+          )}
+          <p style={{ fontSize: '14px', color: ACCENT, fontWeight: 500, margin: 0 }}>
+            {tr.expOut[experiment_review.outcome] || ''}
+          </p>
+        </div>
+      )}
 
       {/* Journey — belief trajectory vs prior sessions (S11 "visible change") */}
       {belief_trajectory && (
@@ -915,7 +958,7 @@ function ResultScreen({ payload, onBack }) {
           <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.14em', color: FAINT, margin: '0 0 10px' }}>
             {tr.blTitle}
           </p>
-          <p style={{ fontSize: '16px', color: TEXT, lineHeight: 1.5, margin: '0 0 12px', fontFamily: fontSerif, fontStyle: 'italic' }}>
+          <p style={{ fontSize: '16px', color: TEXT, lineHeight: 1.5, margin: '0 0 12px', fontFamily: fontSans, fontStyle: 'italic' }}>
             “{bottom_line_text}”
           </p>
           {typeof bottom_line_belief === 'number' && (
@@ -931,7 +974,41 @@ function ResultScreen({ payload, onBack }) {
               <p style={{ fontSize: '12px', color: MUTED, margin: '0 0 4px' }}>{tr.blBelief(bottom_line_belief)}</p>
             </>
           )}
+          {new_bottom_line && (
+            <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: `0.5px solid ${BORDER}` }}>
+              <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.14em', color: ACCENT, margin: '0 0 6px' }}>
+                {tr.newBlTitle}
+              </p>
+              <p style={{ fontSize: '15px', color: ACCENT, fontWeight: 500, margin: 0, fontFamily: fontSans, fontStyle: 'italic' }}>
+                “{new_bottom_line}”
+              </p>
+            </div>
+          )}
           <p style={{ fontSize: '11px', color: '#B0AEA6', margin: '6px 0 0', lineHeight: 1.5 }}>{tr.blNote}</p>
+        </div>
+      )}
+
+      {/* Micro two-chair (S5) — critic's words vs the compassionate reply */}
+      {chair_reply_text && (
+        <div style={{
+          background: '#FFFFFF', border: `1px solid ${BORDER}`,
+          borderRadius: '14px', padding: '16px 18px', marginBottom: '12px',
+        }}>
+          <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.14em', color: FAINT, margin: '0 0 12px' }}>
+            {tr.chairTitle}
+          </p>
+          {critic_words_text && (
+            <div style={{ marginBottom: '10px' }}>
+              <p style={{ fontSize: '11px', color: FAINT, margin: '0 0 3px' }}>{tr.chairCritic}</p>
+              <p style={{ fontSize: '13px', color: MUTED, margin: 0, fontStyle: 'italic' }}>“{critic_words_text}”</p>
+            </div>
+          )}
+          <div>
+            <p style={{ fontSize: '11px', color: ACCENT, margin: '0 0 3px' }}>{tr.chairYou}</p>
+            <p style={{ fontSize: '14px', color: TEXT, fontWeight: 500, margin: 0, fontFamily: fontSans, fontStyle: 'italic' }}>
+              “{chair_reply_text}”
+            </p>
+          </div>
         </div>
       )}
 
@@ -1059,6 +1136,11 @@ function ResultScreen({ payload, onBack }) {
           <p style={{ fontSize: '14px', color: TEXT, lineHeight: 1.75, margin: 0, fontStyle: 'italic' }}>
             {ifthen_action}
           </p>
+          {typeof ifthen_prediction === 'number' && (
+            <p style={{ fontSize: '12px', color: MUTED, margin: '8px 0 0', lineHeight: 1.5 }}>
+              {tr.predNote(ifthen_prediction)}
+            </p>
+          )}
         </div>
       )}
 
@@ -1073,7 +1155,7 @@ function ResultScreen({ payload, onBack }) {
             <Heart size={16} color={ACCENT} style={{ flexShrink: 0, marginTop: '2px' }} />
             <p style={{
               fontSize: '14px', color: TEXT, lineHeight: 1.7, margin: 0,
-              fontFamily: fontSerif, fontStyle: 'italic',
+              fontFamily: fontSans, fontStyle: 'italic',
             }}>
               {selfcompassion_text}
             </p>
@@ -1144,7 +1226,7 @@ function Row({ label, value }) {
 
 /* ── Progress stepper ───────────────────────────────────────── */
 
-const STEP_ORDER = ['CONSENT','SAFETY','SUDS_INIT','GROUNDING','SUDS_RERATE','SITUATION','GOAL','BODY_LOC','BODY_QUAL','EMOTIONS','QUESTION','BELIEF','MOOD1','MOOD2','UNMET_NEED','FOC','COMPASSION','SOOTHE','IFTHEN','GOAL_ATTAIN','RERATE']
+const STEP_ORDER = ['CONSENT','SAFETY','SUDS_INIT','GROUNDING','SUDS_RERATE','SITUATION','GOAL','EXPERIMENT_REVIEW','BODY_LOC','BODY_QUAL','EMOTIONS','GRANULAR','QUESTION','BELIEF','NEW_BL','MOOD1','MOOD2','UNMET_NEED','FOC','COMPASSION','SOOTHE','CHAIR','IFTHEN','PREDICT','GOAL_ATTAIN','RERATE']
 
 function ProgressDots({ currentStep }) {
   const tr = useT()
@@ -1350,7 +1432,7 @@ export default function AEHQSession({ token, onBack, onDone }) {
       )}
 
       <h2 style={{
-        fontFamily: lang === 'th' ? fontSans : fontSerif,
+        fontFamily: fontSans,
         fontStyle: lang === 'th' ? 'normal' : 'italic',
         fontWeight: lang === 'th' ? 500 : 400,
         fontSize: lang === 'th' ? '20px' : '22px', color: TEXT, margin: '0 0 6px', lineHeight: 1.5,

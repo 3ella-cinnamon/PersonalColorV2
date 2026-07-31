@@ -24,6 +24,16 @@ const SECTIONS = [
     bg:     '#F0F7F5',
     border: '#B8D9D2',
   },
+  {
+    id: 'cards',
+    emoji: '🃏',
+    title: 'Card Deck',
+    sub:   'Projective reflection',
+    desc:  'Draw from Tarot, Neuro, or Nature decks. Shuffle, pick your cards, and let the images open a gentle, self-guided reflection.',
+    accent: '#6B5B95',
+    bg:     '#F3F1F8',
+    border: '#D6CFE8',
+  },
 ]
 
 export default function HomeMenu({ onSelect, onLogout }) {
